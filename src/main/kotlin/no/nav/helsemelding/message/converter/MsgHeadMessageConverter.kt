@@ -8,6 +8,7 @@ import no.nav.helsemelding.message.error.ConversionError
 import no.nav.helsemelding.message.json.IncomingDialogMessageSerializer
 import no.nav.helsemelding.message.json.OutgoingDialogMessageSerializer
 import no.nav.helsemelding.message.model.Attachment
+import no.nav.helsemelding.message.model.SplitMessage
 import no.nav.helsemelding.message.msghead.MsgHeadDialogMessageMapper
 import no.nav.helsemelding.message.msghead.XmlSerializer
 import no.nav.helsemelding.message.msghead.extractAttachmentDocuments
@@ -34,6 +35,14 @@ class MsgHeadMessageConverter(
             val msgHead = mapper.toMsgHead(dialogMessage).bind()
 
             xmlSerializer.serialize(msgHead).bind()
+        }
+
+    override fun splitAttachments(msgHeadXml: String): Either<ConversionError, SplitMessage> =
+        either {
+            SplitMessage(
+                messageWithoutAttachmentsXml = removeAttachments(msgHeadXml).bind(),
+                attachments = extractAttachments(msgHeadXml).bind()
+            )
         }
 
     override fun extractAttachments(msgHeadXml: String): Either<ConversionError, List<Attachment>> =

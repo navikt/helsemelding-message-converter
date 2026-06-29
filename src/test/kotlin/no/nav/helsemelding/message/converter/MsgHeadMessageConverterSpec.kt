@@ -62,6 +62,22 @@ class MsgHeadMessageConverterSpec : StringSpec(
             attachments.map { it.contentType }.distinct() shouldContainExactly listOf("application/pdf")
         }
 
+        "should split attachments from MsgHead XML" {
+            val messageXml = String(Files.readAllBytes(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH)))
+
+            val splitMessage = converter.splitAttachments(messageXml).shouldBeRight()
+            val msgHead = serializer.deserialize(splitMessage.messageWithoutAttachmentsXml).shouldBeRight()
+
+            splitMessage.attachments.size shouldBe 3
+            splitMessage.attachments.map { it.description } shouldContainExactly listOf(
+                "Testvedlegg 1",
+                "Testvedlegg 2",
+                "Testvedlegg 3"
+            )
+            msgHead.document.size shouldBe 1
+            splitMessage.messageWithoutAttachmentsXml shouldContain "MsgHead"
+        }
+
         "should return empty attachment list when MsgHead XML has no attachments" {
             val messageXml = String(Files.readAllBytes(Paths.get(XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH)))
 

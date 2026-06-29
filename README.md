@@ -32,6 +32,7 @@ It also implements `AttachmentHandler`:
 
 ```kotlin
 interface AttachmentHandler {
+    fun splitAttachments(msgHeadXml: String): Either<ConversionError, SplitMessage>
     fun extractAttachments(msgHeadXml: String): Either<ConversionError, List<Attachment>>
     fun removeAttachments(msgHeadXml: String): Either<ConversionError, String>
 }
@@ -76,9 +77,31 @@ The input JSON must follow the `OutgoingDialogMessage` schema from `json-schema-
 Attachments can be handled separately from conversion:
 
 ```kotlin
+val splitMessage = converter.splitAttachments(msgHeadXml)
 val attachments = converter.extractAttachments(msgHeadXml)
 val xmlWithoutAttachments = converter.removeAttachments(msgHeadXml)
 ```
+
+`splitAttachments` returns the XML with attachments removed and the extracted attachments in one operation:
+
+```kotlin
+data class SplitMessage(
+    val messageWithoutAttachmentsXml: String,
+    val attachments: List<Attachment>
+)
+```
+
+`Attachment` contains:
+
+```kotlin
+data class Attachment(
+    val description: String,
+    val contentType: String,
+    val contentBase64: String
+)
+```
+
+Supported attachment MIME types are PDF, TIFF, PNG, JPEG, PJPEG, JPG, and PJPG.
 
 ## Errors
 
