@@ -35,40 +35,41 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
             val dialogMessage = mapper.toIncomingDialogMessage(msgHead).shouldBeRight()
 
             dialogMessage shouldBe IncomingDialogMessage(
-                1,
-                "dialog-1",
-                IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
-                "2026-06-10T12:30",
-                "12345678910",
-                Sender(
-                    "provider-1",
-                    "provider-1"
+                version = 1,
+                id = "dialog-1",
+                type = IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
+                receivedAt = "2026-06-10T12:30",
+                patientIdent = "12345678910",
+                sender = Sender(
+                    providerId = "provider-1",
+                    signingProviderId = "provider-1"
                 ),
-                ConversationReference(
-                    "parent-1",
-                    "conversation-1"
+                conversationReference = ConversationReference(
+                    parentMessageId = "parent-1",
+                    conversationId = "conversation-1"
                 ),
-                "",
-                0
+                message = "",
+                numberOfAttachments = 0
             )
         }
 
         "maps OutgoingDialogMessage to MsgHead" {
             val msgHead = mapper.toMsgHead(
                 OutgoingDialogMessage(
-                    1,
-                    "dialog-1",
-                    "12345678910",
-                    "provider-1",
-                    ConversationReference(
-                        "parent-1",
-                        "conversation-1"
+                    version = 1,
+                    id = "dialog-1",
+                    patientIdent = "12345678910",
+                    providerId = "provider-1",
+                    conversationReference = ConversationReference(
+                        parentMessageId = "parent-1",
+                        conversationId = "conversation-1"
                     ),
-                    OutgoingDialogMessageType.NAV_MESSAGE,
-                    "Hei",
-                    null
+                    type = OutgoingDialogMessageType.NAV_MESSAGE,
+                    message = "Hei",
+                    attachment = null
                 )
-            ).shouldBeRight()
+            )
+                .shouldBeRight()
 
             msgHead.msgInfo.msgId shouldBe "dialog-1"
             msgHead.msgInfo.patient.ident.first().id shouldBe "12345678910"

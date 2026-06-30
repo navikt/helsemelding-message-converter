@@ -15,18 +15,18 @@ class ResultExtensionsSpec : StringSpec(
     {
         "should convert right value to successful Result" {
             val dialogMessage = IncomingDialogMessage(
-                1,
-                "dialog-1",
-                IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
-                "2026-06-10T12:30",
-                "12345678910",
-                Sender(
-                    "provider-1",
-                    "signing-provider-1"
+                version = 1,
+                id = "dialog-1",
+                type = IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
+                receivedAt = "2026-06-10T12:30",
+                patientIdent = "12345678910",
+                sender = Sender(
+                    providerId = "provider-1",
+                    signingProviderId = "signing-provider-1"
                 ),
-                null,
-                "Hei",
-                0
+                conversationReference = null,
+                message = "Hei",
+                numberOfAttachments = 0
             )
 
             val result = dialogMessage.right().toResult()
