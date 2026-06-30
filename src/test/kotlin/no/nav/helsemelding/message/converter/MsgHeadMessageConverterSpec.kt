@@ -7,6 +7,7 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
+import kotlinx.serialization.json.Json
 import no.nav.helsemelding.message.error.InvalidJson
 import no.nav.helsemelding.message.error.InvalidXml
 import no.nav.helsemelding.message.msghead.XmlSerializer
@@ -22,16 +23,29 @@ class MsgHeadMessageConverterSpec : StringSpec(
         val serializer = XmlSerializer()
 
         "should convert MsgHead XML to DialogMessage JSON" {
-            val messageXml = String(Files.readAllBytes(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH)))
+            val messageXml = Files.readString(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH))
 
             val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
 
-            json shouldContain "\"version\":1"
-            json shouldContain "\"id\":\"df978545-189c-4ad2-8479-d5271d69e0b6\""
-            json shouldContain "\"type\":\"SICK_LEAVE_FOLLOW_UP_INQUIRY\""
-            json shouldContain "\"receivedAt\":\"2026-05-29T13:13:28.967022541\""
-            json shouldContain "\"patientIdent\":\"31777207884\""
-            json shouldContain "\"numberOfAttachments\":3"
+            Json.parseToJsonElement(json) shouldBe
+                Json.parseToJsonElement(
+                    """
+                    {
+                      "version": 1,
+                      "id": "df978545-189c-4ad2-8479-d5271d69e0b6",
+                      "type": "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+                      "receivedAt": "2026-05-29T13:13:28.967022541",
+                      "patientIdent": "31777207884",
+                      "sender": {
+                        "providerId": "8142520",
+                        "signingProviderId": "8142520"
+                      },
+                      "conversationReference": null,
+                      "message": "Har du forslag til tilrettelegging på arbeidsplassen for den sykmeldte?",
+                      "numberOfAttachments": 3
+                    }
+                    """.trimIndent()
+                )
         }
 
         "should return InvalidXml when MsgHead XML is malformed" {
@@ -49,7 +63,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
         }
 
         "should extract attachments from MsgHead XML" {
-            val messageXml = String(Files.readAllBytes(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH)))
+            val messageXml = Files.readString(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH))
 
             val attachments = converter.extractAttachments(messageXml).shouldBeRight()
 
@@ -63,7 +77,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
         }
 
         "should split attachments from MsgHead XML" {
-            val messageXml = String(Files.readAllBytes(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH)))
+            val messageXml = Files.readString(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH))
 
             val splitMessage = converter.splitAttachments(messageXml).shouldBeRight()
             val msgHead = serializer.deserialize(splitMessage.messageWithoutAttachmentsXml).shouldBeRight()
@@ -79,13 +93,13 @@ class MsgHeadMessageConverterSpec : StringSpec(
         }
 
         "should return empty attachment list when MsgHead XML has no attachments" {
-            val messageXml = String(Files.readAllBytes(Paths.get(XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH)))
+            val messageXml = Files.readString(Paths.get(XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH))
 
             converter.extractAttachments(messageXml).shouldBeRight() shouldBe emptyList()
         }
 
         "should remove attachments from MsgHead XML" {
-            val messageXml = String(Files.readAllBytes(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH)))
+            val messageXml = Files.readString(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH))
 
             val xmlWithoutAttachments = converter.removeAttachments(messageXml).shouldBeRight()
             val msgHead = serializer.deserialize(xmlWithoutAttachments).shouldBeRight()

@@ -24,7 +24,7 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
     {
         val mapper = MsgHeadDialogMessageMapper()
 
-        "maps required MsgHead fields to DialogMessage" {
+        "maps required MsgHead fields to IncomingDialogMessage" {
             val msgHead = msgHead(
                 msgId = "dialog-1",
                 genDate = LocalDateTime.parse("2026-06-10T12:30:00"),

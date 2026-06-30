@@ -2,6 +2,7 @@ package no.nav.helsemelding.message.msghead
 
 import arrow.core.Either
 import arrow.core.raise.either
+import no.nav.helse.dialogmelding.XMLDialogmelding
 import no.nav.helse.msgHead.XMLConversationRef
 import no.nav.helse.msgHead.XMLDocument
 import no.nav.helse.msgHead.XMLIdent
@@ -108,13 +109,22 @@ class MsgHeadDialogMessageMapper {
         }
 
     private fun XMLMsgHead.messageText(): String =
-        document
+        when (
+            val content = document
+                .firstOrNull()
+                ?.refDoc
+                ?.content
+                ?.any
+                ?.firstOrNull()
+        ) {
+            is XMLDialogmelding -> content.sporsmal()
+            else -> ""
+        }
+
+    private fun XMLDialogmelding.sporsmal(): String =
+        foresporsel
             .firstOrNull()
-            ?.refDoc
-            ?.content
-            ?.any
-            ?.firstOrNull()
-            ?.toString()
+            ?.sporsmal
             .orEmpty()
 
     private fun XMLMsgHead.setDialogId(dialogId: String) {
