@@ -1,6 +1,7 @@
 package no.nav.helsemelding.message.client.providerregistry.model
 
 import kotlinx.serialization.Serializable
+import no.nav.helsemelding.message.client.providerregistry.model.serializer.OffsetDateTimeSerializer
 import no.nav.helsemelding.message.msghead.model.Personident
 import java.time.OffsetDateTime
 import kotlin.uuid.Uuid

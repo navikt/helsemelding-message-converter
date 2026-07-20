@@ -1,6 +1,7 @@
 package no.nav.helsemelding.message.client.providerregistry.model
 
 import kotlinx.serialization.Serializable
+import no.nav.helsemelding.message.client.providerregistry.model.serializer.OffsetDateTimeSerializer
 import java.time.OffsetDateTime
 
 @Serializable

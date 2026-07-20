@@ -19,7 +19,6 @@ import kotlin.uuid.Uuid
 
 class OutgoingMessageSpec : StringSpec(
     {
-
         val patientIdent = Personident("24274116206")
         val behandler = createProvider(Uuid.random())
 

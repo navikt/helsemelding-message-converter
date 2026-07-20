@@ -259,7 +259,7 @@ fun inquiry(inquiryMessage: InquiryMessage): XMLDialogmelding {
             XMLForesporsel().apply {
                 typeForesp = CV().apply {
                     dn = inquiryMessage.type.application
-                    s = KODEVERK_BASE + inquiryMessage.type.codeSystem
+                    s = "$KODEVERK_BASE${inquiryMessage.type.codeSystem}"
                     v = inquiryMessage.type.code.toString()
                 }
                 sporsmal = inquiryMessage.message
@@ -275,7 +275,7 @@ fun memo(memoMessage: MemoMessage): XMLDialogmelding {
             XMLNotat().apply {
                 temaKodet = CV().apply {
                     dn = memoMessage.type.application
-                    s = KODEVERK_BASE + memoMessage.type.codeSystem
+                    s = "$KODEVERK_BASE${memoMessage.type.codeSystem}"
                     v = memoMessage.type.code.toString()
                 }
                 tekstNotatInnhold = memoMessage.message
@@ -291,7 +291,7 @@ fun followUpPlan(followUpPlanMessage: FollowUpPlanMessage): XMLDialogmelding {
             XMLNotat().apply {
                 temaKodet = CV().apply {
                     dn = followUpPlanMessage.type.application
-                    s = KODEVERK_BASE + followUpPlanMessage.type.codeSystem
+                    s = "$KODEVERK_BASE${followUpPlanMessage.type.codeSystem}"
                     v = followUpPlanMessage.type.code.toString()
                 }
                 tekstNotatInnhold = followUpPlanMessage.message
