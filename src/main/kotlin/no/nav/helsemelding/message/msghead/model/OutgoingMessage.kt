@@ -12,7 +12,7 @@ sealed interface OutgoingMessage {
     val message: String?
     val attachment: String?
     val provider: Provider
-    val arbeidstaker: Arbeidstaker
+    val employee: Employee
     val createdAt: LocalDateTime
     val dokId: Uuid
 }
@@ -24,7 +24,7 @@ data class InquiryMessage(
     override val message: String?,
     override val attachment: String?,
     override val provider: Provider,
-    override val arbeidstaker: Arbeidstaker,
+    override val employee: Employee,
     override val createdAt: LocalDateTime,
     override val dokId: Uuid
 ) : OutgoingMessage
@@ -36,7 +36,7 @@ data class MemoMessage(
     override val message: String?,
     override val attachment: String?,
     override val provider: Provider,
-    override val arbeidstaker: Arbeidstaker,
+    override val employee: Employee,
     override val createdAt: LocalDateTime,
     override val dokId: Uuid
 ) : OutgoingMessage
@@ -47,14 +47,7 @@ data class FollowUpPlanMessage(
     override val message: String,
     override val attachment: String,
     override val provider: Provider,
-    override val arbeidstaker: Arbeidstaker,
+    override val employee: Employee,
     override val createdAt: LocalDateTime,
     override val dokId: Uuid
 ) : OutgoingMessage
-
-data class AdditionalMessageInfo(
-    val provider: Provider,
-    val arbeidstaker: Arbeidstaker,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    val dokId: Uuid = Uuid.random()
-)

@@ -127,7 +127,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
 
             val providerRegistryClient = FakeProviderRegistryClient()
             val behandler = createProvider(providerId)
-            providerRegistryClient.givenBehandler(behandler.behandlerRef, Either.Right(behandler))
+            providerRegistryClient.givenProvider(behandler.behandlerRef, Either.Right(behandler))
             val converter = msgHeadMessageConverter(
                 providerRegistryClient = providerRegistryClient
             )
@@ -159,7 +159,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
             ).toString()
             val providerRegistryClient = FakeProviderRegistryClient()
             val behandler = createProvider(providerId)
-            providerRegistryClient.givenBehandler(providerId, Either.Right(behandler))
+            providerRegistryClient.givenProvider(providerId, Either.Right(behandler))
             val pdlClient = FakePdlClient()
             val personName = PdlPersonNavn(
                 fornavn = "Ola",

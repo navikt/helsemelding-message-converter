@@ -21,7 +21,7 @@ import no.nav.helsemelding.jsonschema.core.model.Sender
 import no.nav.helsemelding.message.converter.createProvider
 import no.nav.helsemelding.message.error.MappingError
 import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
-import no.nav.helsemelding.message.msghead.model.Arbeidstaker
+import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.Personident
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -84,16 +84,16 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
             )
             val provider = createProvider(Uuid.random())
 
-            val arbeidstaker = Arbeidstaker(
-                fornavn = "Ola",
-                mellomnavn = "Jens",
-                etternavn = "Nordmann",
+            val employee = Employee(
+                firstName = "Ola",
+                middleName = "Jens",
+                lastName = "Nordmann",
                 personident = patientIdent
             )
 
             val additionalInfo = AdditionalMessageInfo(
                 provider = provider,
-                arbeidstaker = arbeidstaker,
+                employee = employee,
                 createdAt = LocalDateTime.parse("2026-07-06T09:48:44.5727191"),
                 dokId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
             )

@@ -25,7 +25,7 @@ class HttpProviderRegistryClient(
 
     private val httpClient = clientProvider()
 
-    override suspend fun getBehandler(providerId: Uuid): Either<ProviderError, Provider> {
+    override suspend fun getProvider(providerId: Uuid): Either<ProviderError, Provider> {
         val response = httpClient.get("$providerRegistryServiceUrl/api/v1/behandler/$providerId") {
             contentType(ContentType.Application.Json)
         }.withLogging()
@@ -48,17 +48,17 @@ private fun HttpResponse.withLogging(): HttpResponse {
 }
 
 interface ProviderRegistryClient {
-    suspend fun getBehandler(providerId: Uuid): Either<ProviderError, Provider>
+    suspend fun getProvider(providerId: Uuid): Either<ProviderError, Provider>
 }
 
 class FakeProviderRegistryClient : ProviderRegistryClient {
     private val providerById = mutableMapOf<Uuid, Either<ProviderError, Provider>>()
 
-    fun givenBehandler(uuid: Uuid, either: Either<ProviderError, Provider>) {
+    fun givenProvider(uuid: Uuid, either: Either<ProviderError, Provider>) {
         providerById[uuid] = either
     }
 
-    override suspend fun getBehandler(providerId: Uuid): Either<ProviderError, Provider> {
+    override suspend fun getProvider(providerId: Uuid): Either<ProviderError, Provider> {
         return providerById[providerId] ?: Either.Left(
             FetchingError(
                 code = HttpStatusCode.Forbidden.value,

@@ -22,16 +22,16 @@ class OutgoingMessageSpec : StringSpec(
         val patientIdent = Personident("24274116206")
         val behandler = createProvider(Uuid.random())
 
-        val arbeidstaker = Arbeidstaker(
-            fornavn = "Ola",
-            mellomnavn = "Jens",
-            etternavn = "Nordmann",
+        val employee = Employee(
+            firstName = "Ola",
+            middleName = "Jens",
+            lastName = "Nordmann",
             personident = patientIdent
         )
 
         val additionalInfo = AdditionalMessageInfo(
             provider = behandler,
-            arbeidstaker = arbeidstaker,
+            employee = employee,
             createdAt = LocalDateTime.parse("2026-07-06T09:48:44.5727191"),
             dokId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
         )
@@ -83,7 +83,7 @@ class OutgoingMessageSpec : StringSpec(
             followUpPlanMessage.createdAt shouldBe additionalInfo.createdAt
             followUpPlanMessage.dokId shouldBe additionalInfo.dokId
             followUpPlanMessage.type shouldBe OutgoingDialogMessageType.FOLLOW_UP_PLAN
-            followUpPlanMessage.arbeidstaker shouldBeEqualUsingFields arbeidstaker
+            followUpPlanMessage.employee shouldBeEqualUsingFields employee
             followUpPlanMessage.provider shouldBeEqualUsingFields behandler
             followUpPlanMessage.message shouldBe "Åpne PDF-vedlegg"
         }
@@ -123,7 +123,7 @@ class OutgoingMessageSpec : StringSpec(
             memoMessage.dokId shouldBe additionalInfo.dokId
             memoMessage.type shouldBe it
             memoMessage.conversationReference shouldBeEqualUsingFields dialogMessage.conversationReference!!
-            memoMessage.arbeidstaker shouldBeEqualUsingFields arbeidstaker
+            memoMessage.employee shouldBeEqualUsingFields employee
             memoMessage.provider shouldBeEqualUsingFields behandler
             memoMessage.message shouldBe dialogMessage.message
         }
@@ -161,7 +161,7 @@ class OutgoingMessageSpec : StringSpec(
             memoMessage.type shouldBe it
             memoMessage.conversationReference.parentMessageId shouldBe dialogMessage.id
             memoMessage.conversationReference.conversationId shouldBe dialogMessage.id
-            memoMessage.arbeidstaker shouldBeEqualUsingFields arbeidstaker
+            memoMessage.employee shouldBeEqualUsingFields employee
             memoMessage.provider shouldBeEqualUsingFields behandler
             memoMessage.message shouldBe dialogMessage.message
         }
@@ -200,7 +200,7 @@ class OutgoingMessageSpec : StringSpec(
             inquiryMessage.dokId shouldBe additionalInfo.dokId
             inquiryMessage.type shouldBe it
             inquiryMessage.conversationReference shouldBeEqualUsingFields dialogMessage.conversationReference!!
-            inquiryMessage.arbeidstaker shouldBeEqualUsingFields arbeidstaker
+            inquiryMessage.employee shouldBeEqualUsingFields employee
             inquiryMessage.provider shouldBeEqualUsingFields behandler
             inquiryMessage.message shouldBe dialogMessage.message
         }
@@ -237,7 +237,7 @@ class OutgoingMessageSpec : StringSpec(
             inquiryMessage.type shouldBe it
             inquiryMessage.conversationReference.parentMessageId shouldBe dialogMessage.id
             inquiryMessage.conversationReference.conversationId shouldBe dialogMessage.id
-            inquiryMessage.arbeidstaker shouldBeEqualUsingFields arbeidstaker
+            inquiryMessage.employee shouldBeEqualUsingFields employee
             inquiryMessage.provider shouldBeEqualUsingFields behandler
             inquiryMessage.message shouldBe dialogMessage.message
         }

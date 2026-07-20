@@ -52,7 +52,7 @@ private fun OutgoingDialogMessage.toFollowUpPlanMessage(
         message = "Åpne PDF-vedlegg",
         attachment = attachment,
         provider = additionalMessageInfo.provider,
-        arbeidstaker = additionalMessageInfo.arbeidstaker,
+        employee = additionalMessageInfo.employee,
         createdAt = additionalMessageInfo.createdAt,
         dokId = additionalMessageInfo.dokId
     ).right()
@@ -69,7 +69,7 @@ private fun OutgoingDialogMessage.toInquiryMessage(additionalMessageInfo: Additi
         message = message,
         attachment = attachment,
         provider = additionalMessageInfo.provider,
-        arbeidstaker = additionalMessageInfo.arbeidstaker,
+        employee = additionalMessageInfo.employee,
         createdAt = additionalMessageInfo.createdAt,
         dokId = additionalMessageInfo.dokId
     )
@@ -85,7 +85,7 @@ private fun OutgoingDialogMessage.toMemoMessage(additionalMessageInfo: Additiona
         message = message,
         attachment = attachment,
         provider = additionalMessageInfo.provider,
-        arbeidstaker = additionalMessageInfo.arbeidstaker,
+        employee = additionalMessageInfo.employee,
         createdAt = additionalMessageInfo.createdAt,
         dokId = additionalMessageInfo.dokId
     )

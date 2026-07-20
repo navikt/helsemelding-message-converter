@@ -42,7 +42,7 @@ class HttpProviderRegistryClientSpec : StringSpec({
             )
         }
 
-        val response = client.getBehandler(providerId)
+        val response = client.getProvider(providerId)
 
         val provider = response.shouldBeRight()
         provider shouldBeEqualUsingFields testProvider
@@ -56,7 +56,7 @@ class HttpProviderRegistryClientSpec : StringSpec({
             )
         }
 
-        val response = client.getBehandler(Uuid.random())
+        val response = client.getProvider(Uuid.random())
 
         val error = response.shouldBeLeft()
         val fetchingError = error.shouldBeInstanceOf<FetchingError>()

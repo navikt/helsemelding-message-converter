@@ -18,7 +18,7 @@ import no.nav.helsemelding.message.msghead.MsgHeadDialogMessageMapper
 import no.nav.helsemelding.message.msghead.XmlSerializer
 import no.nav.helsemelding.message.msghead.extractAttachmentDocuments
 import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
-import no.nav.helsemelding.message.msghead.model.Arbeidstaker
+import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.Personident
 import no.nav.helsemelding.message.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.message.msghead.toAttachment
@@ -54,27 +54,27 @@ class MsgHeadMessageConverter(
     private fun getAdditionalMessageInfo(dialogMessage: OutgoingDialogMessage): Either<ConversionError, AdditionalMessageInfo> =
         either {
             val behandler = runBlocking {
-                providerRegistryClient.getBehandler(Uuid.parse(dialogMessage.providerId))
+                providerRegistryClient.getProvider(Uuid.parse(dialogMessage.providerId))
                     .mapLeft { MappingError(it.message) }
                     .bind()
             }
 
             val patientIdent = Personident(dialogMessage.patientIdent)
-            val arbeidstaker = runBlocking {
+            val employee = runBlocking {
                 pdlClient.getPersonName(patientIdent)
                     .mapLeft { MappingError(it.message) }
                     .map {
-                        Arbeidstaker(
+                        Employee(
                             personident = patientIdent,
-                            fornavn = it.fornavn,
-                            mellomnavn = it.mellomnavn,
-                            etternavn = it.etternavn
+                            firstName = it.fornavn,
+                            middleName = it.mellomnavn,
+                            lastName = it.etternavn
                         )
                     }
                     .bind()
             }
 
-            return Either.Right(AdditionalMessageInfo(behandler, arbeidstaker))
+            return Either.Right(AdditionalMessageInfo(behandler, employee))
         }
 
     override fun splitAttachments(msgHeadXml: String): Either<ConversionError, SplitMessage> =

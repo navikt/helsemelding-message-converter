@@ -26,7 +26,7 @@ import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_FORESPORSEL
 import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_NOTAT
 import no.nav.helsemelding.message.client.providerregistry.model.Provider
-import no.nav.helsemelding.message.msghead.model.Arbeidstaker
+import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.message.msghead.model.InquiryMessage
 import no.nav.helsemelding.message.msghead.model.MemoMessage
@@ -49,7 +49,7 @@ fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
             v = "J"
         }
         sender = createSender()
-        patient = createPatient(message.arbeidstaker)
+        patient = createPatient(message.employee)
     }
 }
 
@@ -219,12 +219,12 @@ fun createXMLIdentForPersonident(personident: Personident): XMLIdent {
     }
 }
 
-fun createPatient(arbeidstaker: Arbeidstaker): XMLPatient {
+fun createPatient(employee: Employee): XMLPatient {
     return XMLPatient().apply {
-        familyName = arbeidstaker.etternavn
-        middleName = arbeidstaker.mellomnavn
-        givenName = arbeidstaker.fornavn
-        ident.add(createXMLIdentForPersonident(arbeidstaker.personident))
+        familyName = employee.lastName
+        middleName = employee.middleName
+        givenName = employee.firstName
+        ident.add(createXMLIdentForPersonident(employee.personident))
     }
 }
 
