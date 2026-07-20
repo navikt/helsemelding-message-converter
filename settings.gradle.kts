@@ -16,10 +16,11 @@ dependencyResolutionManagement {
             version("hoplite", "2.8.2")
             version("logback", "1.5.19")
             version("logstash", "7.4")
-            version("json-schema-core", "0.0.2")
+            version("json-schema-core", "0.0.3-SNAPSHOT")
             version("kotlinx-serialization", "1.9.0")
             version("jaxb-api", "2.4.0-b180830.0359")
             version("migesok-time-adapters", "1.1.3")
+            version("ktor", "3.0.3")
 
             library("arrow-core", "io.arrow-kt", "arrow-core").versionRef("arrow")
             library("arrow-functions", "io.arrow-kt", "arrow-functions").versionRef("arrow")
@@ -42,6 +43,12 @@ dependencyResolutionManagement {
             library("javax-jaxb-api", "javax.xml.bind", "jaxb-api").versionRef("jaxb-api")
 
             library("migesok-jaxb-time-adapters", "com.migesok", "jaxb-java-time-adapters").versionRef("migesok-time-adapters")
+
+            library("ktor-client-content-negotiation", "io.ktor", "ktor-client-content-negotiation").versionRef("ktor")
+            library("ktor-serialization-kotlinx-json", "io.ktor", "ktor-serialization-kotlinx-json").versionRef("ktor")
+            library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef("ktor")
+            library("ktor-client-cio", "io.ktor", "ktor-client-cio").versionRef("ktor")
+            library("ktor-client-auth", "io.ktor", "ktor-client-auth").versionRef("ktor")
 
             library("nav-xml-hodemelding", "no.nav.helse.xml", "kith-hodemelding").version("2019.07.30-12-26-5c924ef4f04022bbb850aaf299eb8e4464c1ca6a")
             library("nav-xml-dialogmelding", "no.nav.helse.xml", "dialogmelding").version("1.5d21db9")

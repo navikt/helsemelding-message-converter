@@ -72,6 +72,37 @@ val xml = converter
 
 The input JSON must follow the `OutgoingDialogMessage` schema from `json-schema-core`.
 
+### Resources used
+- Link to original spec at nhn? - add PDF to repo?
+This makes use of code generated based on xsd definitions from the following [repository](https://github.com/navikt/syfo-xml-codegen)
+
+Supported outgoing and incoming dialog messages are listed in the table below:
+![Overview](dialogMessageOverview.png)
+
+### Outgoing dialog message
+- Link to test folder with examples
+- Table over supported types? Highlight minor differences between some types when it comes to input JSON.
+Complete examples of every possible outgoing message can be found in [test folder](./src/test/resources/msghead)
+
+All outgoing messages are based on `OutgoingDialogMessage`, however some information is not used depending on `OutgoingDialogMessageType`
+
+#### FollowUpPlanMessage
+
+- Provided ConversationRef is ignored and not included in final message
+- Requires an attachment 
+- Provided message text is ignored and replaced with hardcoded value in final message
+
+#### InquiryMessage and MemoMessage
+
+- ConversationReference is used if provided. 
+- If no conversationReference is provided that means this is initial message in a conversation. This results in the 
+following behavior:
+  - Provided message id is used as parentMessageId and conversationId
+
+## Usage of behandlerregister and pdl
+- Link to information?
+- Link to api?
+
 ## Attachments
 
 Attachments can be handled separately from conversion:
@@ -114,6 +145,7 @@ Possible error types:
 - `MappingError`
 - `SerializationError`
 - `AttachmentError`
+- `AttachmentMissingError`
 
 Example:
 

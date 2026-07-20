@@ -2,9 +2,14 @@ package no.nav.helsemelding.message.converter
 
 import arrow.core.Either
 import arrow.core.raise.either
+import kotlinx.coroutines.runBlocking
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessage
 import no.nav.helsemelding.message.attachment.AttachmentHandler
+import no.nav.helsemelding.message.client.pdl.PdlClient
+import no.nav.helsemelding.message.client.providerregistry.ProviderRegistryClient
 import no.nav.helsemelding.message.error.AttachmentError
 import no.nav.helsemelding.message.error.ConversionError
+import no.nav.helsemelding.message.error.MappingError
 import no.nav.helsemelding.message.json.IncomingDialogMessageSerializer
 import no.nav.helsemelding.message.json.OutgoingDialogMessageSerializer
 import no.nav.helsemelding.message.model.Attachment
@@ -12,14 +17,21 @@ import no.nav.helsemelding.message.model.SplitMessage
 import no.nav.helsemelding.message.msghead.MsgHeadDialogMessageMapper
 import no.nav.helsemelding.message.msghead.XmlSerializer
 import no.nav.helsemelding.message.msghead.extractAttachmentDocuments
+import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
+import no.nav.helsemelding.message.msghead.model.Arbeidstaker
+import no.nav.helsemelding.message.msghead.model.Personident
 import no.nav.helsemelding.message.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.message.msghead.toAttachment
+import no.nav.helsemelding.message.msghead.toOutgoingMessage
+import kotlin.uuid.Uuid
 
 class MsgHeadMessageConverter(
     private val xmlSerializer: XmlSerializer = XmlSerializer(),
     private val incomingDialogMessageSerializer: IncomingDialogMessageSerializer = IncomingDialogMessageSerializer(),
     private val outgoingDialogMessageSerializer: OutgoingDialogMessageSerializer = OutgoingDialogMessageSerializer(),
-    private val mapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper()
+    private val mapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper(),
+    private val pdlClient: PdlClient,
+    private val providerRegistryClient: ProviderRegistryClient
 ) : MessageConverter, AttachmentHandler {
     override fun incomingDialogMessageXmlToJson(xml: String): Either<ConversionError, String> =
         either {
@@ -32,9 +44,37 @@ class MsgHeadMessageConverter(
     override fun outgoingDialogMessageJsonToXml(json: String): Either<ConversionError, String> =
         either {
             val dialogMessage = outgoingDialogMessageSerializer.deserialize(json).bind()
-            val msgHead = mapper.toMsgHead(dialogMessage).bind()
+            val additionalMessageInfo = getAdditionalMessageInfo(dialogMessage).bind()
+            val outgoingMessage = dialogMessage.toOutgoingMessage(additionalMessageInfo).bind()
+            val msgHead = mapper.toMsgHead(outgoingMessage).bind()
 
             xmlSerializer.serialize(msgHead).bind()
+        }
+
+    private fun getAdditionalMessageInfo(dialogMessage: OutgoingDialogMessage): Either<ConversionError, AdditionalMessageInfo> =
+        either {
+            val behandler = runBlocking {
+                providerRegistryClient.getBehandler(Uuid.parse(dialogMessage.providerId))
+                    .mapLeft { MappingError(it.message) }
+                    .bind()
+            }
+
+            val patientIdent = Personident(dialogMessage.patientIdent)
+            val arbeidstaker = runBlocking {
+                pdlClient.getPersonName(patientIdent)
+                    .mapLeft { MappingError(it.message) }
+                    .map {
+                        Arbeidstaker(
+                            personident = patientIdent,
+                            fornavn = it.fornavn,
+                            mellomnavn = it.mellomnavn,
+                            etternavn = it.etternavn
+                        )
+                    }
+                    .bind()
+            }
+
+            return Either.Right(AdditionalMessageInfo(behandler, arbeidstaker))
         }
 
     override fun splitAttachments(msgHeadXml: String): Either<ConversionError, SplitMessage> =

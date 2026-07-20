@@ -18,12 +18,18 @@ dependencies {
     implementation(libs.javax.jaxb.api)
     implementation(libs.migesok.jaxb.time.adapters)
     implementation(libs.bundles.nav.xml)
+    implementation(libs.ktor.client.auth)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.serialization.kotlinx.json)
     testImplementation(testLibs.bundles.kotest)
     testImplementation(testLibs.kotest.assertions.arrow)
     testImplementation(testLibs.kotest.extensions.jvm)
     testImplementation(testLibs.kotest.extensions.testcontainers)
     testImplementation(testLibs.testcontainers)
     testImplementation(testLibs.testcontainers.postgresql)
+    testImplementation(testLibs.ktor.client.mock)
     testImplementation(kotlin("test"))
 }
 

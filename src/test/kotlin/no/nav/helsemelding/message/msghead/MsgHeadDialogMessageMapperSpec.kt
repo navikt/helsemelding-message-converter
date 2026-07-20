@@ -3,6 +3,7 @@ package no.nav.helsemelding.message.msghead
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import no.nav.helse.msgHead.XMLConversationRef
 import no.nav.helse.msgHead.XMLIdent
@@ -17,8 +18,15 @@ import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.Sender
+import no.nav.helsemelding.message.converter.createProvider
 import no.nav.helsemelding.message.error.MappingError
+import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
+import no.nav.helsemelding.message.msghead.model.Arbeidstaker
+import no.nav.helsemelding.message.msghead.model.Personident
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDateTime
+import kotlin.uuid.Uuid
 
 class MsgHeadDialogMessageMapperSpec : StringSpec(
     {
@@ -53,30 +61,49 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
             )
         }
 
-        "maps OutgoingDialogMessage to MsgHead" {
-            val msgHead = mapper.toMsgHead(
-                OutgoingDialogMessage(
-                    version = 1,
-                    id = "dialog-1",
-                    patientIdent = "12345678910",
-                    providerId = "provider-1",
-                    conversationReference = ConversationReference(
-                        parentMessageId = "parent-1",
-                        conversationId = "conversation-1"
-                    ),
-                    type = OutgoingDialogMessageType.NAV_MESSAGE,
-                    message = "Hei",
-                    attachment = null
-                )
+        withData(
+            nameFn = { "maps OutgoingDialogMessage(type=$it) to MsgHead" },
+            OutgoingDialogMessageType.entries.toTypedArray().toList()
+        ) {
+            val path = "src/test/resources/outgoing/${it.name}.xml"
+            val messageXml = Files.readString(Paths.get(path))
+            val xmlSerializer = XmlSerializer()
+            val patientIdent = Personident("24274116206")
+            val dialogMessage = OutgoingDialogMessage(
+                version = 1,
+                id = "dbb4a1cb-943e-4bbb-967d-eb7ef456a30f",
+                patientIdent = patientIdent.toString(),
+                providerId = "e5d65352-2fa1-49b0-be3a-a7fd26208998",
+                conversationReference = ConversationReference(
+                    parentMessageId = "2eacbe5e-a087-4239-934c-6a1af772e91c",
+                    conversationId = "980a444b-c36b-49ab-90a3-8682ea31308d"
+                ),
+                type = it,
+                message = "Hei",
+                attachment = "QmFzZTY0IGVuY29kZWQgZmlsZQ=="
             )
-                .shouldBeRight()
+            val provider = createProvider(Uuid.random())
 
-            msgHead.msgInfo.msgId shouldBe "dialog-1"
-            msgHead.msgInfo.patient.ident.first().id shouldBe "12345678910"
-            msgHead.msgInfo.sender.organisation.ident.first().id shouldBe "provider-1"
-            msgHead.msgInfo.conversationRef.refToParent shouldBe "parent-1"
-            msgHead.msgInfo.conversationRef.refToConversation shouldBe "conversation-1"
-            msgHead.document.first().refDoc.content.any.first() shouldBe "Hei"
+            val arbeidstaker = Arbeidstaker(
+                fornavn = "Ola",
+                mellomnavn = "Jens",
+                etternavn = "Nordmann",
+                personident = patientIdent
+            )
+
+            val additionalInfo = AdditionalMessageInfo(
+                provider = provider,
+                arbeidstaker = arbeidstaker,
+                createdAt = LocalDateTime.parse("2026-07-06T09:48:44.5727191"),
+                dokId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
+            )
+
+            val outgoingMessage = dialogMessage.toOutgoingMessage(additionalInfo).shouldBeRight()
+            val msgHead = mapper.toMsgHead(outgoingMessage).shouldBeRight()
+
+            val serialized = xmlSerializer.serialize(msgHead).shouldBeRight()
+
+            serialized.noLineBreaks() shouldBe messageXml.noLineBreaks()
         }
 
         "returns MappingError when MsgHead lacks msgInfo" {
@@ -88,6 +115,8 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
         }
     }
 )
+
+private fun String.noLineBreaks(): String = this.replace("\r", "").replace("\n", "")
 
 private fun msgHead(
     msgId: String,
