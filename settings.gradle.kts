@@ -16,7 +16,7 @@ dependencyResolutionManagement {
             version("hoplite", "2.8.2")
             version("logback", "1.5.19")
             version("logstash", "7.4")
-            version("json-schema-core", "0.0.3-SNAPSHOT")
+            version("json-schema-core", "0.0.3")
             version("kotlinx-serialization", "1.9.0")
             version("jaxb-api", "2.4.0-b180830.0359")
             version("migesok-time-adapters", "1.1.3")
