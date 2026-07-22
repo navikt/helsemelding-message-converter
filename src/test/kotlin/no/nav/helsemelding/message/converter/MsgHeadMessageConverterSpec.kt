@@ -73,7 +73,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
             error.message shouldBe "Could not deserialize OutgoingDialogMessage JSON"
         }
 
-        "should return MappingError when additionalMessageProvider returns error" {
+        "should return AdditionalMessageInfoError when additionalMessageProvider returns error" {
             val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
             val msgId = Uuid.random()
             val json = Json.parseToJsonElement(

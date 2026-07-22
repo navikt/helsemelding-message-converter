@@ -142,6 +142,7 @@ Possible error types:
 - `SerializationError`
 - `AttachmentError`
 - `AttachmentMissingError`
+- `AdditionalMessageInfoError`
 
 Example:
 
