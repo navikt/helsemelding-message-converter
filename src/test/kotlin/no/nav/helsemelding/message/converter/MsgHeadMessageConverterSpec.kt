@@ -9,20 +9,17 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.serialization.json.Json
-import no.nav.helsemelding.message.client.pdl.FakePdlClient
-import no.nav.helsemelding.message.client.pdl.PdlClient
-import no.nav.helsemelding.message.client.pdl.model.PdlPersonNavn
-import no.nav.helsemelding.message.client.providerregistry.FakeProviderRegistryClient
-import no.nav.helsemelding.message.client.providerregistry.ProviderRegistryClient
-import no.nav.helsemelding.message.client.providerregistry.model.OrganisationNumber
-import no.nav.helsemelding.message.client.providerregistry.model.Provider
-import no.nav.helsemelding.message.client.providerregistry.model.ProviderCategori
-import no.nav.helsemelding.message.client.providerregistry.model.ProviderOffice
+import no.nav.helsemelding.message.error.AdditionalMessageInfoError
 import no.nav.helsemelding.message.error.InvalidJson
 import no.nav.helsemelding.message.error.InvalidXml
-import no.nav.helsemelding.message.error.MappingError
 import no.nav.helsemelding.message.msghead.XmlSerializer
+import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
+import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.Personident
+import no.nav.helsemelding.message.msghead.model.provider.OrganisationNumber
+import no.nav.helsemelding.message.msghead.model.provider.Provider
+import no.nav.helsemelding.message.msghead.model.provider.ProviderCategori
+import no.nav.helsemelding.message.msghead.model.provider.ProviderOffice
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.OffsetDateTime
@@ -76,42 +73,14 @@ class MsgHeadMessageConverterSpec : StringSpec(
             error.message shouldBe "Could not deserialize OutgoingDialogMessage JSON"
         }
 
-        "should return MappingError when provider registry returns error" {
-            val json = Json.parseToJsonElement(
-                """
-                    {
-                        "version": 1,
-                        "id": "uuid",
-                        "patientIdent": "12345678910",
-                        "providerId": "75837362-2d8c-4f50-9ba5-961999bf1acc",
-                        "conversationReference": {
-                            "parentMessageId": "uuid3",
-                            "conversationId": "uuid4"
-                        },
-                        "type": "MEETING_INVITATION_2",
-                        "message": "Hei",
-                        "attachment": "attachment"
-                    }
-                """.trimIndent()
-            ).toString()
-
-            val providerRegistryClient = FakeProviderRegistryClient()
-            val converter = msgHeadMessageConverter(
-                providerRegistryClient = providerRegistryClient
-            )
-            val error = converter.outgoingDialogMessageJsonToXml(json).shouldBeLeft()
-
-            error.shouldBeInstanceOf<MappingError>()
-            error.message shouldBe "Error when fetching provider"
-        }
-
-        "should return MappingError when pdl returns error" {
+        "should return MappingError when additionalMessageProvider returns error" {
             val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
+            val msgId = Uuid.random()
             val json = Json.parseToJsonElement(
                 """
                     {
                         "version": 1,
-                        "id": "uuid",
+                        "id": "$msgId",
                         "patientIdent": "12345678910",
                         "providerId": "$providerId",
                         "conversationReference": {
@@ -125,26 +94,21 @@ class MsgHeadMessageConverterSpec : StringSpec(
                 """.trimIndent()
             ).toString()
 
-            val providerRegistryClient = FakeProviderRegistryClient()
-            val behandler = createProvider(providerId)
-            providerRegistryClient.givenProvider(behandler.behandlerRef, Either.Right(behandler))
-            val converter = msgHeadMessageConverter(
-                providerRegistryClient = providerRegistryClient
-            )
             val error = converter.outgoingDialogMessageJsonToXml(json).shouldBeLeft()
 
-            error.shouldBeInstanceOf<MappingError>()
-            error.message shouldBe "Error when fetching person name"
+            error.shouldBeInstanceOf<AdditionalMessageInfoError>()
+            error.message shouldBe "Error when fetching additional message info"
         }
 
         "should convert OutgoingDialogMessage JSON to MsgHead XML" {
             val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
             val patientIdent = Personident("12345678910")
+            val msgId = Uuid.random()
             val json = Json.parseToJsonElement(
                 """
                     {
                         "version": 1,
-                        "id": "uuid",
+                        "id": "$msgId",
                         "patientIdent": "${patientIdent.value}",
                         "providerId": "$providerId",
                         "conversationReference": {
@@ -157,17 +121,21 @@ class MsgHeadMessageConverterSpec : StringSpec(
                     }
                 """.trimIndent()
             ).toString()
-            val providerRegistryClient = FakeProviderRegistryClient()
-            val behandler = createProvider(providerId)
-            providerRegistryClient.givenProvider(providerId, Either.Right(behandler))
-            val pdlClient = FakePdlClient()
-            val personName = PdlPersonNavn(
-                fornavn = "Ola",
-                mellomnavn = "Jens",
-                etternavn = "Nordmann"
+
+            val provider = createProvider(providerId)
+            val employee = Employee(
+                firstName = "Ola",
+                middleName = "Jens",
+                lastName = "Nordmann",
+                personident = patientIdent
             )
-            pdlClient.givenPersonName(patientIdent, Either.Right(personName))
-            val converter = msgHeadMessageConverter(pdlClient, providerRegistryClient)
+            val additionalMessageInfoProvider = FakeAdditionalMessageInfoProvider()
+            additionalMessageInfoProvider.givenAdditionalMessageInfo(
+                msgId = msgId,
+                either = Either.Right(AdditionalMessageInfo(provider, employee))
+            )
+
+            val converter = msgHeadMessageConverter(additionalMessageInfoProvider)
             converter.outgoingDialogMessageJsonToXml(json).shouldBeRight()
         }
 
@@ -220,11 +188,9 @@ class MsgHeadMessageConverterSpec : StringSpec(
 )
 
 private fun msgHeadMessageConverter(
-    pdlClient: PdlClient = FakePdlClient(),
-    providerRegistryClient: ProviderRegistryClient = FakeProviderRegistryClient()
+    additionalMessageInfoProvider: AdditionalMessageInfoProvider = FakeAdditionalMessageInfoProvider()
 ): MsgHeadMessageConverter = MsgHeadMessageConverter(
-    pdlClient = pdlClient,
-    providerRegistryClient = providerRegistryClient
+    additionalMessageInfoProvider = additionalMessageInfoProvider
 )
 
 fun createProvider(

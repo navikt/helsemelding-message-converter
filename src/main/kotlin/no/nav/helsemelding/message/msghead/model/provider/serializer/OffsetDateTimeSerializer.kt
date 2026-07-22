@@ -1,4 +1,4 @@
-package no.nav.helsemelding.message.client.providerregistry.model.serializer
+package no.nav.helsemelding.message.msghead.model.provider.serializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

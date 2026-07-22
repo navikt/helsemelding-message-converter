@@ -1,4 +1,4 @@
-package no.nav.helsemelding.message.client.providerregistry.model
+package no.nav.helsemelding.message.msghead.model.provider
 
 enum class ProviderCategori(
     val kategoriKode: String

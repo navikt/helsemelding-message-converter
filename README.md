@@ -99,10 +99,6 @@ All outgoing messages are based on `OutgoingDialogMessage`, however some informa
 following behavior:
   - Provided message id is used as parentMessageId and conversationId
 
-## Usage of behandlerregister and pdl
-- Link to information?
-- Link to api?
-
 ## Attachments
 
 Attachments can be handled separately from conversion:

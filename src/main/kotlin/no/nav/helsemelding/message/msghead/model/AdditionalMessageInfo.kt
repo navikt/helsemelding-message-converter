@@ -1,6 +1,6 @@
 package no.nav.helsemelding.message.msghead.model
 
-import no.nav.helsemelding.message.client.providerregistry.model.Provider
+import no.nav.helsemelding.message.msghead.model.provider.Provider
 import java.time.LocalDateTime
 import kotlin.uuid.Uuid
 

@@ -25,7 +25,6 @@ import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_FORESPORSEL
 import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_NOTAT
-import no.nav.helsemelding.message.client.providerregistry.model.Provider
 import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.message.msghead.model.InquiryMessage
@@ -33,6 +32,7 @@ import no.nav.helsemelding.message.msghead.model.MemoMessage
 import no.nav.helsemelding.message.msghead.model.OutgoingMessage
 import no.nav.helsemelding.message.msghead.model.Personident
 import no.nav.helsemelding.message.msghead.model.isDNR
+import no.nav.helsemelding.message.msghead.model.provider.Provider
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
