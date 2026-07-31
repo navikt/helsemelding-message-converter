@@ -72,32 +72,34 @@ val xml = converter
 
 The input JSON must follow the `OutgoingDialogMessage` schema from `json-schema-core`.
 
-### Resources used
-- Link to original spec at nhn? - add PDF to repo?
-This makes use of code generated based on xsd definitions from the following [repository](https://github.com/navikt/syfo-xml-codegen)
+### Types of outgoing dialog message
 
-Supported outgoing and incoming dialog messages are listed in the table below:
-![Overview](dialogMessageOverview.png)
-
-### Outgoing dialog message
-- Link to test folder with examples
-- Table over supported types? Highlight minor differences between some types when it comes to input JSON.
-Complete examples of every possible outgoing message can be found in [test folder](./src/test/resources/msghead)
-
-All outgoing messages are based on `OutgoingDialogMessage`, however some information is not used depending on `OutgoingDialogMessageType`
+All outgoing messages are based on `OutgoingDialogMessage`, however some information is not used depending on 
+`OutgoingDialogMessageType`.
 
 #### FollowUpPlanMessage
 
-- Provided ConversationRef is ignored and not included in final message
+- Provided `ConversationReference` is ignored and not included in the created message
 - Requires an attachment 
-- Provided message text is ignored and replaced with hardcoded value in final message
+- Provided message text is ignored and replaced with hardcoded value in the created message
 
 #### InquiryMessage and MemoMessage
 
-- ConversationReference is used if provided. 
-- If no conversationReference is provided that means this is initial message in a conversation. This results in the 
-following behavior:
-  - Provided message id is used as parentMessageId and conversationId
+- ConversationReference is used if provided 
+- If no `conversationReference` is provided then the provided message id is used as `parentMessageId` and `conversationId` 
+because this will be considered the first message in the conversation.
+
+### Resources
+
+The implementation is based on the specification in the following PDF: `Veiledning til anvendelse av dialogmelding for 2-veis 
+kommunikasjon mellom NAV og samhandlere i helsesektoren` found on the page [Forespørsel om pasient](https://www.helsedirektoratet.no/standarder/foresporsel-om-pasient).
+It also makes use of code generated based on XSD from [syfo-xml-codegen](https://github.com/navikt/syfo-xml-codegen) to 
+easier create the desired XML.
+
+A list of supported outgoing and incoming dialog messages (from specification) can be found in the table below:
+![Overview](dialogMessageOverview.png)
+
+Complete examples of every possible outgoing message can be found in the [test folder](./src/test/resources/msghead)
 
 ## Attachments
 
