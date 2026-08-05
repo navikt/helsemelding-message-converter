@@ -30,6 +30,7 @@ import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.Personident
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.uuid.Uuid
 
@@ -101,7 +102,7 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
             val additionalInfo = AdditionalMessageInfo(
                 provider = provider,
                 employee = employee,
-                createdAt = LocalDateTime.parse("2026-07-06T09:48:44.5727191"),
+                createdAt = Instant.parse("2026-07-06T07:48:44.572719100Z"),
                 docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
             )
 
@@ -146,7 +147,7 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
                     lastName = "Nordmann",
                     personident = patientIdent
                 ),
-                createdAt = LocalDateTime.parse("2026-07-06T09:48:44.5727191"),
+                createdAt = Instant.parse("2026-07-06T07:48:44.572719100Z"),
                 docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
             )
 

@@ -12,7 +12,7 @@ import no.nav.helsemelding.message.converter.createProvider
 import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.MemoMessage
 import no.nav.helsemelding.message.msghead.model.Personident
-import java.time.LocalDateTime
+import java.time.Instant
 import kotlin.uuid.Uuid
 
 class MemoMapperSpec : StringSpec(
@@ -66,7 +66,7 @@ private fun memoMessage(): MemoMessage {
             lastName = "Nordmann",
             personident = patientIdent
         ),
-        createdAt = LocalDateTime.parse("2026-07-06T09:48:44.5727191"),
+        createdAt = Instant.parse("2026-07-06T07:48:44.572719100Z"),
         docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
     )
 }

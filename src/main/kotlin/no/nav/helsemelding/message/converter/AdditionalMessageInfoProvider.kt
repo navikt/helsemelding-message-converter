@@ -11,6 +11,14 @@ interface AdditionalMessageInfoProvider {
     fun getAdditionalMessageInfo(dialogMessage: OutgoingDialogMessage): Either<ConversionError, AdditionalMessageInfo>
 }
 
+class MissingAdditionalMessageInfoProvider : AdditionalMessageInfoProvider {
+    override fun getAdditionalMessageInfo(dialogMessage: OutgoingDialogMessage): Either<ConversionError, AdditionalMessageInfo> {
+        return Either.Left(
+            AdditionalMessageInfoError("AdditionalMessageInfoProvider is required for outgoing conversion")
+        )
+    }
+}
+
 class FakeAdditionalMessageInfoProvider : AdditionalMessageInfoProvider {
     private val additionalMessageInfoByMsgId = mutableMapOf<Uuid, Either<ConversionError, AdditionalMessageInfo>>()
 

@@ -3,7 +3,7 @@ package no.nav.helsemelding.message.msghead.model
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.message.msghead.model.provider.Provider
-import java.time.LocalDateTime
+import java.time.Instant
 import kotlin.uuid.Uuid
 
 sealed interface OutgoingMessage {
@@ -13,7 +13,7 @@ sealed interface OutgoingMessage {
     val attachment: String?
     val provider: Provider
     val employee: Employee
-    val createdAt: LocalDateTime
+    val createdAt: Instant
     val docId: Uuid
 }
 
@@ -25,7 +25,7 @@ data class InquiryMessage(
     override val attachment: String?,
     override val provider: Provider,
     override val employee: Employee,
-    override val createdAt: LocalDateTime,
+    override val createdAt: Instant,
     override val docId: Uuid
 ) : OutgoingMessage
 
@@ -37,7 +37,7 @@ data class MemoMessage(
     override val attachment: String?,
     override val provider: Provider,
     override val employee: Employee,
-    override val createdAt: LocalDateTime,
+    override val createdAt: Instant,
     override val docId: Uuid
 ) : OutgoingMessage
 
@@ -48,6 +48,6 @@ data class FollowUpPlanMessage(
     override val attachment: String,
     override val provider: Provider,
     override val employee: Employee,
-    override val createdAt: LocalDateTime,
+    override val createdAt: Instant,
     override val docId: Uuid
 ) : OutgoingMessage

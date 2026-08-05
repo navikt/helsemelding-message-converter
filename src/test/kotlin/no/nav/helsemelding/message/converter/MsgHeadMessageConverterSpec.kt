@@ -101,6 +101,33 @@ class MsgHeadMessageConverterSpec : StringSpec(
             error.message shouldBe "Error when fetching additional message info"
         }
 
+        "should require provider for outgoing conversion" {
+            val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
+            val msgId = Uuid.random()
+            val json = Json.parseToJsonElement(
+                """
+                    {
+                        "version": 1,
+                        "id": "$msgId",
+                        "patientIdent": "12345678910",
+                        "providerId": "$providerId",
+                        "conversationReference": {
+                            "parentMessageId": "uuid3",
+                            "conversationId": "uuid4"
+                        },
+                        "type": "MEETING_INVITATION_2",
+                        "message": "Hei",
+                        "attachment": "attachment"
+                    }
+                """.trimIndent()
+            ).toString()
+
+            val error = MsgHeadMessageConverter().outgoingDialogMessageJsonToXml(json).shouldBeLeft()
+
+            error.shouldBeInstanceOf<AdditionalMessageInfoError>()
+            error.message shouldBe "AdditionalMessageInfoProvider is required for outgoing conversion"
+        }
+
         "should convert OutgoingDialogMessage JSON to MsgHead XML" {
             val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
             val patientIdent = Personident("12345678910").getOrElse { error ->

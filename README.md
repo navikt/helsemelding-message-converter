@@ -19,6 +19,9 @@ import no.nav.helsemelding.message.converter.MsgHeadMessageConverter
 val converter = MsgHeadMessageConverter()
 ```
 
+Outgoing conversion requires an `AdditionalMessageInfoProvider`. If none is supplied, outgoing
+conversion returns `AdditionalMessageInfoError`.
+
 The converter implements:
 
 ```kotlin
@@ -58,10 +61,24 @@ The resulting JSON follows the `IncomingDialogMessage` schema from `json-schema-
 ## Convert Outgoing JSON To MsgHead XML
 
 ```kotlin
+import arrow.core.Either
 import arrow.core.getOrElse
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessage
+import no.nav.helsemelding.message.converter.AdditionalMessageInfoProvider
 import no.nav.helsemelding.message.converter.MsgHeadMessageConverter
+import no.nav.helsemelding.message.error.ConversionError
+import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
 
-val converter = MsgHeadMessageConverter()
+class MyAdditionalMessageInfoProvider : AdditionalMessageInfoProvider {
+    override fun getAdditionalMessageInfo(
+        dialogMessage: OutgoingDialogMessage
+    ): Either<ConversionError, AdditionalMessageInfo> =
+        lookupAdditionalMessageInfo(dialogMessage)
+}
+
+val converter = MsgHeadMessageConverter(
+    additionalMessageInfoProvider = MyAdditionalMessageInfoProvider()
+)
 
 val xml = converter
     .outgoingDialogMessageJsonToXml(outgoingDialogMessageJson)
@@ -71,35 +88,38 @@ val xml = converter
 ```
 
 The input JSON must follow the `OutgoingDialogMessage` schema from `json-schema-core`.
+The converter also needs `AdditionalMessageInfo` from the consuming application because not all
+MsgHead fields are present in the outgoing JSON. This includes provider, employee, created timestamp
+as `Instant`, and `docId`.
 
-### Types of outgoing dialog message
+### Outgoing Message Types
 
-All outgoing messages are based on `OutgoingDialogMessage`, however some information is not used depending on 
+All outgoing messages are based on `OutgoingDialogMessage`, however some information is not used depending on
 `OutgoingDialogMessageType`.
 
 #### FollowUpPlanMessage
 
-- Provided `ConversationReference` is ignored and not included in the created message
-- Requires an attachment 
+- Provided `conversationReference` is ignored and not included in the created message
+- Requires an attachment
 - Provided message text is ignored and replaced with hardcoded value in the created message
 
 #### InquiryMessage and MemoMessage
 
-- ConversationReference is used if provided 
-- If no `conversationReference` is provided then the provided message id is used as `parentMessageId` and `conversationId` 
+- `conversationReference` is used if provided
+- If no `conversationReference` is provided then the provided message id is used as `parentMessageId` and `conversationId`
 because this will be considered the first message in the conversation.
 
 ### Resources
 
-The implementation is based on the specification in the following PDF: `Veiledning til anvendelse av dialogmelding for 2-veis 
+The implementation is based on the specification in the following PDF: `Veiledning til anvendelse av dialogmelding for 2-veis
 kommunikasjon mellom NAV og samhandlere i helsesektoren` found on the page [Forespørsel om pasient](https://www.helsedirektoratet.no/standarder/foresporsel-om-pasient).
-It also makes use of code generated based on XSD from [syfo-xml-codegen](https://github.com/navikt/syfo-xml-codegen) to 
-easier create the desired XML.
+It also makes use of code generated based on XSD from [syfo-xml-codegen](https://github.com/navikt/syfo-xml-codegen) to
+create the desired XML.
 
 A list of supported outgoing and incoming dialog messages (from specification) can be found in the table below:
 ![Overview](dialogMessageOverview.png)
 
-Complete examples of every possible outgoing message can be found in the [test folder](./src/test/resources/msghead)
+Complete examples of every supported outgoing message can be found in the [outgoing test fixtures](./src/test/resources/outgoing).
 
 ## Attachments
 

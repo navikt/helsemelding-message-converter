@@ -38,17 +38,20 @@ import no.nav.helsemelding.message.msghead.model.Personident
 import no.nav.helsemelding.message.msghead.model.isDNR
 import no.nav.helsemelding.message.msghead.model.provider.Provider
 import no.nav.helsemelding.message.msghead.model.provider.ProviderOffice
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Base64
 
 private const val CODE_SYSTEM_BASE = "2.16.578.1.12.4.1.1."
+private val OSLO_ZONE: ZoneId = ZoneId.of("Europe/Oslo")
 
 internal fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
     return XMLMsgInfo().apply {
         type = createType(message.type)
         miGversion = "v1.2 2006-05-24"
-        genDate = message.createdAt
+        genDate = message.createdAt.toOsloLocalDateTime()
         msgId = message.id
         ack = XMLCS().apply {
             dn = "Ja"
@@ -82,7 +85,7 @@ internal fun createType(outgoingDialogMessageType: OutgoingDialogMessageType): X
 
 internal fun createAttachmentDocument(
     attachmentBase64: String,
-    createdAt: LocalDateTime
+    createdAt: Instant
 ): Either<ConversionError, XMLDocument> = either {
     val attachment = decodeAttachment(attachmentBase64).bind()
 
@@ -93,7 +96,7 @@ internal fun createAttachmentDocument(
         }
         refDoc = XMLRefDoc().apply {
             issueDate = XMLTS().apply {
-                v = createdAt.format(DateTimeFormatter.ISO_DATE)
+                v = createdAt.toOsloDate()
             }
             msgType = XMLCS().apply {
                 dn = "Vedlegg"
@@ -270,7 +273,7 @@ internal fun createDialogMessageDocument(
     }
     refDoc = XMLRefDoc().apply {
         issueDate = XMLTS().apply {
-            v = outgoingMessage.createdAt.format(DateTimeFormatter.ISO_DATE)
+            v = outgoingMessage.createdAt.toOsloDate()
         }
         msgType = XMLCS().apply {
             dn = "XML-instans"
@@ -282,6 +285,12 @@ internal fun createDialogMessageDocument(
         }
     }
 }
+
+private fun Instant.toOsloLocalDateTime(): LocalDateTime =
+    atZone(OSLO_ZONE).toLocalDateTime()
+
+private fun Instant.toOsloDate(): String =
+    atZone(OSLO_ZONE).toLocalDate().format(DateTimeFormatter.ISO_DATE)
 
 internal fun createInquiryDialogMessage(inquiryMessage: InquiryMessage): XMLDialogmelding =
     XMLDialogmelding().apply {

@@ -21,7 +21,7 @@ class MsgHeadMessageConverter(
     private val incomingDialogMessageSerializer: IncomingDialogMessageSerializer = IncomingDialogMessageSerializer(),
     private val outgoingDialogMessageSerializer: OutgoingDialogMessageSerializer = OutgoingDialogMessageSerializer(),
     private val mapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper(),
-    private val additionalMessageInfoProvider: AdditionalMessageInfoProvider
+    private val additionalMessageInfoProvider: AdditionalMessageInfoProvider = MissingAdditionalMessageInfoProvider()
 ) : MessageConverter, AttachmentHandler {
     override fun incomingDialogMessageXmlToJson(xml: String): Either<ConversionError, String> =
         either {
