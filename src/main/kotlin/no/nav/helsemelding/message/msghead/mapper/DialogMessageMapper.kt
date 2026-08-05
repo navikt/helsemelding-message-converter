@@ -25,8 +25,8 @@ import no.nav.helse.msgHead.XMLSender
 import no.nav.helse.msgHead.XMLTS
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
-import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_FORESPORSEL
-import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_NOTAT
+import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_NOTE
+import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_REQUEST
 import no.nav.helsemelding.message.error.AttachmentError
 import no.nav.helsemelding.message.error.ConversionError
 import no.nav.helsemelding.message.msghead.model.Employee
@@ -68,14 +68,14 @@ internal fun createConversationRef(conversationReference: ConversationReference)
 
 internal fun createType(outgoingDialogMessageType: OutgoingDialogMessageType): XMLCS {
     return when (outgoingDialogMessageType.messageType) {
-        DIALOG_FORESPORSEL -> XMLCS().apply {
+        DIALOG_REQUEST -> XMLCS().apply {
             dn = "Forespørsel"
-            v = outgoingDialogMessageType.messageType.name
+            v = "DIALOG_FORESPORSEL"
         }
 
-        DIALOG_NOTAT -> XMLCS().apply {
+        DIALOG_NOTE -> XMLCS().apply {
             dn = "Notat"
-            v = outgoingDialogMessageType.messageType.name
+            v = "DIALOG_NOTAT"
         }
     }
 }
