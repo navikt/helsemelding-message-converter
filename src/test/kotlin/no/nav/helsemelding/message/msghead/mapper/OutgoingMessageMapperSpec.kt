@@ -1,4 +1,4 @@
-package no.nav.helsemelding.message.msghead.model
+package no.nav.helsemelding.message.msghead.mapper
 
 import arrow.core.getOrElse
 import io.kotest.assertions.arrow.core.shouldBeLeft
@@ -12,13 +12,31 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.MEDICAL_CERTIFICATE_RETURN
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.MEETING_CANCELLATION
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.MEETING_EXEMPTION
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.MEETING_INVITATION_2
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.MEETING_INVITATION_3
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.MEETING_RESCHEDULE_2
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.MEETING_RESCHEDULE_3
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.NAV_FEEDBACK
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.NAV_INFORMATION
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.NAV_MESSAGE
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.PATIENT_REQUEST
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.PATIENT_REQUEST_REMINDER
+import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType.RETURN_TO_WORK_NOTIFICATION
 import no.nav.helsemelding.message.converter.createProvider
 import no.nav.helsemelding.message.error.AttachmentMissingError
-import no.nav.helsemelding.message.msghead.mapper.createOutgoingMessage
+import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
+import no.nav.helsemelding.message.msghead.model.Employee
+import no.nav.helsemelding.message.msghead.model.FollowUpPlanMessage
+import no.nav.helsemelding.message.msghead.model.InquiryMessage
+import no.nav.helsemelding.message.msghead.model.MemoMessage
+import no.nav.helsemelding.message.msghead.model.Personident
 import java.time.LocalDateTime
 import kotlin.uuid.Uuid
 
-class OutgoingMessageSpec : StringSpec(
+class OutgoingMessageMapperSpec : StringSpec(
     {
         val patientIdent = Personident("24274116206").getOrElse { error ->
             error(error.message)
@@ -39,7 +57,7 @@ class OutgoingMessageSpec : StringSpec(
             docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
         )
 
-        "should return AttachmentMissingError if attachment is null or empty when converting OutgoingDialogMessage(type=FOLLOW_UP_PLAN) to OppfolgingsplanMessage " {
+        "should reject missing follow-up attachment" {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
                 id = "dialog-1",
@@ -57,11 +75,11 @@ class OutgoingMessageSpec : StringSpec(
             val error = createOutgoingMessage(dialogMessage, additionalInfo).shouldBeLeft()
 
             error.shouldBeInstanceOf<AttachmentMissingError>()
-            error.message shouldBe "Failed to convert JSON with OutgoingDialogMessageType: FOLLOW_UP_PLAN to FollowUpPlanMessage"
+            error.message shouldBe "Missing follow-up plan attachment"
             error.cause shouldBe null
         }
 
-        "should convert OutgoingDialogMessage(type=FOLLOW_UP_PLAN) to OppfolgingsplanMessage if attachment is non-empty. Provided message is ignored" {
+        "should map follow-up plan" {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
                 id = "dialog-1",
@@ -91,14 +109,14 @@ class OutgoingMessageSpec : StringSpec(
         }
 
         withData(
-            nameFn = { "should convert OutgoingDialogMessage(type=$it) to MemoMessage with provided conversationReference" },
-            OutgoingDialogMessageType.RETURN_TO_WORK_NOTIFICATION,
-            OutgoingDialogMessageType.MEDICAL_CERTIFICATE_RETURN,
-            OutgoingDialogMessageType.MEETING_CANCELLATION,
-            OutgoingDialogMessageType.MEETING_EXEMPTION,
-            OutgoingDialogMessageType.NAV_FEEDBACK,
-            OutgoingDialogMessageType.NAV_MESSAGE,
-            OutgoingDialogMessageType.NAV_INFORMATION
+            nameFn = { "should map memo type=$it with reference" },
+            RETURN_TO_WORK_NOTIFICATION,
+            MEDICAL_CERTIFICATE_RETURN,
+            MEETING_CANCELLATION,
+            MEETING_EXEMPTION,
+            NAV_FEEDBACK,
+            NAV_MESSAGE,
+            NAV_INFORMATION
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
@@ -130,14 +148,14 @@ class OutgoingMessageSpec : StringSpec(
         }
 
         withData(
-            nameFn = { "should convert OutgoingDialogMessage(type=$it) without conversationReference to MemoMessage with conversationReference equal to message id" },
-            OutgoingDialogMessageType.RETURN_TO_WORK_NOTIFICATION,
-            OutgoingDialogMessageType.MEDICAL_CERTIFICATE_RETURN,
-            OutgoingDialogMessageType.MEETING_CANCELLATION,
-            OutgoingDialogMessageType.MEETING_EXEMPTION,
-            OutgoingDialogMessageType.NAV_FEEDBACK,
-            OutgoingDialogMessageType.NAV_MESSAGE,
-            OutgoingDialogMessageType.NAV_INFORMATION
+            nameFn = { "should map memo type=$it without reference" },
+            RETURN_TO_WORK_NOTIFICATION,
+            MEDICAL_CERTIFICATE_RETURN,
+            MEETING_CANCELLATION,
+            MEETING_EXEMPTION,
+            NAV_FEEDBACK,
+            NAV_MESSAGE,
+            NAV_INFORMATION
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
@@ -167,13 +185,13 @@ class OutgoingMessageSpec : StringSpec(
         }
 
         withData(
-            nameFn = { "should convert OutgoingDialogMessage(type=$it) to ForesporselMessage with provided conversationReference" },
-            OutgoingDialogMessageType.MEETING_INVITATION_2,
-            OutgoingDialogMessageType.MEETING_RESCHEDULE_2,
-            OutgoingDialogMessageType.MEETING_INVITATION_3,
-            OutgoingDialogMessageType.MEETING_RESCHEDULE_3,
-            OutgoingDialogMessageType.PATIENT_REQUEST,
-            OutgoingDialogMessageType.PATIENT_REQUEST_REMINDER
+            nameFn = { "should map inquiry type=$it with reference" },
+            MEETING_INVITATION_2,
+            MEETING_RESCHEDULE_2,
+            MEETING_INVITATION_3,
+            MEETING_RESCHEDULE_3,
+            PATIENT_REQUEST,
+            PATIENT_REQUEST_REMINDER
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
@@ -205,13 +223,13 @@ class OutgoingMessageSpec : StringSpec(
         }
 
         withData(
-            nameFn = { "should convert OutgoingDialogMessage(type=$it) without conversationReference to ForesporselMessage with conversationReference equal to message id" },
-            OutgoingDialogMessageType.MEETING_INVITATION_2,
-            OutgoingDialogMessageType.MEETING_RESCHEDULE_2,
-            OutgoingDialogMessageType.MEETING_INVITATION_3,
-            OutgoingDialogMessageType.MEETING_RESCHEDULE_3,
-            OutgoingDialogMessageType.PATIENT_REQUEST,
-            OutgoingDialogMessageType.PATIENT_REQUEST_REMINDER
+            nameFn = { "should map inquiry type=$it without reference" },
+            MEETING_INVITATION_2,
+            MEETING_RESCHEDULE_2,
+            MEETING_INVITATION_3,
+            MEETING_RESCHEDULE_3,
+            PATIENT_REQUEST,
+            PATIENT_REQUEST_REMINDER
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,

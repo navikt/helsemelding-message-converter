@@ -57,7 +57,7 @@ private fun createFollowUpPlanMessage(
 ): Either<ConversionError, FollowUpPlanMessage> = either {
     val attachment = ensureNotNull(dialogMessage.attachment?.takeIf { it.isNotEmpty() }) {
         AttachmentMissingError(
-            message = "Failed to convert JSON with OutgoingDialogMessageType: FOLLOW_UP_PLAN to FollowUpPlanMessage"
+            message = "Missing follow-up plan attachment"
         )
     }
 

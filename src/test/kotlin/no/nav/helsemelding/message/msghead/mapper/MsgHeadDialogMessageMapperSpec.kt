@@ -37,7 +37,7 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
     {
         val mapper = MsgHeadDialogMessageMapper()
 
-        "maps required MsgHead fields to IncomingDialogMessage" {
+        "should map incoming fields" {
             val msgHead = msgHead(
                 msgId = "dialog-1",
                 genDate = LocalDateTime.parse("2026-06-10T12:30:00"),
@@ -67,7 +67,7 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
         }
 
         withData(
-            nameFn = { "maps OutgoingDialogMessage(type=$it) to MsgHead" },
+            nameFn = { "should map outgoing type=$it" },
             OutgoingDialogMessageType.entries.toTypedArray().toList()
         ) {
             val path = "src/test/resources/outgoing/${it.name}.xml"
@@ -113,7 +113,7 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
             serialized.noLineBreaks() shouldBe messageXml.noLineBreaks()
         }
 
-        "returns MappingError when MsgHead lacks msgInfo" {
+        "should reject missing msgInfo" {
             val error = mapper.toIncomingDialogMessage(XMLMsgHead()).shouldBeLeft() as MappingError
 
             error.message shouldBe "Missing required MsgHead field: msgInfo.msgId"
@@ -121,7 +121,7 @@ class MsgHeadDialogMessageMapperSpec : StringSpec(
             error.cause shouldBe null
         }
 
-        "returns AttachmentError when outgoing message attachment is not valid base64" {
+        "should reject invalid attachment" {
             val patientIdent = Personident("24274116206").getOrElse { error ->
                 error(error.message)
             }
