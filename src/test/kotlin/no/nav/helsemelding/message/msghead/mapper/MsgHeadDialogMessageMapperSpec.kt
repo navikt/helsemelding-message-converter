@@ -1,4 +1,4 @@
-package no.nav.helsemelding.message.msghead
+package no.nav.helsemelding.message.msghead.mapper
 
 import arrow.core.getOrElse
 import io.kotest.assertions.arrow.core.shouldBeLeft
@@ -24,7 +24,7 @@ import no.nav.helsemelding.jsonschema.core.model.Sender
 import no.nav.helsemelding.message.converter.createProvider
 import no.nav.helsemelding.message.error.AttachmentError
 import no.nav.helsemelding.message.error.MappingError
-import no.nav.helsemelding.message.msghead.mapper.createOutgoingMessage
+import no.nav.helsemelding.message.msghead.XmlSerializer
 import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
 import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.Personident

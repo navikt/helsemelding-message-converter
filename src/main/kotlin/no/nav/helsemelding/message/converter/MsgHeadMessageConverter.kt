@@ -9,9 +9,9 @@ import no.nav.helsemelding.message.json.IncomingDialogMessageSerializer
 import no.nav.helsemelding.message.json.OutgoingDialogMessageSerializer
 import no.nav.helsemelding.message.model.Attachment
 import no.nav.helsemelding.message.model.SplitMessage
-import no.nav.helsemelding.message.msghead.MsgHeadDialogMessageMapper
 import no.nav.helsemelding.message.msghead.XmlSerializer
 import no.nav.helsemelding.message.msghead.extractAttachmentDocuments
+import no.nav.helsemelding.message.msghead.mapper.MsgHeadDialogMessageMapper
 import no.nav.helsemelding.message.msghead.mapper.createOutgoingMessage
 import no.nav.helsemelding.message.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.message.msghead.toAttachment

@@ -1,4 +1,4 @@
-package no.nav.helsemelding.message.msghead
+package no.nav.helsemelding.message.msghead.mapper
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -10,9 +10,7 @@ import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.Sender
 import no.nav.helsemelding.message.error.ConversionError
 import no.nav.helsemelding.message.error.MappingError
-import no.nav.helsemelding.message.msghead.mapper.createFollowUpPlan
-import no.nav.helsemelding.message.msghead.mapper.createInquiry
-import no.nav.helsemelding.message.msghead.mapper.createMemo
+import no.nav.helsemelding.message.msghead.extractAttachmentDocuments
 import no.nav.helsemelding.message.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.message.msghead.model.InquiryMessage
 import no.nav.helsemelding.message.msghead.model.MemoMessage
