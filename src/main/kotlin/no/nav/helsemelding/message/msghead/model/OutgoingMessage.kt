@@ -43,7 +43,7 @@ data class MemoMessage(
 
 data class FollowUpPlanMessage(
     override val id: String,
-    override val type: OutgoingDialogMessageType = OutgoingDialogMessageType.FOLLOW_UP_PLAN,
+    override val type: OutgoingDialogMessageType,
     override val message: String,
     override val attachment: String,
     override val provider: Provider,

@@ -63,6 +63,7 @@ private fun createFollowUpPlanMessage(
 
     FollowUpPlanMessage(
         id = dialogMessage.id,
+        type = dialogMessage.type,
         message = "Åpne PDF-vedlegg",
         attachment = attachment,
         provider = additionalMessageInfo.provider,
