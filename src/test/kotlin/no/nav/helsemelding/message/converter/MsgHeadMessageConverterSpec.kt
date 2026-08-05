@@ -1,5 +1,7 @@
 package no.nav.helsemelding.message.converter
 
+import arrow.core.Either
+import arrow.core.getOrElse
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
@@ -8,18 +10,28 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.serialization.json.Json
+import no.nav.helsemelding.message.error.AdditionalMessageInfoError
 import no.nav.helsemelding.message.error.InvalidJson
 import no.nav.helsemelding.message.error.InvalidXml
 import no.nav.helsemelding.message.msghead.XmlSerializer
+import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
+import no.nav.helsemelding.message.msghead.model.Employee
+import no.nav.helsemelding.message.msghead.model.Personident
+import no.nav.helsemelding.message.msghead.model.provider.OrganisationNumber
+import no.nav.helsemelding.message.msghead.model.provider.Provider
+import no.nav.helsemelding.message.msghead.model.provider.ProviderCategory
+import no.nav.helsemelding.message.msghead.model.provider.ProviderOffice
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.OffsetDateTime
+import kotlin.uuid.Uuid
 
 private const val XML_MESSAGE_WITH_ATTACHMENTS_PATH = "src/test/resources/message_with_attachments.xml"
 private const val XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH = "src/test/resources/message_without_attachments.xml"
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
-        val converter = MsgHeadMessageConverter()
+        val converter = msgHeadMessageConverter()
         val serializer = XmlSerializer()
 
         "should convert MsgHead XML to DialogMessage JSON" {
@@ -60,6 +72,101 @@ class MsgHeadMessageConverterSpec : StringSpec(
 
             error.shouldBeInstanceOf<InvalidJson>()
             error.message shouldBe "Could not deserialize OutgoingDialogMessage JSON"
+        }
+
+        "should return AdditionalMessageInfoError when additionalMessageProvider returns error" {
+            val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
+            val msgId = Uuid.random()
+            val json = Json.parseToJsonElement(
+                """
+                    {
+                        "version": 1,
+                        "id": "$msgId",
+                        "patientIdent": "12345678910",
+                        "providerId": "$providerId",
+                        "conversationReference": {
+                            "parentMessageId": "uuid3",
+                            "conversationId": "uuid4"
+                        },
+                        "type": "MEETING_INVITATION_2",
+                        "message": "Hei",
+                        "attachment": "attachment"
+                    }
+                """.trimIndent()
+            ).toString()
+
+            val error = converter.outgoingDialogMessageJsonToXml(json).shouldBeLeft()
+
+            error.shouldBeInstanceOf<AdditionalMessageInfoError>()
+            error.message shouldBe "Error when fetching additional message info"
+        }
+
+        "should require provider for outgoing conversion" {
+            val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
+            val msgId = Uuid.random()
+            val json = Json.parseToJsonElement(
+                """
+                    {
+                        "version": 1,
+                        "id": "$msgId",
+                        "patientIdent": "12345678910",
+                        "providerId": "$providerId",
+                        "conversationReference": {
+                            "parentMessageId": "uuid3",
+                            "conversationId": "uuid4"
+                        },
+                        "type": "MEETING_INVITATION_2",
+                        "message": "Hei",
+                        "attachment": "attachment"
+                    }
+                """.trimIndent()
+            ).toString()
+
+            val error = MsgHeadMessageConverter().outgoingDialogMessageJsonToXml(json).shouldBeLeft()
+
+            error.shouldBeInstanceOf<AdditionalMessageInfoError>()
+            error.message shouldBe "AdditionalMessageInfoProvider is required for outgoing conversion"
+        }
+
+        "should convert OutgoingDialogMessage JSON to MsgHead XML" {
+            val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
+            val patientIdent = Personident("12345678910").getOrElse { error ->
+                error(error.message)
+            }
+            val msgId = Uuid.random()
+            val json = Json.parseToJsonElement(
+                """
+                    {
+                        "version": 1,
+                        "id": "$msgId",
+                        "patientIdent": "${patientIdent.value}",
+                        "providerId": "$providerId",
+                        "conversationReference": {
+                            "parentMessageId": "uuid3",
+                            "conversationId": "uuid4"
+                        },
+                        "type": "MEETING_INVITATION_2",
+                        "message": "Hei",
+                        "attachment": "attachment"
+                    }
+                """.trimIndent()
+            ).toString()
+
+            val provider = createProvider(providerId)
+            val employee = Employee(
+                firstName = "Ola",
+                middleName = "Jens",
+                lastName = "Nordmann",
+                personident = patientIdent
+            )
+            val additionalMessageInfoProvider = FakeAdditionalMessageInfoProvider()
+            additionalMessageInfoProvider.givenAdditionalMessageInfo(
+                msgId = msgId,
+                either = Either.Right(AdditionalMessageInfo(provider, employee))
+            )
+
+            val converter = msgHeadMessageConverter(additionalMessageInfoProvider)
+            converter.outgoingDialogMessageJsonToXml(json).shouldBeRight()
         }
 
         "should extract attachments from MsgHead XML" {
@@ -108,4 +215,52 @@ class MsgHeadMessageConverterSpec : StringSpec(
             xmlWithoutAttachments shouldContain "MsgHead"
         }
     }
+)
+
+private fun msgHeadMessageConverter(
+    additionalMessageInfoProvider: AdditionalMessageInfoProvider = FakeAdditionalMessageInfoProvider()
+): MsgHeadMessageConverter = MsgHeadMessageConverter(
+    additionalMessageInfoProvider = additionalMessageInfoProvider
+)
+
+fun createProvider(
+    providerReference: Uuid,
+    dialogMessageEnabled: Boolean = true,
+    dialogMessageEnabledLocked: Boolean = false,
+    officeName: String? = null,
+    personident: Personident = Personident("13326920147").getOrElse { error ->
+        error(error.message)
+    },
+    herId: Int? = 654321,
+    hprId: Int = 7654321,
+    category: ProviderCategory = ProviderCategory.DOCTOR,
+    organisationNumber: String? = "987654321"
+) = Provider(
+    providerReference = providerReference,
+    office = ProviderOffice(
+        herId = 54321,
+        name = officeName,
+        address = "Storgata 15",
+        postalCode = "0158",
+        city = "Oslo",
+        organisationNumber = organisationNumber?.let { value ->
+            OrganisationNumber(value).getOrElse { error ->
+                error(error.message)
+            }
+        },
+        dialogMessageEnabled = dialogMessageEnabled,
+        dialogMessageEnabledLocked = dialogMessageEnabledLocked,
+        system = null,
+        receivedAt = OffsetDateTime.now()
+    ),
+    nationalIdentityNumber = personident,
+    firstName = "Kari",
+    middleName = "Anne",
+    lastName = "Hansen",
+    herId = herId,
+    hprId = hprId,
+    phoneNumber = null,
+    category = category,
+    receivedAt = OffsetDateTime.now(),
+    suspended = false
 )

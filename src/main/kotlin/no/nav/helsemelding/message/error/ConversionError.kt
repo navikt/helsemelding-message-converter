@@ -30,3 +30,13 @@ data class AttachmentError(
     override val message: String,
     override val cause: Throwable? = null
 ) : ConversionError
+
+data class AttachmentMissingError(
+    override val message: String,
+    override val cause: Throwable? = null
+) : ConversionError
+
+data class AdditionalMessageInfoError(
+    override val message: String,
+    override val cause: Throwable? = null
+) : ConversionError

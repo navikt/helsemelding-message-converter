@@ -9,9 +9,10 @@ import no.nav.helsemelding.message.json.IncomingDialogMessageSerializer
 import no.nav.helsemelding.message.json.OutgoingDialogMessageSerializer
 import no.nav.helsemelding.message.model.Attachment
 import no.nav.helsemelding.message.model.SplitMessage
-import no.nav.helsemelding.message.msghead.MsgHeadDialogMessageMapper
 import no.nav.helsemelding.message.msghead.XmlSerializer
 import no.nav.helsemelding.message.msghead.extractAttachmentDocuments
+import no.nav.helsemelding.message.msghead.mapper.MsgHeadDialogMessageMapper
+import no.nav.helsemelding.message.msghead.mapper.createOutgoingMessage
 import no.nav.helsemelding.message.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.message.msghead.toAttachment
 
@@ -19,7 +20,8 @@ class MsgHeadMessageConverter(
     private val xmlSerializer: XmlSerializer = XmlSerializer(),
     private val incomingDialogMessageSerializer: IncomingDialogMessageSerializer = IncomingDialogMessageSerializer(),
     private val outgoingDialogMessageSerializer: OutgoingDialogMessageSerializer = OutgoingDialogMessageSerializer(),
-    private val mapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper()
+    private val mapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper(),
+    private val additionalMessageInfoProvider: AdditionalMessageInfoProvider = MissingAdditionalMessageInfoProvider()
 ) : MessageConverter, AttachmentHandler {
     override fun incomingDialogMessageXmlToJson(xml: String): Either<ConversionError, String> =
         either {
@@ -32,7 +34,9 @@ class MsgHeadMessageConverter(
     override fun outgoingDialogMessageJsonToXml(json: String): Either<ConversionError, String> =
         either {
             val dialogMessage = outgoingDialogMessageSerializer.deserialize(json).bind()
-            val msgHead = mapper.toMsgHead(dialogMessage).bind()
+            val additionalMessageInfo = additionalMessageInfoProvider.getAdditionalMessageInfo(dialogMessage).bind()
+            val outgoingMessage = createOutgoingMessage(dialogMessage, additionalMessageInfo).bind()
+            val msgHead = mapper.toMsgHead(outgoingMessage).bind()
 
             xmlSerializer.serialize(msgHead).bind()
         }

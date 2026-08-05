@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MsgHead xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xmlns:ns6="http://www.kith.no/xmlstds/apprec/2004-11-21" xmlns:ns5="http://www.kith.no/xmlstds/base64container" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns:ns4="http://www.kith.no/xmlstds/felleskomponent1" xmlns:ns3="http://www.kith.no/xmlstds/dialog/2006-10-11">
+    <MsgInfo>
+        <Type V="DIALOG_FORESPORSEL" DN="Forespørsel"/>
+        <MIGversion>v1.2 2006-05-24</MIGversion>
+        <GenDate>2026-07-06T09:48:44.5727191</GenDate>
+        <MsgId>dbb4a1cb-943e-4bbb-967d-eb7ef456a30f</MsgId>
+        <Ack V="J" DN="Ja"/>
+        <ConversationRef>
+            <RefToParent>2eacbe5e-a087-4239-934c-6a1af772e91c</RefToParent>
+            <RefToConversation>980a444b-c36b-49ab-90a3-8682ea31308d</RefToConversation>
+        </ConversationRef>
+        <Sender>
+            <Organisation>
+                <OrganisationName>NAV</OrganisationName>
+                <Ident>
+                    <Id>889640782</Id>
+                    <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregisteret"/>
+                </Ident>
+                <Ident>
+                    <Id>8142519</Id>
+                    <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)"/>
+                </Ident>
+            </Organisation>
+        </Sender>
+        <Receiver>
+            <Organisation>
+                <Ident>
+                    <Id>987654321</Id>
+                    <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregisteret"/>
+                </Ident>
+                <Ident>
+                    <Id>54321</Id>
+                    <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)"/>
+                </Ident>
+                <Address>
+                    <Type V="RES" DN="Besøksadresse"/>
+                    <StreetAdr>Storgata 15</StreetAdr>
+                    <PostalCode>0158</PostalCode>
+                    <City>Oslo</City>
+                </Address>
+                <HealthcareProfessional>
+                    <FamilyName>Hansen</FamilyName>
+                    <MiddleName>Anne</MiddleName>
+                    <GivenName>Kari</GivenName>
+                    <Ident>
+                        <Id>13326920147</Id>
+                        <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer"/>
+                    </Ident>
+                    <Ident>
+                        <Id>7654321</Id>
+                        <TypeId V="HPR" S="2.16.578.1.12.4.1.1.8116" DN="HPR-nummer"/>
+                    </Ident>
+                    <Ident>
+                        <Id>654321</Id>
+                        <TypeId V="HER" S="2.16.578.1.12.4.1.1.8116" DN="Identifikator fra Helsetjenesteenhetsregisteret"/>
+                    </Ident>
+                </HealthcareProfessional>
+            </Organisation>
+        </Receiver>
+        <Patient>
+            <FamilyName>Nordmann</FamilyName>
+            <MiddleName>Jens</MiddleName>
+            <GivenName>Ola</GivenName>
+            <Ident>
+                <Id>24274116206</Id>
+                <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer"/>
+            </Ident>
+        </Patient>
+    </MsgInfo>
+    <Document>
+        <DocumentConnection V="H" DN="Hoveddokument"/>
+        <RefDoc>
+            <IssueDate V="2026-07-06"/>
+            <MsgType V="XML" DN="XML-instans"/>
+            <MimeType>text/xml</MimeType>
+            <Content>
+                <ns3:Dialogmelding>
+                    <ns3:Foresporsel>
+                        <ns3:TypeForesp V="1" S="2.16.578.1.12.4.1.1.8125" DN="Innkalling dialogmøte 2"/>
+                        <ns3:Sporsmal>Hei</ns3:Sporsmal>
+                        <ns3:DokIdForesp>769a5524-ca26-4d57-a0f4-d0a1d8f445c9</ns3:DokIdForesp>
+                    </ns3:Foresporsel>
+                </ns3:Dialogmelding>
+            </Content>
+        </RefDoc>
+    </Document>
+    <Document>
+        <DocumentConnection V="V" DN="Vedlegg"/>
+        <RefDoc>
+            <IssueDate V="2026-07-06"/>
+            <MsgType V="A" DN="Vedlegg"/>
+            <MimeType>application/pdf</MimeType>
+            <Content>
+                <ns5:Base64Container>QmFzZTY0IGVuY29kZWQgZmlsZQ==</ns5:Base64Container>
+            </Content>
+        </RefDoc>
+    </Document>
+</MsgHead>
