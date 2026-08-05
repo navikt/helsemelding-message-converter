@@ -16,7 +16,7 @@ internal fun createMemo(message: MemoMessage): Either<ConversionError, XMLMsgHea
             document.add(
                 createDialogMessageDocument(
                     outgoingMessage = message,
-                    dialogmelding = memo(message)
+                    dialogMessage = createMemoDialogMessage(message)
                 )
             )
             message.attachment?.let {

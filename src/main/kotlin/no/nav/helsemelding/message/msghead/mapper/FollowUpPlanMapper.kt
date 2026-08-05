@@ -15,7 +15,7 @@ internal fun createFollowUpPlan(message: FollowUpPlanMessage): Either<Conversion
             document.add(
                 createDialogMessageDocument(
                     outgoingMessage = message,
-                    dialogmelding = followUpPlan(message)
+                    dialogMessage = createFollowUpPlanDialogMessage(message)
                 )
             )
             document.add(

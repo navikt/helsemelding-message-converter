@@ -16,7 +16,7 @@ internal fun createInquiry(message: InquiryMessage): Either<ConversionError, XML
             document.add(
                 createDialogMessageDocument(
                     outgoingMessage = message,
-                    dialogmelding = inquiry(message)
+                    dialogMessage = createInquiryDialogMessage(message)
                 )
             )
             message.attachment?.let {

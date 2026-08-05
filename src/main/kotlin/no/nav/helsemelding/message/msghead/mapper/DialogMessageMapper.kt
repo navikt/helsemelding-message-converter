@@ -40,7 +40,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
 
-private const val KODEVERK_BASE = "2.16.578.1.12.4.1.1."
+private const val CODE_SYSTEM_BASE = "2.16.578.1.12.4.1.1."
 
 internal fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
     return XMLMsgInfo().apply {
@@ -114,7 +114,7 @@ internal fun createSender(): XMLSender {
             ident.add(
                 XMLIdent().apply {
                     id = "889640782"
-                    typeId = createEnhetsregister()
+                    typeId = createOrganisationNumberType()
                 }
             )
             ident.add(
@@ -127,7 +127,7 @@ internal fun createSender(): XMLSender {
     }
 }
 
-internal fun createEnhetsregister(): XMLCV {
+internal fun createOrganisationNumberType(): XMLCV {
     return XMLCV().apply {
         dn = "Organisasjonsnummeret i Enhetsregisteret"
         s = "2.16.578.1.12.4.1.1.9051"
@@ -154,7 +154,7 @@ internal fun createReceiver(
                 ident.add(
                     XMLIdent().apply {
                         id = provider.office.organisationNumber.value
-                        typeId = createEnhetsregister()
+                        typeId = createOrganisationNumberType()
                     }
                 )
             }
@@ -179,7 +179,7 @@ internal fun createReceiver(
                 middleName = provider.middleName
                 givenName = provider.firstName
                 provider.nationalIdentityNumber?.let {
-                    ident.add(createXMLIdentForPersonident(it))
+                    ident.add(createXMLIdentForPersonIdent(it))
                 }
                 if (provider.hprId != null) {
                     ident.add(
@@ -218,14 +218,14 @@ internal fun XMLHealthcareProfessional.roleToPatient() {
     }
 }
 
-internal fun createXMLIdentForPersonident(personident: Personident): XMLIdent {
-    val isPersonidentDNR = personident.isDNR()
+internal fun createXMLIdentForPersonIdent(personIdent: Personident): XMLIdent {
+    val isPersonIdentDNumber = personIdent.isDNR()
     return XMLIdent().apply {
-        id = personident.value
+        id = personIdent.value
         typeId = XMLCV().apply {
-            dn = if (isPersonidentDNR) "D-nummer" else "Fødselsnummer"
+            dn = if (isPersonIdentDNumber) "D-nummer" else "Fødselsnummer"
             s = "2.16.578.1.12.4.1.1.8116"
-            v = if (isPersonidentDNR) "DNR" else "FNR"
+            v = if (isPersonIdentDNumber) "DNR" else "FNR"
         }
     }
 }
@@ -235,13 +235,13 @@ internal fun createPatient(employee: Employee): XMLPatient {
         familyName = employee.lastName
         middleName = employee.middleName
         givenName = employee.firstName
-        ident.add(createXMLIdentForPersonident(employee.personident))
+        ident.add(createXMLIdentForPersonIdent(employee.personident))
     }
 }
 
 internal fun createDialogMessageDocument(
     outgoingMessage: OutgoingMessage,
-    dialogmelding: XMLDialogmelding
+    dialogMessage: XMLDialogmelding
 ): XMLDocument {
     return XMLDocument().apply {
         documentConnection = XMLCS().apply {
@@ -258,19 +258,19 @@ internal fun createDialogMessageDocument(
             }
             mimeType = "text/xml"
             content = XMLRefDoc.Content().apply {
-                any.add(dialogmelding)
+                any.add(dialogMessage)
             }
         }
     }
 }
 
-internal fun inquiry(inquiryMessage: InquiryMessage): XMLDialogmelding {
+internal fun createInquiryDialogMessage(inquiryMessage: InquiryMessage): XMLDialogmelding {
     return XMLDialogmelding().apply {
         foresporsel.add(
             XMLForesporsel().apply {
                 typeForesp = CV().apply {
                     dn = inquiryMessage.type.application
-                    s = "$KODEVERK_BASE${inquiryMessage.type.codeSystem}"
+                    s = "$CODE_SYSTEM_BASE${inquiryMessage.type.codeSystem}"
                     v = inquiryMessage.type.code.toString()
                 }
                 sporsmal = inquiryMessage.message
@@ -280,13 +280,13 @@ internal fun inquiry(inquiryMessage: InquiryMessage): XMLDialogmelding {
     }
 }
 
-internal fun memo(memoMessage: MemoMessage): XMLDialogmelding {
+internal fun createMemoDialogMessage(memoMessage: MemoMessage): XMLDialogmelding {
     return XMLDialogmelding().apply {
         notat.add(
             XMLNotat().apply {
                 temaKodet = CV().apply {
                     dn = memoMessage.type.application
-                    s = "$KODEVERK_BASE${memoMessage.type.codeSystem}"
+                    s = "$CODE_SYSTEM_BASE${memoMessage.type.codeSystem}"
                     v = memoMessage.type.code.toString()
                 }
                 tekstNotatInnhold = memoMessage.message
@@ -296,13 +296,13 @@ internal fun memo(memoMessage: MemoMessage): XMLDialogmelding {
     }
 }
 
-internal fun followUpPlan(followUpPlanMessage: FollowUpPlanMessage): XMLDialogmelding {
+internal fun createFollowUpPlanDialogMessage(followUpPlanMessage: FollowUpPlanMessage): XMLDialogmelding {
     return XMLDialogmelding().apply {
         notat.add(
             XMLNotat().apply {
                 temaKodet = CV().apply {
                     dn = followUpPlanMessage.type.application
-                    s = "$KODEVERK_BASE${followUpPlanMessage.type.codeSystem}"
+                    s = "$CODE_SYSTEM_BASE${followUpPlanMessage.type.codeSystem}"
                     v = followUpPlanMessage.type.code.toString()
                 }
                 tekstNotatInnhold = followUpPlanMessage.message
