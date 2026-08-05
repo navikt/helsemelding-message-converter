@@ -60,24 +60,14 @@ The resulting JSON follows the `IncomingDialogMessage` schema from `json-schema-
 
 ## Convert Outgoing JSON To MsgHead XML
 
-```kotlin
-import arrow.core.Either
-import arrow.core.getOrElse
-import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessage
-import no.nav.helsemelding.message.converter.AdditionalMessageInfoProvider
-import no.nav.helsemelding.message.converter.MsgHeadMessageConverter
-import no.nav.helsemelding.message.error.ConversionError
-import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
+Outgoing conversion requires an `AdditionalMessageInfoProvider` from the consuming application.
 
-class MyAdditionalMessageInfoProvider : AdditionalMessageInfoProvider {
-    override fun getAdditionalMessageInfo(
-        dialogMessage: OutgoingDialogMessage
-    ): Either<ConversionError, AdditionalMessageInfo> =
-        lookupAdditionalMessageInfo(dialogMessage)
-}
+```kotlin
+import arrow.core.getOrElse
+import no.nav.helsemelding.message.converter.MsgHeadMessageConverter
 
 val converter = MsgHeadMessageConverter(
-    additionalMessageInfoProvider = MyAdditionalMessageInfoProvider()
+    additionalMessageInfoProvider = additionalInfoProvider
 )
 
 val xml = converter
@@ -88,9 +78,8 @@ val xml = converter
 ```
 
 The input JSON must follow the `OutgoingDialogMessage` schema from `json-schema-core`.
-The converter also needs `AdditionalMessageInfo` from the consuming application because not all
-MsgHead fields are present in the outgoing JSON. This includes provider, employee, created timestamp
-as `Instant`, and `docId`.
+`AdditionalMessageInfoProvider` supplies the MsgHead fields not present in the outgoing JSON:
+provider, employee, created timestamp as `Instant`, and `docId`.
 
 ### Outgoing Message Types
 
