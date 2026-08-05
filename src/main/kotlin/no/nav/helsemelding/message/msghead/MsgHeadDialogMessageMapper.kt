@@ -2,7 +2,6 @@ package no.nav.helsemelding.message.msghead
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.right
 import no.nav.helse.dialogmelding.XMLDialogmelding
 import no.nav.helse.msgHead.XMLMsgHead
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
@@ -42,7 +41,7 @@ class MsgHeadDialogMessageMapper {
             is MemoMessage -> createMemo(dialogMessage)
             is InquiryMessage -> createInquiry(dialogMessage)
             is FollowUpPlanMessage -> createFollowUpPlan(dialogMessage)
-        }.right()
+        }
     }
 
     private fun XMLMsgHead.dialogId(): Either<ConversionError, String> =

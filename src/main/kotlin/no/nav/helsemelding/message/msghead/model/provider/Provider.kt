@@ -1,5 +1,6 @@
 package no.nav.helsemelding.message.msghead.model.provider
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import no.nav.helsemelding.message.msghead.model.Personident
 import no.nav.helsemelding.message.msghead.model.provider.serializer.OffsetDateTimeSerializer
@@ -8,17 +9,19 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class Provider(
-    val behandlerRef: Uuid,
-    val personident: Personident?,
-    val fornavn: String,
-    val mellomnavn: String?,
-    val etternavn: String,
+    @SerialName("behandlerRef") val providerReference: Uuid,
+    @SerialName("personident") val nationalIdentityNumber: Personident?,
+    @SerialName("fornavn") val firstName: String,
+    @SerialName("mellomnavn") val middleName: String?,
+    @SerialName("etternavn") val lastName: String,
     val herId: Int?,
     val hprId: Int?,
-    val telefon: String?,
-    val kontor: ProviderOffice,
-    val kategori: ProviderCategori,
-    @Serializable(with = OffsetDateTimeSerializer::class) val mottatt: OffsetDateTime,
+    @SerialName("telefon") val phoneNumber: String?,
+    @SerialName("kontor") val office: ProviderOffice,
+    @SerialName("kategori") val category: ProviderCategory,
+    @SerialName("mottatt")
+    @Serializable(with = OffsetDateTimeSerializer::class)
+    val receivedAt: OffsetDateTime,
     @Serializable(with = OffsetDateTimeSerializer::class) val invalidated: OffsetDateTime? = null,
-    val suspendert: Boolean
+    @SerialName("suspendert") val suspended: Boolean
 )

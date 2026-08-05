@@ -14,12 +14,10 @@ object OffsetDateTimeSerializer : KSerializer<OffsetDateTime> {
         PrimitiveSerialDescriptor("OffsetDateTime", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: OffsetDateTime) {
-        val string = value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-        encoder.encodeString(string)
+        encoder.encodeString(value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
     }
 
     override fun deserialize(decoder: Decoder): OffsetDateTime {
-        val string = decoder.decodeString()
-        return OffsetDateTime.parse(string, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+        return OffsetDateTime.parse(decoder.decodeString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     }
 }

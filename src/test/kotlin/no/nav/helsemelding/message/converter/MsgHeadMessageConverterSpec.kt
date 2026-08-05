@@ -1,6 +1,7 @@
 package no.nav.helsemelding.message.converter
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
@@ -18,7 +19,7 @@ import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.Personident
 import no.nav.helsemelding.message.msghead.model.provider.OrganisationNumber
 import no.nav.helsemelding.message.msghead.model.provider.Provider
-import no.nav.helsemelding.message.msghead.model.provider.ProviderCategori
+import no.nav.helsemelding.message.msghead.model.provider.ProviderCategory
 import no.nav.helsemelding.message.msghead.model.provider.ProviderOffice
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -102,7 +103,9 @@ class MsgHeadMessageConverterSpec : StringSpec(
 
         "should convert OutgoingDialogMessage JSON to MsgHead XML" {
             val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
-            val patientIdent = Personident("12345678910")
+            val patientIdent = Personident("12345678910").getOrElse { error ->
+                error(error.message)
+            }
             val msgId = Uuid.random()
             val json = Json.parseToJsonElement(
                 """
@@ -194,37 +197,43 @@ private fun msgHeadMessageConverter(
 )
 
 fun createProvider(
-    behandlerRef: Uuid,
-    dialogmeldingEnabled: Boolean = true,
-    dialogmeldingEnabledLocked: Boolean = false,
-    kontornavn: String? = null,
-    personident: Personident = Personident("13326920147"),
+    providerReference: Uuid,
+    dialogMessageEnabled: Boolean = true,
+    dialogMessageEnabledLocked: Boolean = false,
+    officeName: String? = null,
+    personident: Personident = Personident("13326920147").getOrElse { error ->
+        error(error.message)
+    },
     herId: Int? = 654321,
     hprId: Int = 7654321,
-    kategori: ProviderCategori = ProviderCategori.LEGE,
-    orgnummer: String? = "987654321"
+    category: ProviderCategory = ProviderCategory.DOCTOR,
+    organisationNumber: String? = "987654321"
 ) = Provider(
-    behandlerRef = behandlerRef,
-    kontor = ProviderOffice(
+    providerReference = providerReference,
+    office = ProviderOffice(
         herId = 54321,
-        navn = kontornavn,
-        adresse = "Storgata 15",
-        postnummer = "0158",
-        poststed = "Oslo",
-        orgnummer = orgnummer?.let { OrganisationNumber(it) },
-        dialogmeldingEnabled = dialogmeldingEnabled,
-        dialogmeldingEnabledLocked = dialogmeldingEnabledLocked,
+        name = officeName,
+        address = "Storgata 15",
+        postalCode = "0158",
+        city = "Oslo",
+        organisationNumber = organisationNumber?.let { value ->
+            OrganisationNumber(value).getOrElse { error ->
+                error(error.message)
+            }
+        },
+        dialogMessageEnabled = dialogMessageEnabled,
+        dialogMessageEnabledLocked = dialogMessageEnabledLocked,
         system = null,
-        mottatt = OffsetDateTime.now()
+        receivedAt = OffsetDateTime.now()
     ),
-    personident = personident,
-    fornavn = "Kari",
-    mellomnavn = "Anne",
-    etternavn = "Hansen",
+    nationalIdentityNumber = personident,
+    firstName = "Kari",
+    middleName = "Anne",
+    lastName = "Hansen",
     herId = herId,
     hprId = hprId,
-    telefon = null,
-    kategori = kategori,
-    mottatt = OffsetDateTime.now(),
-    suspendert = false
+    phoneNumber = null,
+    category = category,
+    receivedAt = OffsetDateTime.now(),
+    suspended = false
 )

@@ -12,9 +12,9 @@ import no.nav.helsemelding.message.model.SplitMessage
 import no.nav.helsemelding.message.msghead.MsgHeadDialogMessageMapper
 import no.nav.helsemelding.message.msghead.XmlSerializer
 import no.nav.helsemelding.message.msghead.extractAttachmentDocuments
+import no.nav.helsemelding.message.msghead.mapper.createOutgoingMessage
 import no.nav.helsemelding.message.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.message.msghead.toAttachment
-import no.nav.helsemelding.message.msghead.toOutgoingMessage
 
 class MsgHeadMessageConverter(
     private val xmlSerializer: XmlSerializer = XmlSerializer(),
@@ -35,7 +35,7 @@ class MsgHeadMessageConverter(
         either {
             val dialogMessage = outgoingDialogMessageSerializer.deserialize(json).bind()
             val additionalMessageInfo = additionalMessageInfoProvider.getAdditionalMessageInfo(dialogMessage).bind()
-            val outgoingMessage = dialogMessage.toOutgoingMessage(additionalMessageInfo).bind()
+            val outgoingMessage = createOutgoingMessage(dialogMessage, additionalMessageInfo).bind()
             val msgHead = mapper.toMsgHead(outgoingMessage).bind()
 
             xmlSerializer.serialize(msgHead).bind()

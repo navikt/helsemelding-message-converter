@@ -1,5 +1,6 @@
 package no.nav.helsemelding.message.msghead.mapper
 
+import arrow.core.Either
 import no.nav.helse.base64container.Base64Container
 import no.nav.helse.dialogmelding.CV
 import no.nav.helse.dialogmelding.XMLDialogmelding
@@ -25,6 +26,8 @@ import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_FORESPORSEL
 import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_NOTAT
+import no.nav.helsemelding.message.error.AttachmentError
+import no.nav.helsemelding.message.error.ConversionError
 import no.nav.helsemelding.message.msghead.model.Employee
 import no.nav.helsemelding.message.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.message.msghead.model.InquiryMessage
@@ -35,10 +38,11 @@ import no.nav.helsemelding.message.msghead.model.isDNR
 import no.nav.helsemelding.message.msghead.model.provider.Provider
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Base64
 
 private const val KODEVERK_BASE = "2.16.578.1.12.4.1.1."
 
-fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
+internal fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
     return XMLMsgInfo().apply {
         type = createType(message.type)
         miGversion = "v1.2 2006-05-24"
@@ -53,14 +57,14 @@ fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
     }
 }
 
-fun createConversationRef(conversationReference: ConversationReference): XMLConversationRef {
+internal fun createConversationRef(conversationReference: ConversationReference): XMLConversationRef {
     return XMLConversationRef().apply {
         refToConversation = conversationReference.conversationId
         refToParent = conversationReference.parentMessageId
     }
 }
 
-fun createType(outgoingDialogMessageType: OutgoingDialogMessageType): XMLCS {
+internal fun createType(outgoingDialogMessageType: OutgoingDialogMessageType): XMLCS {
     return when (outgoingDialogMessageType.messageType) {
         DIALOG_FORESPORSEL -> XMLCS().apply {
             dn = "Forespørsel"
@@ -74,29 +78,36 @@ fun createType(outgoingDialogMessageType: OutgoingDialogMessageType): XMLCS {
     }
 }
 
-fun createAttachmentDocument(attachment: ByteArray, createdAt: LocalDateTime): XMLDocument {
-    return XMLDocument().apply {
-        documentConnection = XMLCS().apply {
-            dn = "Vedlegg"
-            v = "V"
-        }
-        refDoc = XMLRefDoc().apply {
-            issueDate = XMLTS().apply {
-                v = createdAt.format(DateTimeFormatter.ISO_DATE)
-            }
-            msgType = XMLCS().apply {
+internal fun createAttachmentDocument(
+    attachmentBase64: String,
+    createdAt: LocalDateTime
+): Either<ConversionError, XMLDocument> =
+    Either.catch {
+        val attachment = Base64.getDecoder().decode(attachmentBase64)
+
+        XMLDocument().apply {
+            documentConnection = XMLCS().apply {
                 dn = "Vedlegg"
-                v = "A"
+                v = "V"
             }
-            mimeType = "application/pdf"
-            content = XMLRefDoc.Content().apply {
-                any.add(Base64Container().apply { value = attachment })
+            refDoc = XMLRefDoc().apply {
+                issueDate = XMLTS().apply {
+                    v = createdAt.format(DateTimeFormatter.ISO_DATE)
+                }
+                msgType = XMLCS().apply {
+                    dn = "Vedlegg"
+                    v = "A"
+                }
+                mimeType = "application/pdf"
+                content = XMLRefDoc.Content().apply {
+                    any.add(Base64Container().apply { value = attachment })
+                }
             }
         }
     }
-}
+        .mapLeft { AttachmentError("Could not decode base64 attachment", it) }
 
-fun createSender(): XMLSender {
+internal fun createSender(): XMLSender {
     return XMLSender().apply {
         organisation = XMLOrganisation().apply {
             organisationName = "NAV"
@@ -116,7 +127,7 @@ fun createSender(): XMLSender {
     }
 }
 
-fun createEnhetsregister(): XMLCV {
+internal fun createEnhetsregister(): XMLCV {
     return XMLCV().apply {
         dn = "Organisasjonsnummeret i Enhetsregisteret"
         s = "2.16.578.1.12.4.1.1.9051"
@@ -124,7 +135,7 @@ fun createEnhetsregister(): XMLCV {
     }
 }
 
-fun createHerId(): XMLCV {
+internal fun createHerId(): XMLCV {
     return XMLCV().apply {
         dn = "Identifikator fra Helsetjenesteenhetsregisteret (HER-id)"
         s = "2.16.578.1.12.4.1.1.9051"
@@ -132,24 +143,24 @@ fun createHerId(): XMLCV {
     }
 }
 
-fun createReceiver(
+internal fun createReceiver(
     provider: Provider,
     roleToPatient: XMLHealthcareProfessional.() -> Unit = {}
 ): XMLReceiver {
     return XMLReceiver().apply {
         organisation = XMLOrganisation().apply {
-            organisationName = provider.kontor.navn
-            if (provider.kontor.orgnummer != null) {
+            organisationName = provider.office.name
+            if (provider.office.organisationNumber != null) {
                 ident.add(
                     XMLIdent().apply {
-                        id = provider.kontor.orgnummer.value
+                        id = provider.office.organisationNumber.value
                         typeId = createEnhetsregister()
                     }
                 )
             }
             ident.add(
                 XMLIdent().apply {
-                    id = provider.kontor.herId.toString()
+                    id = provider.office.herId.toString()
                     typeId = createHerId()
                 }
             )
@@ -158,16 +169,16 @@ fun createReceiver(
                     dn = "Besøksadresse"
                     v = "RES"
                 }
-                streetAdr = provider.kontor.adresse
-                postalCode = provider.kontor.postnummer
-                city = provider.kontor.poststed
+                streetAdr = provider.office.address
+                postalCode = provider.office.postalCode
+                city = provider.office.city
             }
             healthcareProfessional = XMLHealthcareProfessional().apply {
                 roleToPatient()
-                familyName = provider.etternavn
-                middleName = provider.mellomnavn
-                givenName = provider.fornavn
-                provider.personident?.let {
+                familyName = provider.lastName
+                middleName = provider.middleName
+                givenName = provider.firstName
+                provider.nationalIdentityNumber?.let {
                     ident.add(createXMLIdentForPersonident(it))
                 }
                 if (provider.hprId != null) {
@@ -199,7 +210,7 @@ fun createReceiver(
     }
 }
 
-fun XMLHealthcareProfessional.roleToPatient() {
+internal fun XMLHealthcareProfessional.roleToPatient() {
     roleToPatient = XMLCV().apply {
         v = "6"
         s = "2.16.578.1.12.4.1.1.9034"
@@ -207,7 +218,7 @@ fun XMLHealthcareProfessional.roleToPatient() {
     }
 }
 
-fun createXMLIdentForPersonident(personident: Personident): XMLIdent {
+internal fun createXMLIdentForPersonident(personident: Personident): XMLIdent {
     val isPersonidentDNR = personident.isDNR()
     return XMLIdent().apply {
         id = personident.value
@@ -219,7 +230,7 @@ fun createXMLIdentForPersonident(personident: Personident): XMLIdent {
     }
 }
 
-fun createPatient(employee: Employee): XMLPatient {
+internal fun createPatient(employee: Employee): XMLPatient {
     return XMLPatient().apply {
         familyName = employee.lastName
         middleName = employee.middleName
@@ -228,7 +239,7 @@ fun createPatient(employee: Employee): XMLPatient {
     }
 }
 
-fun createDialogMessageDocument(
+internal fun createDialogMessageDocument(
     outgoingMessage: OutgoingMessage,
     dialogmelding: XMLDialogmelding
 ): XMLDocument {
@@ -253,7 +264,7 @@ fun createDialogMessageDocument(
     }
 }
 
-fun inquiry(inquiryMessage: InquiryMessage): XMLDialogmelding {
+internal fun inquiry(inquiryMessage: InquiryMessage): XMLDialogmelding {
     return XMLDialogmelding().apply {
         foresporsel.add(
             XMLForesporsel().apply {
@@ -263,13 +274,13 @@ fun inquiry(inquiryMessage: InquiryMessage): XMLDialogmelding {
                     v = inquiryMessage.type.code.toString()
                 }
                 sporsmal = inquiryMessage.message
-                dokIdForesp = inquiryMessage.dokId.toString()
+                dokIdForesp = inquiryMessage.docId.toString()
             }
         )
     }
 }
 
-fun memo(memoMessage: MemoMessage): XMLDialogmelding {
+internal fun memo(memoMessage: MemoMessage): XMLDialogmelding {
     return XMLDialogmelding().apply {
         notat.add(
             XMLNotat().apply {
@@ -279,13 +290,13 @@ fun memo(memoMessage: MemoMessage): XMLDialogmelding {
                     v = memoMessage.type.code.toString()
                 }
                 tekstNotatInnhold = memoMessage.message
-                dokIdNotat = memoMessage.dokId.toString()
+                dokIdNotat = memoMessage.docId.toString()
             }
         )
     }
 }
 
-fun followUpPlan(followUpPlanMessage: FollowUpPlanMessage): XMLDialogmelding {
+internal fun followUpPlan(followUpPlanMessage: FollowUpPlanMessage): XMLDialogmelding {
     return XMLDialogmelding().apply {
         notat.add(
             XMLNotat().apply {
@@ -295,7 +306,7 @@ fun followUpPlan(followUpPlanMessage: FollowUpPlanMessage): XMLDialogmelding {
                     v = followUpPlanMessage.type.code.toString()
                 }
                 tekstNotatInnhold = followUpPlanMessage.message
-                dokIdNotat = followUpPlanMessage.dokId.toString()
+                dokIdNotat = followUpPlanMessage.docId.toString()
                 rollerRelatertNotat.add(
                     XMLRollerRelatertNotat().apply {
                         rolleNotat = CV().apply {

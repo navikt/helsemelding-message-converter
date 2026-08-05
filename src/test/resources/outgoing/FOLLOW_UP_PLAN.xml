@@ -93,7 +93,7 @@
             <MsgType V="A" DN="Vedlegg"/>
             <MimeType>application/pdf</MimeType>
             <Content>
-                <ns5:Base64Container>UW1GelpUWTBJR1Z1WTI5a1pXUWdabWxzWlE9PQ==</ns5:Base64Container>
+                <ns5:Base64Container>QmFzZTY0IGVuY29kZWQgZmlsZQ==</ns5:Base64Container>
             </Content>
         </RefDoc>
     </Document>

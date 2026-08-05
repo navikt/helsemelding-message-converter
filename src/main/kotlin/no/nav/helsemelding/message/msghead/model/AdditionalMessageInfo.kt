@@ -8,5 +8,5 @@ data class AdditionalMessageInfo(
     val provider: Provider,
     val employee: Employee,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val dokId: Uuid = Uuid.random()
+    val docId: Uuid = Uuid.random()
 )

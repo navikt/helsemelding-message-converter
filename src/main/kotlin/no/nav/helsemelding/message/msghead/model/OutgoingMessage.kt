@@ -14,7 +14,7 @@ sealed interface OutgoingMessage {
     val provider: Provider
     val employee: Employee
     val createdAt: LocalDateTime
-    val dokId: Uuid
+    val docId: Uuid
 }
 
 data class InquiryMessage(
@@ -26,7 +26,7 @@ data class InquiryMessage(
     override val provider: Provider,
     override val employee: Employee,
     override val createdAt: LocalDateTime,
-    override val dokId: Uuid
+    override val docId: Uuid
 ) : OutgoingMessage
 
 data class MemoMessage(
@@ -38,7 +38,7 @@ data class MemoMessage(
     override val provider: Provider,
     override val employee: Employee,
     override val createdAt: LocalDateTime,
-    override val dokId: Uuid
+    override val docId: Uuid
 ) : OutgoingMessage
 
 data class FollowUpPlanMessage(
@@ -49,5 +49,5 @@ data class FollowUpPlanMessage(
     override val provider: Provider,
     override val employee: Employee,
     override val createdAt: LocalDateTime,
-    override val dokId: Uuid
+    override val docId: Uuid
 ) : OutgoingMessage

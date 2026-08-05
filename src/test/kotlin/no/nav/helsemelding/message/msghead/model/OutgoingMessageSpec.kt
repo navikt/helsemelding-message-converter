@@ -1,5 +1,6 @@
 package no.nav.helsemelding.message.msghead.model
 
+import arrow.core.getOrElse
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
@@ -13,13 +14,15 @@ import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.message.converter.createProvider
 import no.nav.helsemelding.message.error.AttachmentMissingError
-import no.nav.helsemelding.message.msghead.toOutgoingMessage
+import no.nav.helsemelding.message.msghead.mapper.createOutgoingMessage
 import java.time.LocalDateTime
 import kotlin.uuid.Uuid
 
 class OutgoingMessageSpec : StringSpec(
     {
-        val patientIdent = Personident("24274116206")
+        val patientIdent = Personident("24274116206").getOrElse { error ->
+            error(error.message)
+        }
         val provider = createProvider(Uuid.random())
 
         val employee = Employee(
@@ -33,7 +36,7 @@ class OutgoingMessageSpec : StringSpec(
             provider = provider,
             employee = employee,
             createdAt = LocalDateTime.parse("2026-07-06T09:48:44.5727191"),
-            dokId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
+            docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
         )
 
         "should return AttachmentMissingError if attachment is null or empty when converting OutgoingDialogMessage(type=FOLLOW_UP_PLAN) to OppfolgingsplanMessage " {
@@ -51,7 +54,7 @@ class OutgoingMessageSpec : StringSpec(
                 attachment = null
             )
 
-            val error = dialogMessage.toOutgoingMessage(additionalInfo).shouldBeLeft()
+            val error = createOutgoingMessage(dialogMessage, additionalInfo).shouldBeLeft()
 
             error.shouldBeInstanceOf<AttachmentMissingError>()
             error.message shouldBe "Failed to convert JSON with OutgoingDialogMessageType: FOLLOW_UP_PLAN to FollowUpPlanMessage"
@@ -73,15 +76,14 @@ class OutgoingMessageSpec : StringSpec(
                 attachment = "QmFzZTY0IGVuY29kZWQgZmlsZQ=="
             )
 
-            val followUpPlanMessage = dialogMessage
-                .toOutgoingMessage(additionalInfo)
+            val followUpPlanMessage = createOutgoingMessage(dialogMessage, additionalInfo)
                 .shouldBeRight()
                 .shouldBeTypeOf<FollowUpPlanMessage>()
 
             followUpPlanMessage.id shouldBe dialogMessage.id
             followUpPlanMessage.attachment shouldBe dialogMessage.attachment
             followUpPlanMessage.createdAt shouldBe additionalInfo.createdAt
-            followUpPlanMessage.dokId shouldBe additionalInfo.dokId
+            followUpPlanMessage.docId shouldBe additionalInfo.docId
             followUpPlanMessage.type shouldBe OutgoingDialogMessageType.FOLLOW_UP_PLAN
             followUpPlanMessage.employee shouldBeEqualUsingFields employee
             followUpPlanMessage.provider shouldBeEqualUsingFields provider
@@ -112,15 +114,14 @@ class OutgoingMessageSpec : StringSpec(
                 attachment = "QmFzZTY0IGVuY29kZWQgZmlsZQ=="
             )
 
-            val memoMessage = dialogMessage
-                .toOutgoingMessage(additionalInfo)
+            val memoMessage = createOutgoingMessage(dialogMessage, additionalInfo)
                 .shouldBeRight()
                 .shouldBeTypeOf<MemoMessage>()
 
             memoMessage.id shouldBe dialogMessage.id
             memoMessage.attachment shouldBe dialogMessage.attachment
             memoMessage.createdAt shouldBe additionalInfo.createdAt
-            memoMessage.dokId shouldBe additionalInfo.dokId
+            memoMessage.docId shouldBe additionalInfo.docId
             memoMessage.type shouldBe it
             memoMessage.conversationReference shouldBeEqualUsingFields dialogMessage.conversationReference!!
             memoMessage.employee shouldBeEqualUsingFields employee
@@ -149,15 +150,14 @@ class OutgoingMessageSpec : StringSpec(
                 attachment = "QmFzZTY0IGVuY29kZWQgZmlsZQ=="
             )
 
-            val memoMessage = dialogMessage
-                .toOutgoingMessage(additionalInfo)
+            val memoMessage = createOutgoingMessage(dialogMessage, additionalInfo)
                 .shouldBeRight()
                 .shouldBeTypeOf<MemoMessage>()
 
             memoMessage.id shouldBe dialogMessage.id
             memoMessage.attachment shouldBe dialogMessage.attachment
             memoMessage.createdAt shouldBe additionalInfo.createdAt
-            memoMessage.dokId shouldBe additionalInfo.dokId
+            memoMessage.docId shouldBe additionalInfo.docId
             memoMessage.type shouldBe it
             memoMessage.conversationReference.parentMessageId shouldBe dialogMessage.id
             memoMessage.conversationReference.conversationId shouldBe dialogMessage.id
@@ -189,15 +189,14 @@ class OutgoingMessageSpec : StringSpec(
                 attachment = "QmFzZTY0IGVuY29kZWQgZmlsZQ=="
             )
 
-            val inquiryMessage = dialogMessage
-                .toOutgoingMessage(additionalInfo)
+            val inquiryMessage = createOutgoingMessage(dialogMessage, additionalInfo)
                 .shouldBeRight()
                 .shouldBeTypeOf<InquiryMessage>()
 
             inquiryMessage.id shouldBe dialogMessage.id
             inquiryMessage.attachment shouldBe dialogMessage.attachment
             inquiryMessage.createdAt shouldBe additionalInfo.createdAt
-            inquiryMessage.dokId shouldBe additionalInfo.dokId
+            inquiryMessage.docId shouldBe additionalInfo.docId
             inquiryMessage.type shouldBe it
             inquiryMessage.conversationReference shouldBeEqualUsingFields dialogMessage.conversationReference!!
             inquiryMessage.employee shouldBeEqualUsingFields employee
@@ -225,15 +224,14 @@ class OutgoingMessageSpec : StringSpec(
                 attachment = "QmFzZTY0IGVuY29kZWQgZmlsZQ=="
             )
 
-            val inquiryMessage = dialogMessage
-                .toOutgoingMessage(additionalInfo)
+            val inquiryMessage = createOutgoingMessage(dialogMessage, additionalInfo)
                 .shouldBeRight()
                 .shouldBeTypeOf<InquiryMessage>()
 
             inquiryMessage.id shouldBe dialogMessage.id
             inquiryMessage.attachment shouldBe dialogMessage.attachment
             inquiryMessage.createdAt shouldBe additionalInfo.createdAt
-            inquiryMessage.dokId shouldBe additionalInfo.dokId
+            inquiryMessage.docId shouldBe additionalInfo.docId
             inquiryMessage.type shouldBe it
             inquiryMessage.conversationReference.parentMessageId shouldBe dialogMessage.id
             inquiryMessage.conversationReference.conversationId shouldBe dialogMessage.id
