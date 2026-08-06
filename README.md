@@ -14,7 +14,7 @@ It also includes helpers for extracting and removing attachments from MsgHead XM
 Use `MsgHeadMessageConverter` for MsgHead-based conversions:
 
 ```kotlin
-import no.nav.helsemelding.message.converter.MsgHeadMessageConverter
+import no.nav.helsemelding.messageconverter.MsgHeadMessageConverter
 
 val converter = MsgHeadMessageConverter()
 ```
@@ -45,7 +45,7 @@ interface AttachmentHandler {
 
 ```kotlin
 import arrow.core.getOrElse
-import no.nav.helsemelding.message.converter.MsgHeadMessageConverter
+import no.nav.helsemelding.messageconverter.MsgHeadMessageConverter
 
 val converter = MsgHeadMessageConverter()
 
@@ -64,7 +64,7 @@ Outgoing conversion requires an `AdditionalMessageInfoProvider` from the consumi
 
 ```kotlin
 import arrow.core.getOrElse
-import no.nav.helsemelding.message.converter.MsgHeadMessageConverter
+import no.nav.helsemelding.messageconverter.MsgHeadMessageConverter
 
 val converter = MsgHeadMessageConverter(
     additionalMessageInfoProvider = additionalInfoProvider
