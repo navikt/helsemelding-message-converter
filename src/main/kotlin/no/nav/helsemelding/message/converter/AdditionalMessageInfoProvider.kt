@@ -7,10 +7,28 @@ import no.nav.helsemelding.message.error.ConversionError
 import no.nav.helsemelding.message.msghead.model.AdditionalMessageInfo
 import kotlin.uuid.Uuid
 
+/**
+ * Provides additional metadata needed to construct the MsgHead envelope for outgoing dialog messages.
+ *
+ * Implement this interface to supply message-specific information that is not available
+ * in the dialog message JSON itself.
+ */
 interface AdditionalMessageInfoProvider {
+    /**
+     * Returns additional metadata for the given outgoing dialog message.
+     *
+     * @param dialogMessage the outgoing dialog message to look up metadata for
+     * @return [AdditionalMessageInfo] required for MsgHead construction, or a [ConversionError] on failure
+     */
     fun getAdditionalMessageInfo(dialogMessage: OutgoingDialogMessage): Either<ConversionError, AdditionalMessageInfo>
 }
 
+/**
+ * Default [AdditionalMessageInfoProvider] used when no provider has been configured.
+ *
+ * Always returns an [AdditionalMessageInfoError], ensuring that outgoing conversion
+ * fails with a clear error rather than silently producing incorrect output.
+ */
 class MissingAdditionalMessageInfoProvider : AdditionalMessageInfoProvider {
     override fun getAdditionalMessageInfo(dialogMessage: OutgoingDialogMessage): Either<ConversionError, AdditionalMessageInfo> {
         return Either.Left(
