@@ -42,12 +42,16 @@ plugins.withId("org.jlleitschuh.gradle.ktlint") {
     }
 }
 
+java {
+    withSourcesJar()
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             groupId = "no.nav.helsemelding"
             artifactId = "message-converter"
-            version = "0.0.1"
+            version = "0.0.2-SNAPSHOT"
             from(components["java"])
         }
     }
