@@ -7,6 +7,7 @@ plugins {
 }
 
 dependencies {
+    api(libs.json.schema.core)
     implementation(libs.arrow.core)
     implementation(libs.arrow.functions)
     implementation(libs.bundles.logging)
@@ -14,7 +15,6 @@ dependencies {
     implementation(libs.hoplite.hocon)
     implementation(libs.kotlin.logging)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.json.schema.core)
     implementation(libs.javax.jaxb.api)
     implementation(libs.migesok.jaxb.time.adapters)
     implementation(libs.bundles.nav.xml)
