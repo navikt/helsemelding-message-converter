@@ -2,6 +2,8 @@ name-template: $NEXT_PATCH_VERSION
 tag-template: $NEXT_PATCH_VERSION
 change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
 
+include-labels:
+  - helsemelding-message-converter
 categories:
   - title: '🚀 Features'
     labels:
@@ -22,6 +24,9 @@ categories:
     labels:
       - 'bump'
       - 'dependencies'
+  - title: '📝 Documentation'
+    labels:
+      - 'documentation'
   - title: "📝 Other"
     labels:
       - "*"
