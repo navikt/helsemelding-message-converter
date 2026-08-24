@@ -8,12 +8,18 @@ import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import no.nav.helse.dialogmelding.CV
+import no.nav.helse.dialogmelding.XMLDialogmelding
+import no.nav.helse.dialogmelding.XMLNotat
+import no.nav.helse.msgHead.XMLCS
 import no.nav.helse.msgHead.XMLConversationRef
+import no.nav.helse.msgHead.XMLDocument
 import no.nav.helse.msgHead.XMLIdent
 import no.nav.helse.msgHead.XMLMsgHead
 import no.nav.helse.msgHead.XMLMsgInfo
 import no.nav.helse.msgHead.XMLOrganisation
 import no.nav.helse.msgHead.XMLPatient
+import no.nav.helse.msgHead.XMLRefDoc
 import no.nav.helse.msgHead.XMLSender
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessage
@@ -186,4 +192,25 @@ private fun msgHead(
                 ident.add(XMLIdent().apply { id = patientId })
             }
         }
+        document.add(
+            XMLDocument().apply {
+                refDoc = XMLRefDoc().apply {
+                    msgType = XMLCS().apply { v = "XML" }
+                    content = XMLRefDoc.Content().apply {
+                        any.add(
+                            XMLDialogmelding().apply {
+                                notat.add(
+                                    XMLNotat().apply {
+                                        temaKodet = CV().apply {
+                                            v = "1"
+                                            s = "2.16.578.1.12.4.1.1.8128"
+                                        }
+                                    }
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+        )
     }

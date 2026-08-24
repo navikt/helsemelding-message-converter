@@ -24,7 +24,7 @@ class MsgHeadDialogMessageMapper {
             IncomingDialogMessage(
                 INCOMING_DIALOG_MESSAGE_VERSION,
                 msgHead.dialogId().bind(),
-                IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
+                msgHead.dialogMessageType().bind(),
                 msgHead.createdAt().bind(),
                 msgHead.patientId().bind(),
                 msgHead.sender().bind(),
@@ -40,6 +40,33 @@ class MsgHeadDialogMessageMapper {
             is InquiryMessage -> createInquiry(dialogMessage)
             is FollowUpPlanMessage -> createFollowUpPlan(dialogMessage)
         }
+    }
+
+    private fun XMLMsgHead.dialogMessageType(): Either<ConversionError, IncomingDialogMessageType> {
+        val temaKodet = document
+            .firstOrNull()
+            ?.refDoc
+            ?.content
+            ?.any
+            ?.firstOrNull()
+            ?.let { it as? XMLDialogmelding }
+            ?.let { dialogmelding ->
+                dialogmelding.notat.firstOrNull()?.temaKodet
+                    ?: dialogmelding.foresporsel.firstOrNull()?.typeForesp
+            }
+
+        val codeSystem = temaKodet?.s?.takeLast(4)?.toIntOrNull()
+        val code = temaKodet?.v?.toIntOrNull()
+
+        return IncomingDialogMessageType.entries
+            .firstOrNull { it.codeSystem == codeSystem && it.code == code }
+            ?.let { Either.Right(it) }
+            ?: Either.Left(
+                MappingError(
+                    message = "Unknown dialog message type: codeSystem=$codeSystem, code=$code",
+                    field = "document[0].refDoc.content.Dialogmelding.temaKodet"
+                )
+            )
     }
 
     private fun XMLMsgHead.dialogId(): Either<ConversionError, String> =

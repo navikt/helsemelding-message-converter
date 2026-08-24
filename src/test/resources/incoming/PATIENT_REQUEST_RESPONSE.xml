@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MsgHead xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd">
+  <MsgInfo>
+    <Type V="DIALOG_SVAR" DN="Svar på forespørsel" />
+    <MIGversion>v1.2 2006-05-24</MIGversion>
+    <GenDate>2025-10-10T10:02:36.2570969+02:00</GenDate>
+    <MsgId>f4afe2d3-2d00-40b3-95d0-0b537bf43637</MsgId>
+    <ConversationRef>
+      <RefToParent>72c7b6a8-3abf-4c1b-9780-eb6eda94447a</RefToParent>
+      <RefToConversation>72c7b6a8-3abf-4c1b-9780-eb6eda94447a</RefToConversation>
+    </ConversationRef>
+    <Sender>
+      <Organisation>
+        <OrganisationName>Nes Legesenter DA</OrganisationName>
+        <Ident>
+          <Id>959409587</Id>
+          <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregister (Brønnøysund)" />
+        </Ident>
+        <Ident>
+          <Id>1346</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" />
+        </Ident>
+        <Address>
+          <Type V="PST" DN="Postadresse" />
+          <StreetAdr>Hagaskogveien 17</StreetAdr>
+          <PostalCode>2150</PostalCode>
+          <City>ÅRNES</City>
+        </Address>
+        <TeleCom>
+          <TeleAddress V="mailto:test@testlegesenter.no" />
+        </TeleCom>
+        <TeleCom>
+          <TypeTelecom V="HP" DN="Hovedtelefon" />
+          <TeleAddress V="tel:11111111" />
+        </TeleCom>
+        <HealthcareProfessional>
+          <FamilyName>XXXXXX</FamilyName>
+          <GivenName>XXXX</GivenName>
+          <Ident>
+            <Id>1111</Id>
+            <TypeId V="HER" S="2.16.578.1.12.4.1.1.8116" DN="HER-id" />
+          </Ident>
+          <Ident>
+            <Id>1111111</Id>
+            <TypeId V="HPR" S="2.16.578.1.12.4.1.1.8116" DN="HPR-nummer" />
+          </Ident>
+          <Ident>
+            <Id>12345678910</Id>
+            <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
+          </Ident>
+          <TeleCom>
+            <TeleAddress V="mailto:testlege@testlegesenter.no" />
+          </TeleCom>
+          <TeleCom>
+            <TypeTelecom V="HP" DN="Hovedtelefon" />
+            <TeleAddress V="tel:11111111" />
+          </TeleCom>
+        </HealthcareProfessional>
+      </Organisation>
+    </Sender>
+    <Receiver>
+      <Organisation>
+        <OrganisationName>NAV</OrganisationName>
+        <Ident>
+          <Id>889640782</Id>
+          <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregister (Brønnøysund)" />
+        </Ident>
+        <Ident>
+          <Id>79768</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" />
+        </Ident>
+      </Organisation>
+    </Receiver>
+    <Patient>
+      <FamilyName>XXXXXXX</FamilyName>
+      <MiddleName></MiddleName>
+      <GivenName>XXXXXX</GivenName>
+      <DateOfBirth>10000-01-01</DateOfBirth>
+      <Sex V="1" DN="Mann" />
+      <Ident>
+        <Id>26076725771</Id>
+        <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
+      </Ident>
+      <Address>
+        <Type V="PST" DN="Postadresse" />
+        <StreetAdr>TESTVEIEN 1</StreetAdr>
+        <PostalCode>0001</PostalCode>
+        <City>TESTBY</City>
+        <County V="0000" DN="TESTKOMMUNE" />
+      </Address>
+      <TeleCom>
+        <TypeTelecom V="MC" DN="Mobiltelefon" />
+        <TeleAddress V="tel:99999999" />
+      </TeleCom>
+    </Patient>
+  </MsgInfo>
+  <Document>
+    <RefDoc>
+      <MsgType DN="XML-instans" V="XML" />
+      <Content>
+        <Dialogmelding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.kith.no/xmlstds/dialog/2006-10-11" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2006-10-11 dialogmelding.xsd">
+          <Notat>
+            <TemaKodet V="5" S="2.16.578.1.12.4.1.1.9069" DN="Svar på forespørsel" OT="Ingen" />
+            <TekstNotatInnhold xsi:type="xsd:string">Pasienten er henvist videre til DPS. Planlagt oppstart om 4-6 uker.</TekstNotatInnhold>
+            <DokIdNotat>OD2510106934724</DokIdNotat>
+            <Foresporsel>
+              <TypeForesp V="1" S="2.16.578.1.12.4.1.1.8129" DN="Forespørsel om pasient" />
+              <Sporsmal>Hei, kan du gi en oppdatering på behandlingsplanen? Med hilsen Nav Testkontor</Sporsmal>
+              <DokIdForesp>OD2510106934724</DokIdForesp>
+              <RollerRelatertNotat>
+                <RolleNotat V="1" S="2.16.578.1.12.4.1.1.9057" />
+                <Person>
+                  <GivenName>Silje</GivenName>
+                  <FamilyName>Nordmann</FamilyName>
+                </Person>
+              </RollerRelatertNotat>
+            </Foresporsel>
+          </Notat>
+        </Dialogmelding>
+      </Content>
+    </RefDoc>
+  </Document>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><DigestValue>nnFIVPqaI8Yo52Xt4t5h7NqH7I1AUfC2EQuK3Q1fVa8=</DigestValue></Reference></SignedInfo><SignatureValue>EXqujwsFZ+hoHxr92uMDKN4PMvh3bww/DV19p0dVxgQDrKat2i4RsB9AXoacSKT1tplLvqtvuw9dDWUFfWorm6Jm3QwI60ZgSQFnwWTSC0IjgDIMeENOMrprxmfawcjUTeFfGIhIxuIoyBzk+XZ37W5QmYoAXyQmgaIMqeHmk4xKsxds87uHpGy38SClAqslEN3aredrvnW5AuOqdXEixtuTKJIjOP3YeyHLsm+LseDigonOBhBRTdD7OhB7ZqGHqfCirCF0hrarRONLkj7X34N0gEb/tFJPAKcSoDBp3kzDhB7EJFrV7zBCXS8Uhb1J1Sfe0Bvbld9zCoFxzpCUoQ==</SignatureValue><KeyInfo><X509Data><X509Certificate>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</X509Certificate></X509Data></KeyInfo></Signature></MsgHead>

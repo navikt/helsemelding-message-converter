@@ -28,6 +28,7 @@ import kotlin.uuid.Uuid
 
 private const val XML_MESSAGE_WITH_ATTACHMENTS_PATH = "src/test/resources/message_with_attachments.xml"
 private const val XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH = "src/test/resources/message_without_attachments.xml"
+private const val XML_INCOMING_PATIENT_REQUEST_RESPONSE_PATH = "src/test/resources/incoming/PATIENT_REQUEST_RESPONSE.xml"
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
@@ -35,7 +36,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
         val serializer = XmlSerializer()
 
         "should convert MsgHead XML to DialogMessage JSON" {
-            val messageXml = Files.readString(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH))
+            val messageXml = Files.readString(Paths.get(XML_INCOMING_PATIENT_REQUEST_RESPONSE_PATH))
 
             val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
 
@@ -44,17 +45,20 @@ class MsgHeadMessageConverterSpec : StringSpec(
                     """
                     {
                       "version": 1,
-                      "id": "df978545-189c-4ad2-8479-d5271d69e0b6",
-                      "type": "SICK_LEAVE_FOLLOW_UP_INQUIRY",
-                      "receivedAt": "2026-05-29T13:13:28.967022541",
-                      "patientIdent": "31777207884",
+                      "id": "f4afe2d3-2d00-40b3-95d0-0b537bf43637",
+                      "type": "PATIENT_REQUEST_RESPONSE",
+                      "receivedAt": "2025-10-10T10:02:36.257096900",
+                      "patientIdent": "26076725771",
                       "sender": {
-                        "providerId": "8142520",
-                        "signingProviderId": "8142520"
+                        "providerId": "959409587",
+                        "signingProviderId": "1111"
                       },
-                      "conversationReference": null,
-                      "message": "Har du forslag til tilrettelegging på arbeidsplassen for den sykmeldte?",
-                      "numberOfAttachments": 3
+                      "conversationReference": {
+                        "parentMessageId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a",
+                        "conversationId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a"
+                      },
+                      "message": "",
+                      "numberOfAttachments": 0
                     }
                     """.trimIndent()
                 )
