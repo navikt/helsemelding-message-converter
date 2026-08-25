@@ -15,6 +15,7 @@ import no.nav.helsemelding.messageconverter.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.messageconverter.msghead.model.InquiryMessage
 import no.nav.helsemelding.messageconverter.msghead.model.MemoMessage
 import no.nav.helsemelding.messageconverter.msghead.model.OutgoingMessage
+import no.nav.helse.dialogmelding.CV as CodedValue
 
 private const val INCOMING_DIALOG_MESSAGE_VERSION = 1
 
@@ -43,30 +44,14 @@ class MsgHeadDialogMessageMapper {
     }
 
     private fun XMLMsgHead.dialogMessageType(): Either<ConversionError, IncomingDialogMessageType> {
-        val temaKodet = document
-            .firstOrNull()
-            ?.refDoc
-            ?.content
-            ?.any
-            ?.firstOrNull()
-            ?.let { it as? XMLDialogmelding }
-            ?.let { dialogmelding ->
-                dialogmelding.notat.firstOrNull()?.temaKodet
-                    ?: dialogmelding.foresporsel.firstOrNull()?.typeForesp
-            }
+        val messageTopic = dialogMessage()
+            ?.topic()
 
-        val codeSystem = temaKodet?.s?.takeLast(4)?.toIntOrNull()
-        val code = temaKodet?.v?.toIntOrNull()
+        val messageType = messageTopic?.toIncomingDialogMessageType()
 
-        return IncomingDialogMessageType.entries
-            .firstOrNull { it.codeSystem == codeSystem && it.code == code }
+        return messageType
             ?.let { Either.Right(it) }
-            ?: Either.Left(
-                MappingError(
-                    message = "Unknown dialog message type: codeSystem=$codeSystem, code=$code",
-                    field = "document[0].refDoc.content.Dialogmelding.temaKodet"
-                )
-            )
+            ?: Either.Left(unknownDialogMessageType(messageTopic))
     }
 
     private fun XMLMsgHead.dialogId(): Either<ConversionError, String> =
@@ -153,4 +138,41 @@ class MsgHeadDialogMessageMapper {
                 field = field
             )
         )
+
+    private fun <T : Any> T?.toRequiredNode(field: String): Either<ConversionError, T> =
+        this?.let { Either.Right(it) } ?: Either.Left(
+            MappingError(
+                message = "Missing required XML node: $field",
+                field = field
+            )
+        )
+
+    private fun XMLMsgHead.dialogMessage(): XMLDialogmelding? =
+        document
+            .firstOrNull()
+            ?.refDoc
+            ?.content
+            ?.any
+            ?.firstOrNull() as? XMLDialogmelding
+
+    private fun XMLDialogmelding.topic(): CodedValue? =
+        notat.firstOrNull()?.temaKodet ?: foresporsel.firstOrNull()?.typeForesp
+
+    private fun CodedValue.codeSystem(): Int? = s?.takeLast(4)?.toIntOrNull()
+
+    private fun CodedValue.code(): Int? = v?.toIntOrNull()
+
+    private fun CodedValue.toIncomingDialogMessageType(): IncomingDialogMessageType? =
+        IncomingDialogMessageType.entries
+            .firstOrNull { it.codeSystem == codeSystem() && it.code == code() }
+
+    private fun unknownDialogMessageType(messageTopic: CodedValue?): MappingError {
+        val codeSystem = messageTopic?.codeSystem()
+        val code = messageTopic?.code()
+
+        return MappingError(
+            message = "Unknown dialog message type: codeSystem=$codeSystem, code=$code",
+            field = "document[0].refDoc.content.Dialogmelding.temaKodet"
+        )
+    }
 }
