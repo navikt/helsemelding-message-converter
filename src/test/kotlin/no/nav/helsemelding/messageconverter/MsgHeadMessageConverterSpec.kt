@@ -77,7 +77,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
             XML_INCOMING_SICK_LEAVE_FOLLOW_UP_INQUIRY_PATH to "SICK_LEAVE_FOLLOW_UP_INQUIRY",
             XML_INCOMING_DECLINES_MEETING_WITH_REASON_PATH to "DECLINES_MEETING_WITH_REASON",
             XML_INCOMING_PATIENT_INQUIRY_PATH to "PATIENT_INQUIRY",
-            XML_INCOMING_REQUESTS_NEW_MEETING_TIME_PATH to "REQUESTS_NEW_MEETING_TIME",
+            XML_INCOMING_REQUESTS_NEW_MEETING_TIME_PATH to "REQUESTS_NEW_MEETING_TIME"
         ).forEach { (path, expectedType) ->
             "should resolve type $expectedType from incoming XML" {
                 val messageXml = Files.readString(Paths.get(path))
