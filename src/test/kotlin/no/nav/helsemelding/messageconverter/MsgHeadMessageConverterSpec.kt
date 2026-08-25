@@ -15,6 +15,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import no.nav.helsemelding.messageconverter.error.AdditionalMessageInfoError
 import no.nav.helsemelding.messageconverter.error.InvalidJson
 import no.nav.helsemelding.messageconverter.error.InvalidXml
+import no.nav.helsemelding.messageconverter.error.MappingError
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.model.AdditionalMessageInfo
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
@@ -36,6 +37,7 @@ private const val XML_INCOMING_SICK_LEAVE_FOLLOW_UP_INQUIRY_PATH = "src/test/res
 private const val XML_INCOMING_DECLINES_MEETING_WITH_REASON_PATH = "src/test/resources/incoming/DECLINES_MEETING_WITH_REASON.xml"
 private const val XML_INCOMING_PATIENT_INQUIRY_PATH = "src/test/resources/incoming/PATIENT_INQUIRY.xml"
 private const val XML_INCOMING_REQUESTS_NEW_MEETING_TIME_PATH = "src/test/resources/incoming/REQUESTS_NEW_MEETING_TIME.xml"
+private const val XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH = "src/test/resources/incoming/INCOMING_MESSAGE_INVALID_TEMAKODE.xml"
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
@@ -86,6 +88,14 @@ class MsgHeadMessageConverterSpec : StringSpec(
 
                 Json.parseToJsonElement(json).jsonObject["type"]?.jsonPrimitive?.content shouldBe expectedType
             }
+        }
+
+        "should return MappingError when TemaKodet attribute combination is unknown" {
+            val messageXml = Files.readString(Paths.get(XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH))
+
+            val error = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeLeft()
+
+            error.shouldBeInstanceOf<MappingError>()
         }
 
         "should return InvalidXml when MsgHead XML is malformed" {
