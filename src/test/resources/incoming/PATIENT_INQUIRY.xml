@@ -3,32 +3,29 @@
   <MsgInfo>
     <Type V="DIALOG_SVAR" DN="Svar på forespørsel" />
     <MIGversion>v1.2 2006-05-24</MIGversion>
-    <GenDate>2025-10-10T10:02:36.2570969+02:00</GenDate>
-    <MsgId>f4afe2d3-2d00-40b3-95d0-0b537bf43637</MsgId>
+    <GenDate>2025-03-01T11:06:34.6364029+01:00</GenDate>
+    <MsgId>0c6a887b-2bdb-4818-897b-5d7831374c72</MsgId>
     <ConversationRef>
-      <RefToParent>72c7b6a8-3abf-4c1b-9780-eb6eda94447a</RefToParent>
-      <RefToConversation>72c7b6a8-3abf-4c1b-9780-eb6eda94447a</RefToConversation>
+      <RefToParent>6de544ee-3e7f-4a39-a41a-a6da9f0a4b00</RefToParent>
+      <RefToConversation>5fae1fce-3400-4445-8e1f-f03323d2b84e</RefToConversation>
     </ConversationRef>
     <Sender>
       <Organisation>
-        <OrganisationName>Nes Legesenter DA</OrganisationName>
+        <OrganisationName>Hov Legesenter</OrganisationName>
         <Ident>
-          <Id>959409587</Id>
+          <Id>976642139</Id>
           <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregister (Brønnøysund)" />
         </Ident>
         <Ident>
-          <Id>1346</Id>
+          <Id>1985</Id>
           <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" />
         </Ident>
         <Address>
           <Type V="PST" DN="Postadresse" />
-          <StreetAdr>Hagaskogveien 17</StreetAdr>
-          <PostalCode>2150</PostalCode>
-          <City>ÅRNES</City>
+          <StreetAdr>Testveien 1</StreetAdr>
+          <PostalCode>0001</PostalCode>
+          <City>TESTBY</City>
         </Address>
-        <TeleCom>
-          <TeleAddress V="mailto:test@testlegesenter.no" />
-        </TeleCom>
         <TeleCom>
           <TypeTelecom V="HP" DN="Hovedtelefon" />
           <TeleAddress V="tel:11111111" />
@@ -37,20 +34,17 @@
           <FamilyName>Nordmann</FamilyName>
           <GivenName>Silje</GivenName>
           <Ident>
-            <Id>1111</Id>
+            <Id>2000</Id>
             <TypeId V="HER" S="2.16.578.1.12.4.1.1.8116" DN="HER-id" />
           </Ident>
           <Ident>
-            <Id>1111111</Id>
+            <Id>100000</Id>
             <TypeId V="HPR" S="2.16.578.1.12.4.1.1.8116" DN="HPR-nummer" />
           </Ident>
           <Ident>
             <Id>12345678910</Id>
             <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
           </Ident>
-          <TeleCom>
-            <TeleAddress V="mailto:testlege@testlegesenter.no" />
-          </TeleCom>
           <TeleCom>
             <TypeTelecom V="HP" DN="Hovedtelefon" />
             <TeleAddress V="tel:11111111" />
@@ -74,10 +68,10 @@
     <Patient>
       <FamilyName>Nilssen</FamilyName>
       <GivenName>Ole</GivenName>
-      <DateOfBirth>10000-01-01</DateOfBirth>
+      <DateOfBirth>1984-10-13</DateOfBirth>
       <Sex V="1" DN="Mann" />
       <Ident>
-        <Id>26076725771</Id>
+        <Id>12345678900</Id>
         <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
       </Ident>
       <Address>
@@ -99,21 +93,8 @@
       <Content>
         <Dialogmelding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.kith.no/xmlstds/dialog/2006-10-11" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2006-10-11 dialogmelding.xsd">
           <Notat>
-            <TemaKodet V="5" S="2.16.578.1.12.4.1.1.9069" DN="Svar på forespørsel" OT="Ingen" />
-            <TekstNotatInnhold xsi:type="xsd:string">Pasienten er henvist videre til DPS. Planlagt oppstart om 4-6 uker.</TekstNotatInnhold>
-            <DokIdNotat>OD2510106934724</DokIdNotat>
-            <Foresporsel>
-              <TypeForesp V="1" S="2.16.578.1.12.4.1.1.8129" DN="Forespørsel om pasient" />
-              <Sporsmal>Hei, kan du gi en oppdatering på behandlingsplanen? Med hilsen Nav Testkontor</Sporsmal>
-              <DokIdForesp>OD2510106934724</DokIdForesp>
-              <RollerRelatertNotat>
-                <RolleNotat V="1" S="2.16.578.1.12.4.1.1.9057" />
-                <Person>
-                  <GivenName>Silje</GivenName>
-                  <FamilyName>Nordmann</FamilyName>
-                </Person>
-              </RollerRelatertNotat>
-            </Foresporsel>
+            <TemaKodet V="2" S="2.16.578.1.12.4.1.1.8128" DN="Henvendelse om pasient" OT="Benyttes når henvendelsen gjelder en pasient som er sykmeldt, evt henvendelser knyttet til et tidligere sykefraværstilfelle." />
+            <TekstNotatInnhold xsi:type="xsd:string">Pasienten følges opp videre. Vennlig hilsen Silje Nordmann</TekstNotatInnhold>
           </Notat>
         </Dialogmelding>
       </Content>

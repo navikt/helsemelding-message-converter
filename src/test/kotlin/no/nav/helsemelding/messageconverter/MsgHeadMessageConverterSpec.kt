@@ -10,6 +10,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import no.nav.helsemelding.messageconverter.error.AdditionalMessageInfoError
 import no.nav.helsemelding.messageconverter.error.InvalidJson
 import no.nav.helsemelding.messageconverter.error.InvalidXml
@@ -29,6 +31,11 @@ import kotlin.uuid.Uuid
 private const val XML_MESSAGE_WITH_ATTACHMENTS_PATH = "src/test/resources/message_with_attachments.xml"
 private const val XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH = "src/test/resources/message_without_attachments.xml"
 private const val XML_INCOMING_PATIENT_REQUEST_RESPONSE_PATH = "src/test/resources/incoming/PATIENT_REQUEST_RESPONSE.xml"
+private const val XML_INCOMING_ACCEPTS_MEETING_INVITATION_PATH = "src/test/resources/incoming/ACCEPTS_MEETING_INVITATION.xml"
+private const val XML_INCOMING_SICK_LEAVE_FOLLOW_UP_INQUIRY_PATH = "src/test/resources/incoming/SICK_LEAVE_FOLLOW_UP_INQUIRY.xml"
+private const val XML_INCOMING_DECLINES_MEETING_WITH_REASON_PATH = "src/test/resources/incoming/DECLINES_MEETING_WITH_REASON.xml"
+private const val XML_INCOMING_PATIENT_INQUIRY_PATH = "src/test/resources/incoming/PATIENT_INQUIRY.xml"
+private const val XML_INCOMING_REQUESTS_NEW_MEETING_TIME_PATH = "src/test/resources/incoming/REQUESTS_NEW_MEETING_TIME.xml"
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
@@ -62,6 +69,23 @@ class MsgHeadMessageConverterSpec : StringSpec(
                     }
                     """.trimIndent()
                 )
+        }
+
+        listOf(
+            XML_INCOMING_PATIENT_REQUEST_RESPONSE_PATH to "PATIENT_REQUEST_RESPONSE",
+            XML_INCOMING_ACCEPTS_MEETING_INVITATION_PATH to "ACCEPTS_MEETING_INVITATION",
+            XML_INCOMING_SICK_LEAVE_FOLLOW_UP_INQUIRY_PATH to "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+            XML_INCOMING_DECLINES_MEETING_WITH_REASON_PATH to "DECLINES_MEETING_WITH_REASON",
+            XML_INCOMING_PATIENT_INQUIRY_PATH to "PATIENT_INQUIRY",
+            XML_INCOMING_REQUESTS_NEW_MEETING_TIME_PATH to "REQUESTS_NEW_MEETING_TIME",
+        ).forEach { (path, expectedType) ->
+            "should resolve type $expectedType from incoming XML" {
+                val messageXml = Files.readString(Paths.get(path))
+
+                val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
+
+                Json.parseToJsonElement(json).jsonObject["type"]?.jsonPrimitive?.content shouldBe expectedType
+            }
         }
 
         "should return InvalidXml when MsgHead XML is malformed" {
