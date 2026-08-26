@@ -3,6 +3,7 @@ package no.nav.helsemelding.messageconverter.msghead.mapper
 import arrow.core.Either
 import arrow.core.raise.either
 import no.nav.helse.dialogmelding.XMLDialogmelding
+import no.nav.helse.dialogmelding.XMLNotat
 import no.nav.helse.msgHead.XMLMsgHead
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessage
@@ -121,15 +122,14 @@ class MsgHeadDialogMessageMapper {
                 ?.any
                 ?.firstOrNull()
         ) {
-            is XMLDialogmelding -> content.sporsmal()
+            is XMLDialogmelding -> content.messageText()
             else -> ""
         }
 
-    private fun XMLDialogmelding.sporsmal(): String =
-        foresporsel
-            .firstOrNull()
-            ?.sporsmal
-            .orEmpty()
+    private fun XMLDialogmelding.messageText(): String =
+        notat.firstOrNull()?.tekstNotatInnhold
+            ?: foresporsel.firstOrNull()?.sporsmal
+            ?: ""
 
     private fun String?.toRequiredField(field: String): Either<ConversionError, String> =
         this?.let { Either.Right(it) } ?: Either.Left(
