@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "f4afe2d3-2d00-40b3-95d0-0b537bf43637",
+  "type": "PATIENT_REQUEST_RESPONSE",
+  "receivedAt": "2025-10-10T10:02:36.257096900",
+  "patientIdent": "26076725771",
+  "sender": {
+    "providerId": "959409587",
+    "signingProviderId": "1111"
+  },
+  "conversationReference": {
+    "parentMessageId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a",
+    "conversationId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a"
+  },
+  "message": "",
+  "numberOfAttachments": 0
+}

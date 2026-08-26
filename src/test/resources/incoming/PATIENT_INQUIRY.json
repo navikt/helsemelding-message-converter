@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "0c6a887b-2bdb-4818-897b-5d7831374c72",
+  "type": "PATIENT_INQUIRY",
+  "receivedAt": "2025-03-01T11:06:34.636402900",
+  "patientIdent": "12345678900",
+  "sender": {
+    "providerId": "976642139",
+    "signingProviderId": "2000"
+  },
+  "conversationReference": {
+    "parentMessageId": "6de544ee-3e7f-4a39-a41a-a6da9f0a4b00",
+    "conversationId": "5fae1fce-3400-4445-8e1f-f03323d2b84e"
+  },
+  "message": "",
+  "numberOfAttachments": 0
+}

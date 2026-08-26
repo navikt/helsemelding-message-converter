@@ -31,62 +31,48 @@ import kotlin.uuid.Uuid
 
 private const val XML_MESSAGE_WITH_ATTACHMENTS_PATH = "src/test/resources/message_with_attachments.xml"
 private const val XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH = "src/test/resources/message_without_attachments.xml"
-private const val XML_INCOMING_PATIENT_REQUEST_RESPONSE_PATH = "src/test/resources/incoming/PATIENT_REQUEST_RESPONSE.xml"
-private const val XML_INCOMING_ACCEPTS_MEETING_INVITATION_PATH = "src/test/resources/incoming/ACCEPTS_MEETING_INVITATION.xml"
-private const val XML_INCOMING_SICK_LEAVE_FOLLOW_UP_INQUIRY_PATH = "src/test/resources/incoming/SICK_LEAVE_FOLLOW_UP_INQUIRY.xml"
-private const val XML_INCOMING_DECLINES_MEETING_WITH_REASON_PATH = "src/test/resources/incoming/DECLINES_MEETING_WITH_REASON.xml"
-private const val XML_INCOMING_PATIENT_INQUIRY_PATH = "src/test/resources/incoming/PATIENT_INQUIRY.xml"
-private const val XML_INCOMING_REQUESTS_NEW_MEETING_TIME_PATH = "src/test/resources/incoming/REQUESTS_NEW_MEETING_TIME.xml"
 private const val XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH = "src/test/resources/incoming/INCOMING_MESSAGE_INVALID_TEMAKODE.xml"
+
+private fun incomingXmlPath(name: String) = "src/test/resources/incoming/$name.xml"
+private fun incomingJsonPath(name: String) = "src/test/resources/incoming/$name.json"
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
         val converter = msgHeadMessageConverter()
         val serializer = XmlSerializer()
 
-        "should convert MsgHead XML to DialogMessage JSON" {
-            val messageXml = Files.readString(Paths.get(XML_INCOMING_PATIENT_REQUEST_RESPONSE_PATH))
-
-            val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
-
-            Json.parseToJsonElement(json) shouldBe
-                Json.parseToJsonElement(
-                    """
-                    {
-                      "version": 1,
-                      "id": "f4afe2d3-2d00-40b3-95d0-0b537bf43637",
-                      "type": "PATIENT_REQUEST_RESPONSE",
-                      "receivedAt": "2025-10-10T10:02:36.257096900",
-                      "patientIdent": "26076725771",
-                      "sender": {
-                        "providerId": "959409587",
-                        "signingProviderId": "1111"
-                      },
-                      "conversationReference": {
-                        "parentMessageId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a",
-                        "conversationId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a"
-                      },
-                      "message": "",
-                      "numberOfAttachments": 0
-                    }
-                    """.trimIndent()
-                )
-        }
-
         listOf(
-            XML_INCOMING_PATIENT_REQUEST_RESPONSE_PATH to "PATIENT_REQUEST_RESPONSE",
-            XML_INCOMING_ACCEPTS_MEETING_INVITATION_PATH to "ACCEPTS_MEETING_INVITATION",
-            XML_INCOMING_SICK_LEAVE_FOLLOW_UP_INQUIRY_PATH to "SICK_LEAVE_FOLLOW_UP_INQUIRY",
-            XML_INCOMING_DECLINES_MEETING_WITH_REASON_PATH to "DECLINES_MEETING_WITH_REASON",
-            XML_INCOMING_PATIENT_INQUIRY_PATH to "PATIENT_INQUIRY",
-            XML_INCOMING_REQUESTS_NEW_MEETING_TIME_PATH to "REQUESTS_NEW_MEETING_TIME"
-        ).forEach { (path, expectedType) ->
-            "should resolve type $expectedType from incoming XML" {
-                val messageXml = Files.readString(Paths.get(path))
+            "PATIENT_REQUEST_RESPONSE",
+            "ACCEPTS_MEETING_INVITATION",
+            "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+            "DECLINES_MEETING_WITH_REASON",
+            "PATIENT_INQUIRY",
+            "REQUESTS_NEW_MEETING_TIME",
+        ).forEach { name ->
+            "should convert $name XML to DialogMessage JSON" {
+                val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
+                val expectedJson = Files.readString(Paths.get(incomingJsonPath(name)))
 
                 val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
 
-                Json.parseToJsonElement(json).jsonObject["type"]?.jsonPrimitive?.content shouldBe expectedType
+                Json.parseToJsonElement(json) shouldBe Json.parseToJsonElement(expectedJson)
+            }
+        }
+
+        listOf(
+            "PATIENT_REQUEST_RESPONSE",
+            "ACCEPTS_MEETING_INVITATION",
+            "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+            "DECLINES_MEETING_WITH_REASON",
+            "PATIENT_INQUIRY",
+            "REQUESTS_NEW_MEETING_TIME",
+        ).forEach { name ->
+            "should resolve type $name from incoming XML" {
+                val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
+
+                val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
+
+                Json.parseToJsonElement(json).jsonObject["type"]?.jsonPrimitive?.content shouldBe name
             }
         }
 
