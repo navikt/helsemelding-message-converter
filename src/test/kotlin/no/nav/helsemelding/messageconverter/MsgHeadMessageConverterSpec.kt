@@ -31,7 +31,7 @@ import kotlin.uuid.Uuid
 
 private const val XML_MESSAGE_WITH_ATTACHMENTS_PATH = "src/test/resources/message_with_attachments.xml"
 private const val XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH = "src/test/resources/message_without_attachments.xml"
-private const val XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH = "src/test/resources/incoming/INCOMING_MESSAGE_INVALID_TEMAKODE.xml"
+private const val XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH = "src/test/resources/incoming/invalid/INCOMING_MESSAGE_INVALID_TEMAKODE.xml"
 
 private fun incomingXmlPath(name: String) = "src/test/resources/incoming/$name.xml"
 private fun incomingJsonPath(name: String) = "src/test/resources/incoming/$name.json"
@@ -47,7 +47,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
             "SICK_LEAVE_FOLLOW_UP_INQUIRY",
             "DECLINES_MEETING_WITH_REASON",
             "PATIENT_INQUIRY",
-            "REQUESTS_NEW_MEETING_TIME",
+            "REQUESTS_NEW_MEETING_TIME"
         ).forEach { name ->
             "should convert $name XML to DialogMessage JSON" {
                 val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
@@ -65,7 +65,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
             "SICK_LEAVE_FOLLOW_UP_INQUIRY",
             "DECLINES_MEETING_WITH_REASON",
             "PATIENT_INQUIRY",
-            "REQUESTS_NEW_MEETING_TIME",
+            "REQUESTS_NEW_MEETING_TIME"
         ).forEach { name ->
             "should resolve type $name from incoming XML" {
                 val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
