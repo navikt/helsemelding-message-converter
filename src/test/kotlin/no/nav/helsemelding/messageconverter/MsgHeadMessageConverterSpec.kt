@@ -9,6 +9,7 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
+import io.kotest.datatest.withData
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -41,39 +42,41 @@ class MsgHeadMessageConverterSpec : StringSpec(
         val converter = msgHeadMessageConverter()
         val serializer = XmlSerializer()
 
-        listOf(
-            "PATIENT_REQUEST_RESPONSE",
-            "ACCEPTS_MEETING_INVITATION",
-            "SICK_LEAVE_FOLLOW_UP_INQUIRY",
-            "DECLINES_MEETING_WITH_REASON",
-            "PATIENT_INQUIRY",
-            "REQUESTS_NEW_MEETING_TIME"
-        ).forEach { name ->
-            "should convert $name XML to DialogMessage JSON" {
-                val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
-                val expectedJson = Files.readString(Paths.get(incomingJsonPath(name)))
+        withData(
+            nameFn = { "should convert $it XML to DialogMessage JSON" },
+            listOf(
+                "PATIENT_REQUEST_RESPONSE",
+                "ACCEPTS_MEETING_INVITATION",
+                "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+                "DECLINES_MEETING_WITH_REASON",
+                "PATIENT_INQUIRY",
+                "REQUESTS_NEW_MEETING_TIME"
+            )
+        ) { name ->
+            val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
+            val expectedJson = Files.readString(Paths.get(incomingJsonPath(name)))
 
-                val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
+            val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
 
-                Json.parseToJsonElement(json) shouldBe Json.parseToJsonElement(expectedJson)
-            }
+            Json.parseToJsonElement(json) shouldBe Json.parseToJsonElement(expectedJson)
         }
 
-        listOf(
-            "PATIENT_REQUEST_RESPONSE",
-            "ACCEPTS_MEETING_INVITATION",
-            "SICK_LEAVE_FOLLOW_UP_INQUIRY",
-            "DECLINES_MEETING_WITH_REASON",
-            "PATIENT_INQUIRY",
-            "REQUESTS_NEW_MEETING_TIME"
-        ).forEach { name ->
-            "should resolve type $name from incoming XML" {
-                val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
+        withData(
+            nameFn = { "should resolve type $it from incoming XML" },
+            listOf(
+                "PATIENT_REQUEST_RESPONSE",
+                "ACCEPTS_MEETING_INVITATION",
+                "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+                "DECLINES_MEETING_WITH_REASON",
+                "PATIENT_INQUIRY",
+                "REQUESTS_NEW_MEETING_TIME"
+            )
+        ) { name ->
+            val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
 
-                val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
+            val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
 
-                Json.parseToJsonElement(json).jsonObject["type"]?.jsonPrimitive?.content shouldBe name
-            }
+            Json.parseToJsonElement(json).jsonObject["type"]?.jsonPrimitive?.content shouldBe name
         }
 
         "should return MappingError when TemaKodet attribute combination is unknown" {
