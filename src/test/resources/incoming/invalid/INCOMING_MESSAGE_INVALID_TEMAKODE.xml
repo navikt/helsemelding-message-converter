@@ -6,8 +6,8 @@
     <GenDate>2025-03-01T11:06:34.6364029+01:00</GenDate>
     <MsgId>0c6a887b-2bdb-4818-897b-5d7831374c72</MsgId>
     <ConversationRef>
-      <RefToParent>6de544ee-3e7f-4a39-a41a-a6da9f0a4b00</RefToParent>
-      <RefToConversation>5fae1fce-3400-4445-8e1f-f03323d2b84e</RefToConversation>
+      <RefToParent>0c6a887b-2bdb-4818-897b-5d7831374c72</RefToParent>
+      <RefToConversation>0c6a887b-2bdb-4818-897b-5d7831374c72</RefToConversation>
     </ConversationRef>
     <Sender>
       <Organisation>
@@ -95,6 +95,8 @@
           <Notat>
             <TemaKodet V="9" S="2.16.578.1.12.4.1.1.8128" DN="Henvendelse om pasient" OT="Benyttes når henvendelsen gjelder en pasient som er sykmeldt, evt henvendelser knyttet til et tidligere sykefraværstilfelle." />
             <TekstNotatInnhold xsi:type="xsd:string">Pasienten følges opp videre. Vennlig hilsen Silje Nordmann</TekstNotatInnhold>
+            <DokIdNotat>0c6a887b-2bdb-4818-897b-5d7831374c72</DokIdNotat>
+            <DatoNotat>2025-03-01</DatoNotat>
           </Notat>
         </Dialogmelding>
       </Content>
