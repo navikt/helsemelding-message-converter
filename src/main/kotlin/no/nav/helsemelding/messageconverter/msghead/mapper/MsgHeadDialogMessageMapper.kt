@@ -3,11 +3,11 @@ package no.nav.helsemelding.messageconverter.msghead.mapper
 import arrow.core.Either
 import arrow.core.raise.either
 import no.nav.helse.dialogmelding.XMLDialogmelding
-import no.nav.helse.dialogmelding.XMLNotat
 import no.nav.helse.msgHead.XMLMsgHead
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessageType
+import no.nav.helsemelding.jsonschema.core.model.IncomingType
 import no.nav.helsemelding.jsonschema.core.model.Sender
 import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.error.MappingError
@@ -44,16 +44,19 @@ class MsgHeadDialogMessageMapper {
         }
     }
 
-    private fun XMLMsgHead.dialogMessageType(): Either<ConversionError, IncomingDialogMessageType> {
-        val messageTopic = dialogMessage()
-            ?.topic()
+    private fun XMLMsgHead.dialogMessageType(): Either<ConversionError, IncomingDialogMessageType> =
+        either {
+            val incomingType = msgInfo?.type?.v
+                .toRequiredField("msgInfo.type.v").bind()
+                .toIncomingType().bind()
 
-        val messageType = messageTopic?.toIncomingDialogMessageType()
+            val messageTopic = dialogMessage()
+                ?.topic()
 
-        return messageType
-            ?.let { Either.Right(it) }
-            ?: Either.Left(unknownDialogMessageType(messageTopic))
-    }
+            messageTopic
+                ?.toIncomingDialogMessageType(incomingType)
+                ?: raise(unknownDialogMessageType(messageTopic))
+        }
 
     private fun XMLMsgHead.dialogId(): Either<ConversionError, String> =
         msgInfo?.msgId.toRequiredField("msgInfo.msgId")
@@ -139,14 +142,6 @@ class MsgHeadDialogMessageMapper {
             )
         )
 
-    private fun <T : Any> T?.toRequiredNode(field: String): Either<ConversionError, T> =
-        this?.let { Either.Right(it) } ?: Either.Left(
-            MappingError(
-                message = "Missing required XML node: $field",
-                field = field
-            )
-        )
-
     private fun XMLMsgHead.dialogMessage(): XMLDialogmelding? =
         document
             .firstOrNull()
@@ -162,9 +157,15 @@ class MsgHeadDialogMessageMapper {
 
     private fun CodedValue.code(): Int? = v?.toIntOrNull()
 
-    private fun CodedValue.toIncomingDialogMessageType(): IncomingDialogMessageType? =
+    private fun CodedValue.toIncomingDialogMessageType(incomingType: IncomingType): IncomingDialogMessageType? =
         IncomingDialogMessageType.entries
-            .firstOrNull { it.codeSystem == codeSystem() && it.code == code() }
+            .firstOrNull { it.codeSystem == codeSystem() && it.code == code() && it.messageType == incomingType }
+
+    private fun String.toIncomingType(): Either<ConversionError, IncomingType> = when (this) {
+        "DIALOG_NOTAT" -> Either.Right(IncomingType.DIALOG_NOTE)
+        "DIALOG_SVAR" -> Either.Right(IncomingType.DIALOG_RESPONSE)
+        else -> Either.Left(MappingError(message = "Unknown message type: $this", field = "msgInfo.type.v"))
+    }
 
     private fun unknownDialogMessageType(messageTopic: CodedValue?): MappingError {
         val codeSystem = messageTopic?.codeSystem()

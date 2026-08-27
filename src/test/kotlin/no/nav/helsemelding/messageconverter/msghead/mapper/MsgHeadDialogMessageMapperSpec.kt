@@ -173,12 +173,14 @@ private fun msgHead(
     msgId: String,
     genDate: LocalDateTime,
     patientId: String,
-    providerId: String
+    providerId: String,
+    typeV: String = "DIALOG_NOTAT"
 ): XMLMsgHead =
     XMLMsgHead().apply {
         msgInfo = XMLMsgInfo().apply {
             this.msgId = msgId
             this.genDate = genDate
+            type = XMLCS().apply { v = typeV }
             sender = XMLSender().apply {
                 organisation = XMLOrganisation().apply {
                     ident.add(XMLIdent().apply { id = providerId })
