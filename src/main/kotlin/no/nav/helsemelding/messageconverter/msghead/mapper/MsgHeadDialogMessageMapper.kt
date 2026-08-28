@@ -132,9 +132,7 @@ class MsgHeadDialogMessageMapper {
         }
 
     private fun XMLDialogmelding.messageText(): String =
-        notat.firstOrNull()?.tekstNotatInnhold
-            ?: foresporsel.firstOrNull()?.sporsmal
-            ?: ""
+        notat.firstOrNull()?.tekstNotatInnhold ?: ""
 
     private fun String?.toRequiredField(field: String): Either<ConversionError, String> =
         this?.let { Either.Right(it) } ?: Either.Left(
