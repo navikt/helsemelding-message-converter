@@ -5,14 +5,18 @@ import arrow.core.getOrElse
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import no.nav.helsemelding.messageconverter.error.AdditionalMessageInfoError
 import no.nav.helsemelding.messageconverter.error.InvalidJson
 import no.nav.helsemelding.messageconverter.error.InvalidXml
+import no.nav.helsemelding.messageconverter.error.MappingError
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.model.AdditionalMessageInfo
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
@@ -28,36 +32,59 @@ import kotlin.uuid.Uuid
 
 private const val XML_MESSAGE_WITH_ATTACHMENTS_PATH = "src/test/resources/message_with_attachments.xml"
 private const val XML_MESSAGE_WITHOUT_ATTACHMENTS_PATH = "src/test/resources/message_without_attachments.xml"
+private const val XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH = "src/test/resources/incoming/invalid/INCOMING_MESSAGE_INVALID_TEMAKODE.xml"
+
+private fun incomingXmlPath(name: String) = "src/test/resources/incoming/$name.xml"
+private fun incomingJsonPath(name: String) = "src/test/resources/incoming/$name.json"
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
         val converter = msgHeadMessageConverter()
         val serializer = XmlSerializer()
 
-        "should convert MsgHead XML to DialogMessage JSON" {
-            val messageXml = Files.readString(Paths.get(XML_MESSAGE_WITH_ATTACHMENTS_PATH))
+        withData(
+            nameFn = { "should convert $it XML to DialogMessage JSON" },
+            listOf(
+                "PATIENT_REQUEST_RESPONSE",
+                "ACCEPTS_MEETING_INVITATION",
+                "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+                "DECLINES_MEETING_WITH_REASON",
+                "PATIENT_INQUIRY",
+                "REQUESTS_NEW_MEETING_TIME"
+            )
+        ) { name ->
+            val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
+            val expectedJson = Files.readString(Paths.get(incomingJsonPath(name)))
 
             val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
 
-            Json.parseToJsonElement(json) shouldBe
-                Json.parseToJsonElement(
-                    """
-                    {
-                      "version": 1,
-                      "id": "df978545-189c-4ad2-8479-d5271d69e0b6",
-                      "type": "SICK_LEAVE_FOLLOW_UP_INQUIRY",
-                      "receivedAt": "2026-05-29T13:13:28.967022541",
-                      "patientIdent": "31777207884",
-                      "sender": {
-                        "providerId": "8142520",
-                        "signingProviderId": "8142520"
-                      },
-                      "conversationReference": null,
-                      "message": "Har du forslag til tilrettelegging på arbeidsplassen for den sykmeldte?",
-                      "numberOfAttachments": 3
-                    }
-                    """.trimIndent()
-                )
+            Json.parseToJsonElement(json) shouldBe Json.parseToJsonElement(expectedJson)
+        }
+
+        withData(
+            nameFn = { "should resolve type $it from incoming XML" },
+            listOf(
+                "PATIENT_REQUEST_RESPONSE",
+                "ACCEPTS_MEETING_INVITATION",
+                "SICK_LEAVE_FOLLOW_UP_INQUIRY",
+                "DECLINES_MEETING_WITH_REASON",
+                "PATIENT_INQUIRY",
+                "REQUESTS_NEW_MEETING_TIME"
+            )
+        ) { name ->
+            val messageXml = Files.readString(Paths.get(incomingXmlPath(name)))
+
+            val json = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeRight()
+
+            Json.parseToJsonElement(json).jsonObject["type"]?.jsonPrimitive?.content shouldBe name
+        }
+
+        "should return MappingError when TemaKodet attribute combination is unknown" {
+            val messageXml = Files.readString(Paths.get(XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH))
+
+            val error = converter.incomingDialogMessageXmlToJson(messageXml).shouldBeLeft()
+
+            error.shouldBeInstanceOf<MappingError>()
         }
 
         "should return InvalidXml when MsgHead XML is malformed" {

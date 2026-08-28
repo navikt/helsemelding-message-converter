@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MsgHead xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd">
+  <MsgInfo>
+    <Type V="DIALOG_SVAR" DN="Svar på forespørsel" />
+    <MIGversion>v1.2 2006-05-24</MIGversion>
+    <GenDate>2025-10-01T13:12:51.1497131+02:00</GenDate>
+    <MsgId>225cb1d0-eaf3-4157-aa81-26aebc89db79</MsgId>
+    <ConversationRef>
+      <RefToParent>6fcc6369-c376-4ed7-a25a-60b55f5e1249</RefToParent>
+      <RefToConversation>6fcc6369-c376-4ed7-a25a-60b55f5e1249</RefToConversation>
+    </ConversationRef>
+    <Sender>
+      <Organisation>
+        <OrganisationName>XXXXX Allmennpraksis DA</OrganisationName>
+        <Ident>
+          <Id>983680755</Id>
+          <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregister (Brønnøysund)" />
+        </Ident>
+        <Ident>
+          <Id>1892</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" />
+        </Ident>
+        <Address>
+          <Type V="PST" DN="Postadresse" />
+          <StreetAdr>Testveien 1</StreetAdr>
+          <PostalCode>0001</PostalCode>
+          <City>TESTBY</City>
+        </Address>
+        <TeleCom>
+          <TeleAddress V="mailto:test@testlegesenter.no" />
+        </TeleCom>
+        <TeleCom>
+          <TypeTelecom V="HP" DN="Hovedtelefon" />
+          <TeleAddress V="tel:11111111" />
+        </TeleCom>
+        <HealthcareProfessional>
+          <FamilyName>Nordmann</FamilyName>
+          <GivenName>Silje</GivenName>
+          <Ident>
+            <Id>100000</Id>
+            <TypeId V="HER" S="2.16.578.1.12.4.1.1.8116" DN="HER-id" />
+          </Ident>
+          <Ident>
+            <Id>2000000</Id>
+            <TypeId V="HPR" S="2.16.578.1.12.4.1.1.8116" DN="HPR-nummer" />
+          </Ident>
+          <Ident>
+            <Id>12345678910</Id>
+            <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
+          </Ident>
+          <TeleCom>
+            <TeleAddress V="mailto:testlege@testlegesenter.no" />
+          </TeleCom>
+          <TeleCom>
+            <TypeTelecom V="HP" DN="Hovedtelefon" />
+            <TeleAddress V="tel:11111111" />
+          </TeleCom>
+        </HealthcareProfessional>
+      </Organisation>
+    </Sender>
+    <Receiver>
+      <Organisation>
+        <OrganisationName>NAV</OrganisationName>
+        <Ident>
+          <Id>889640782</Id>
+          <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregister (Brønnøysund)" />
+        </Ident>
+        <Ident>
+          <Id>79768</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" />
+        </Ident>
+      </Organisation>
+    </Receiver>
+    <Patient>
+      <FamilyName>Nilssen</FamilyName>
+      <GivenName>Ole</GivenName>
+      <DateOfBirth>1986-07-21</DateOfBirth>
+      <Sex V="2" DN="Kvinne" />
+      <Ident>
+        <Id>12345678910</Id>
+        <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
+      </Ident>
+      <Address>
+        <Type V="PST" DN="Postadresse" />
+        <StreetAdr>TESTVEIEN 1</StreetAdr>
+        <PostalCode>0001</PostalCode>
+        <City>TESTBY</City>
+        <County V="0000" DN="TESTKOMMUNE" />
+      </Address>
+      <TeleCom>
+        <TypeTelecom V="MC" DN="Mobiltelefon" />
+        <TeleAddress V="tel:99999999" />
+      </TeleCom>
+    </Patient>
+  </MsgInfo>
+  <Document>
+    <RefDoc>
+      <MsgType DN="XML-instans" V="XML" />
+      <Content>
+        <Dialogmelding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.kith.no/xmlstds/dialog/2006-10-11" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2006-10-11 dialogmelding.xsd">
+          <Notat>
+            <TemaKodet V="2" S="2.16.578.1.12.4.1.1.8126" DN="Jeg ønsker nytt møtetidspunkt" OT="med valgfritt fritekstsvar" />
+            <TekstNotatInnhold xsi:type="xsd:string">Jeg ønsker nytt møtetidspunkt.</TekstNotatInnhold>
+            <DokIdNotat>37709873-7e89-4bfb-bb46-b4a29292f9f8</DokIdNotat>
+            <Foresporsel>
+              <TypeForesp V="1" S="2.16.578.1.12.4.1.1.8125" DN="Innkalling dialogmøte 2" />
+              <Sporsmal>Kan du stille til møtet?</Sporsmal>
+              <DokIdForesp>37709873-7e89-4bfb-bb46-b4a29292f9f8</DokIdForesp>
+            </Foresporsel>
+          </Notat>
+        </Dialogmelding>
+      </Content>
+    </RefDoc>
+  </Document>
+</MsgHead>

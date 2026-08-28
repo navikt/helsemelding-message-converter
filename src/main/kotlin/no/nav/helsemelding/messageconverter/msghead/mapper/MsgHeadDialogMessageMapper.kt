@@ -7,14 +7,18 @@ import no.nav.helse.msgHead.XMLMsgHead
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessageType
+import no.nav.helsemelding.jsonschema.core.model.IncomingType
 import no.nav.helsemelding.jsonschema.core.model.Sender
 import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.error.MappingError
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_NOTE
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_RESPONSE
 import no.nav.helsemelding.messageconverter.msghead.extractAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.messageconverter.msghead.model.InquiryMessage
 import no.nav.helsemelding.messageconverter.msghead.model.MemoMessage
 import no.nav.helsemelding.messageconverter.msghead.model.OutgoingMessage
+import no.nav.helse.dialogmelding.CV as CodedValue
 
 private const val INCOMING_DIALOG_MESSAGE_VERSION = 1
 
@@ -24,7 +28,7 @@ class MsgHeadDialogMessageMapper {
             IncomingDialogMessage(
                 INCOMING_DIALOG_MESSAGE_VERSION,
                 msgHead.dialogId().bind(),
-                IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
+                msgHead.dialogMessageType().bind(),
                 msgHead.createdAt().bind(),
                 msgHead.patientId().bind(),
                 msgHead.sender().bind(),
@@ -41,6 +45,20 @@ class MsgHeadDialogMessageMapper {
             is FollowUpPlanMessage -> createFollowUpPlan(dialogMessage)
         }
     }
+
+    private fun XMLMsgHead.dialogMessageType(): Either<ConversionError, IncomingDialogMessageType> =
+        either {
+            val incomingType = msgInfo?.type?.v
+                .toRequiredField("msgInfo.type.v").bind()
+                .toIncomingType().bind()
+
+            val messageTopic = dialogMessage()
+                ?.topic()
+
+            messageTopic
+                ?.toIncomingDialogMessageType(incomingType)
+                ?: raise(unknownDialogMessageType(messageTopic))
+        }
 
     private fun XMLMsgHead.dialogId(): Either<ConversionError, String> =
         msgInfo?.msgId.toRequiredField("msgInfo.msgId")
@@ -109,15 +127,12 @@ class MsgHeadDialogMessageMapper {
                 ?.any
                 ?.firstOrNull()
         ) {
-            is XMLDialogmelding -> content.sporsmal()
+            is XMLDialogmelding -> content.messageText()
             else -> ""
         }
 
-    private fun XMLDialogmelding.sporsmal(): String =
-        foresporsel
-            .firstOrNull()
-            ?.sporsmal
-            .orEmpty()
+    private fun XMLDialogmelding.messageText(): String =
+        notat.firstOrNull()?.tekstNotatInnhold ?: ""
 
     private fun String?.toRequiredField(field: String): Either<ConversionError, String> =
         this?.let { Either.Right(it) } ?: Either.Left(
@@ -126,4 +141,39 @@ class MsgHeadDialogMessageMapper {
                 field = field
             )
         )
+
+    private fun XMLMsgHead.dialogMessage(): XMLDialogmelding? =
+        document
+            .firstOrNull()
+            ?.refDoc
+            ?.content
+            ?.any
+            ?.firstOrNull() as? XMLDialogmelding
+
+    private fun XMLDialogmelding.topic(): CodedValue? =
+        notat.firstOrNull()?.temaKodet ?: foresporsel.firstOrNull()?.typeForesp
+
+    private fun CodedValue.codeSystem(): Int? = s?.takeLast(4)?.toIntOrNull()
+
+    private fun CodedValue.code(): Int? = v?.toIntOrNull()
+
+    private fun CodedValue.toIncomingDialogMessageType(incomingType: IncomingType): IncomingDialogMessageType? =
+        IncomingDialogMessageType.entries
+            .firstOrNull { it.codeSystem == codeSystem() && it.code == code() && it.messageType == incomingType }
+
+    private fun String.toIncomingType(): Either<ConversionError, IncomingType> = when (this) {
+        MSG_TYPE_DIALOG_NOTE -> Either.Right(IncomingType.DIALOG_NOTE)
+        MSG_TYPE_DIALOG_RESPONSE -> Either.Right(IncomingType.DIALOG_RESPONSE)
+        else -> Either.Left(MappingError(message = "Unknown message type: $this", field = "msgInfo.type.v"))
+    }
+
+    private fun unknownDialogMessageType(messageTopic: CodedValue?): MappingError {
+        val codeSystem = messageTopic?.codeSystem()
+        val code = messageTopic?.code()
+
+        return MappingError(
+            message = "Unknown dialog message type: codeSystem=$codeSystem, code=$code",
+            field = "document[0].refDoc.content.Dialogmelding.temaKodet"
+        )
+    }
 }

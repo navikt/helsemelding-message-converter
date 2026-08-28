@@ -29,6 +29,8 @@ import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_NOTE
 import no.nav.helsemelding.jsonschema.core.model.OutgoingType.DIALOG_REQUEST
 import no.nav.helsemelding.messageconverter.error.AttachmentError
 import no.nav.helsemelding.messageconverter.error.ConversionError
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_NOTE
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_REQUEST
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
 import no.nav.helsemelding.messageconverter.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.messageconverter.msghead.model.InquiryMessage
@@ -73,12 +75,12 @@ internal fun createType(outgoingDialogMessageType: OutgoingDialogMessageType): X
     return when (outgoingDialogMessageType.messageType) {
         DIALOG_REQUEST -> XMLCS().apply {
             dn = "Forespørsel"
-            v = "DIALOG_FORESPORSEL"
+            v = MSG_TYPE_DIALOG_REQUEST
         }
 
         DIALOG_NOTE -> XMLCS().apply {
             dn = "Notat"
-            v = "DIALOG_NOTAT"
+            v = MSG_TYPE_DIALOG_NOTE
         }
     }
 }

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "225cb1d0-eaf3-4157-aa81-26aebc89db79",
+  "type": "REQUESTS_NEW_MEETING_TIME",
+  "receivedAt": "2025-10-01T13:12:51.149713100",
+  "patientIdent": "12345678910",
+  "sender": {
+    "providerId": "983680755",
+    "signingProviderId": "100000"
+  },
+  "conversationReference": {
+    "parentMessageId": "6fcc6369-c376-4ed7-a25a-60b55f5e1249",
+    "conversationId": "6fcc6369-c376-4ed7-a25a-60b55f5e1249"
+  },
+  "message": "Jeg ønsker nytt møtetidspunkt.",
+  "numberOfAttachments": 0
+}

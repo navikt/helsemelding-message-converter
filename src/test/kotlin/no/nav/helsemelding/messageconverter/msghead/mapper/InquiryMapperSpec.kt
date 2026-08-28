@@ -10,6 +10,7 @@ import no.nav.helse.dialogmelding.XMLDialogmelding
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.messageconverter.createProvider
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_REQUEST
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
 import no.nav.helsemelding.messageconverter.msghead.model.InquiryMessage
 import no.nav.helsemelding.messageconverter.msghead.model.Personident
@@ -23,7 +24,7 @@ class InquiryMapperSpec : StringSpec(
 
             val msgHead = createInquiry(message).shouldBeRight()
 
-            msgHead.msgInfo.type.v shouldBe "DIALOG_FORESPORSEL"
+            msgHead.msgInfo.type.v shouldBe MSG_TYPE_DIALOG_REQUEST
             msgHead.msgInfo.type.dn shouldBe "Forespørsel"
             msgHead.msgInfo.conversationRef.refToParent shouldBe "parent-1"
             msgHead.msgInfo.conversationRef.refToConversation shouldBe "conversation-1"

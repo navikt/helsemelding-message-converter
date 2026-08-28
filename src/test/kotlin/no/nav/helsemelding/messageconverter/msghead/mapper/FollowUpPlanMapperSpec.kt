@@ -12,6 +12,7 @@ import no.nav.helse.dialogmelding.XMLDialogmelding
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.messageconverter.createProvider
 import no.nav.helsemelding.messageconverter.error.AttachmentError
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_NOTE
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
 import no.nav.helsemelding.messageconverter.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.messageconverter.msghead.model.Personident
@@ -25,7 +26,7 @@ class FollowUpPlanMapperSpec : StringSpec(
 
             val msgHead = createFollowUpPlan(message).shouldBeRight()
 
-            msgHead.msgInfo.type.v shouldBe "DIALOG_NOTAT"
+            msgHead.msgInfo.type.v shouldBe MSG_TYPE_DIALOG_NOTE
             msgHead.msgInfo.type.dn shouldBe "Notat"
             msgHead.msgInfo.conversationRef shouldBe null
             msgHead.msgInfo.receiver.organisation.healthcareProfessional.roleToPatient.v shouldBe "6"

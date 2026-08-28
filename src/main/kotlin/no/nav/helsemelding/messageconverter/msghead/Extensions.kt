@@ -10,6 +10,9 @@ import no.nav.helsemelding.messageconverter.model.Attachment
 import java.util.Base64
 
 const val ATTACHMENT_TYPE = "A"
+const val MSG_TYPE_DIALOG_NOTE = "DIALOG_NOTAT"
+const val MSG_TYPE_DIALOG_RESPONSE = "DIALOG_SVAR"
+const val MSG_TYPE_DIALOG_REQUEST = "DIALOG_FORESPORSEL"
 
 private val acceptedMimeTypes = listOf(
     "application/pdf",

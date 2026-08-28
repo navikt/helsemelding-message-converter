@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MsgHead xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd">
+  <MsgInfo>
+    <Type V="DIALOG_SVAR" DN="Svar på forespørsel" />
+    <MIGversion>v1.2 2006-05-24</MIGversion>
+    <GenDate>2025-10-10T10:02:36.2570969+02:00</GenDate>
+    <MsgId>f4afe2d3-2d00-40b3-95d0-0b537bf43637</MsgId>
+    <ConversationRef>
+      <RefToParent>72c7b6a8-3abf-4c1b-9780-eb6eda94447a</RefToParent>
+      <RefToConversation>72c7b6a8-3abf-4c1b-9780-eb6eda94447a</RefToConversation>
+    </ConversationRef>
+    <Sender>
+      <Organisation>
+        <OrganisationName>Nes Legesenter DA</OrganisationName>
+        <Ident>
+          <Id>959409587</Id>
+          <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregister (Brønnøysund)" />
+        </Ident>
+        <Ident>
+          <Id>1346</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" />
+        </Ident>
+        <Address>
+          <Type V="PST" DN="Postadresse" />
+          <StreetAdr>Hagaskogveien 17</StreetAdr>
+          <PostalCode>2150</PostalCode>
+          <City>ÅRNES</City>
+        </Address>
+        <TeleCom>
+          <TeleAddress V="mailto:test@testlegesenter.no" />
+        </TeleCom>
+        <TeleCom>
+          <TypeTelecom V="HP" DN="Hovedtelefon" />
+          <TeleAddress V="tel:11111111" />
+        </TeleCom>
+        <HealthcareProfessional>
+          <FamilyName>Nordmann</FamilyName>
+          <GivenName>Silje</GivenName>
+          <Ident>
+            <Id>1111</Id>
+            <TypeId V="HER" S="2.16.578.1.12.4.1.1.8116" DN="HER-id" />
+          </Ident>
+          <Ident>
+            <Id>1111111</Id>
+            <TypeId V="HPR" S="2.16.578.1.12.4.1.1.8116" DN="HPR-nummer" />
+          </Ident>
+          <Ident>
+            <Id>12345678910</Id>
+            <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
+          </Ident>
+          <TeleCom>
+            <TeleAddress V="mailto:testlege@testlegesenter.no" />
+          </TeleCom>
+          <TeleCom>
+            <TypeTelecom V="HP" DN="Hovedtelefon" />
+            <TeleAddress V="tel:11111111" />
+          </TeleCom>
+        </HealthcareProfessional>
+      </Organisation>
+    </Sender>
+    <Receiver>
+      <Organisation>
+        <OrganisationName>NAV</OrganisationName>
+        <Ident>
+          <Id>889640782</Id>
+          <TypeId V="ENH" S="2.16.578.1.12.4.1.1.9051" DN="Organisasjonsnummeret i Enhetsregister (Brønnøysund)" />
+        </Ident>
+        <Ident>
+          <Id>79768</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" />
+        </Ident>
+      </Organisation>
+    </Receiver>
+    <Patient>
+      <FamilyName>Nilssen</FamilyName>
+      <GivenName>Ole</GivenName>
+      <DateOfBirth>10000-01-01</DateOfBirth>
+      <Sex V="1" DN="Mann" />
+      <Ident>
+        <Id>26076725771</Id>
+        <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
+      </Ident>
+      <Address>
+        <Type V="PST" DN="Postadresse" />
+        <StreetAdr>TESTVEIEN 1</StreetAdr>
+        <PostalCode>0001</PostalCode>
+        <City>TESTBY</City>
+        <County V="0000" DN="TESTKOMMUNE" />
+      </Address>
+      <TeleCom>
+        <TypeTelecom V="MC" DN="Mobiltelefon" />
+        <TeleAddress V="tel:99999999" />
+      </TeleCom>
+    </Patient>
+  </MsgInfo>
+  <Document>
+    <RefDoc>
+      <MsgType DN="XML-instans" V="XML" />
+      <Content>
+        <Dialogmelding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.kith.no/xmlstds/dialog/2006-10-11" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2006-10-11 dialogmelding.xsd">
+          <Notat>
+            <TemaKodet V="5" S="2.16.578.1.12.4.1.1.9069" DN="Svar på forespørsel" OT="Ingen" />
+            <TekstNotatInnhold xsi:type="xsd:string">Pasienten er henvist videre til DPS. Planlagt oppstart om 4-6 uker.</TekstNotatInnhold>
+            <DokIdNotat>OD2510106934724</DokIdNotat>
+            <Foresporsel>
+              <TypeForesp V="1" S="2.16.578.1.12.4.1.1.8129" DN="Forespørsel om pasient" />
+              <Sporsmal>Hei, kan du gi en oppdatering på behandlingsplanen? Med hilsen Nav Testkontor</Sporsmal>
+              <DokIdForesp>OD2510106934724</DokIdForesp>
+              <RollerRelatertNotat>
+                <RolleNotat V="1" S="2.16.578.1.12.4.1.1.9057" />
+                <Person>
+                  <GivenName>Silje</GivenName>
+                  <FamilyName>Nordmann</FamilyName>
+                </Person>
+              </RollerRelatertNotat>
+            </Foresporsel>
+          </Notat>
+        </Dialogmelding>
+      </Content>
+    </RefDoc>
+  </Document>
+</MsgHead>
