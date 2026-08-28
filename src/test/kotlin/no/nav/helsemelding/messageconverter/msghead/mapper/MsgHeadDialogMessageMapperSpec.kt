@@ -30,6 +30,7 @@ import no.nav.helsemelding.jsonschema.core.model.Sender
 import no.nav.helsemelding.messageconverter.createProvider
 import no.nav.helsemelding.messageconverter.error.AttachmentError
 import no.nav.helsemelding.messageconverter.error.MappingError
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_NOTE
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.model.AdditionalMessageInfo
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
@@ -174,7 +175,7 @@ private fun msgHead(
     genDate: LocalDateTime,
     patientId: String,
     providerId: String,
-    typeV: String = "DIALOG_NOTAT"
+    typeV: String = MSG_TYPE_DIALOG_NOTE
 ): XMLMsgHead =
     XMLMsgHead().apply {
         msgInfo = XMLMsgInfo().apply {

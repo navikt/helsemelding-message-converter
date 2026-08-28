@@ -11,6 +11,8 @@ import no.nav.helsemelding.jsonschema.core.model.IncomingType
 import no.nav.helsemelding.jsonschema.core.model.Sender
 import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.error.MappingError
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_NOTE
+import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_RESPONSE
 import no.nav.helsemelding.messageconverter.msghead.extractAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.messageconverter.msghead.model.InquiryMessage
@@ -162,8 +164,8 @@ class MsgHeadDialogMessageMapper {
             .firstOrNull { it.codeSystem == codeSystem() && it.code == code() && it.messageType == incomingType }
 
     private fun String.toIncomingType(): Either<ConversionError, IncomingType> = when (this) {
-        "DIALOG_NOTAT" -> Either.Right(IncomingType.DIALOG_NOTE)
-        "DIALOG_SVAR" -> Either.Right(IncomingType.DIALOG_RESPONSE)
+        MSG_TYPE_DIALOG_NOTE -> Either.Right(IncomingType.DIALOG_NOTE)
+        MSG_TYPE_DIALOG_RESPONSE -> Either.Right(IncomingType.DIALOG_RESPONSE)
         else -> Either.Left(MappingError(message = "Unknown message type: $this", field = "msgInfo.type.v"))
     }
 
