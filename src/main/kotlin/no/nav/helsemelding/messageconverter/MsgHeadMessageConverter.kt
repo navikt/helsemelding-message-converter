@@ -2,12 +2,10 @@ package no.nav.helsemelding.messageconverter
 
 import arrow.core.Either
 import arrow.core.raise.either
-import no.nav.helsemelding.messageconverter.attachment.AttachmentHandler
 import no.nav.helsemelding.messageconverter.error.AttachmentError
 import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.json.IncomingDialogMessageSerializer
 import no.nav.helsemelding.messageconverter.json.OutgoingDialogMessageSerializer
-import no.nav.helsemelding.messageconverter.metadata.MetadataExtractor
 import no.nav.helsemelding.messageconverter.model.Attachment
 import no.nav.helsemelding.messageconverter.model.MessageMetadata
 import no.nav.helsemelding.messageconverter.model.SplitMessage

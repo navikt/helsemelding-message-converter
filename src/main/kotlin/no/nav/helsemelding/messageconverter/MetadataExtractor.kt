@@ -1,4 +1,4 @@
-package no.nav.helsemelding.messageconverter.metadata
+package no.nav.helsemelding.messageconverter
 
 import arrow.core.Either
 import no.nav.helsemelding.messageconverter.error.ConversionError
