@@ -2,25 +2,25 @@ package no.nav.helsemelding.messageconverter
 
 import arrow.core.Either
 import arrow.core.raise.either
-import no.nav.helsemelding.messageconverter.attachment.AttachmentHandler
 import no.nav.helsemelding.messageconverter.error.AttachmentError
 import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.json.IncomingDialogMessageSerializer
 import no.nav.helsemelding.messageconverter.json.OutgoingDialogMessageSerializer
 import no.nav.helsemelding.messageconverter.model.Attachment
+import no.nav.helsemelding.messageconverter.model.MessageMetadata
 import no.nav.helsemelding.messageconverter.model.SplitMessage
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.extractAttachmentDocuments
-import no.nav.helsemelding.messageconverter.msghead.mapper.MsgHeadDialogMessageMapper
+import no.nav.helsemelding.messageconverter.msghead.mapper.DialogMessageMapper
 import no.nav.helsemelding.messageconverter.msghead.mapper.createOutgoingMessage
 import no.nav.helsemelding.messageconverter.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.toAttachment
 
 /**
- * MsgHead-based implementation of [MessageConverter] and [AttachmentHandler].
+ * MsgHead-based implementation of [MessageConverter], [AttachmentHandler], and [MetadataExtractor].
  *
- * Handles conversion between MsgHead XML and dialog message JSON, as well as
- * extraction and removal of attachments from MsgHead XML messages.
+ * Converts between MsgHead XML and dialog message JSON, extracts metadata,
+ * and extracts or removes attachments from MsgHead XML messages.
  *
  * For outgoing conversion, an [AdditionalMessageInfoProvider] must be supplied —
  * the default [MissingAdditionalMessageInfoProvider] will always return an error.
@@ -28,16 +28,18 @@ import no.nav.helsemelding.messageconverter.msghead.toAttachment
  * @param xmlSerializer serializer for MsgHead XML; defaults to [XmlSerializer]
  * @param incomingDialogMessageSerializer serializer for incoming dialog message JSON
  * @param outgoingDialogMessageSerializer serializer for outgoing dialog message JSON
- * @param mapper mapper between MsgHead and dialog message models
+ * @param dialogMessageMapper mapper between MsgHead and dialog message models
  * @param additionalMessageInfoProvider provider for additional metadata required for outgoing conversion
+ * @param metadataExtractor extractor for metadata from MsgHead XML messages
  */
 class MsgHeadMessageConverter(
     private val xmlSerializer: XmlSerializer = XmlSerializer(),
     private val incomingDialogMessageSerializer: IncomingDialogMessageSerializer = IncomingDialogMessageSerializer(),
     private val outgoingDialogMessageSerializer: OutgoingDialogMessageSerializer = OutgoingDialogMessageSerializer(),
-    private val mapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper(),
-    private val additionalMessageInfoProvider: AdditionalMessageInfoProvider = MissingAdditionalMessageInfoProvider()
-) : MessageConverter, AttachmentHandler {
+    private val dialogMessageMapper: DialogMessageMapper = DialogMessageMapper(),
+    private val additionalMessageInfoProvider: AdditionalMessageInfoProvider = MissingAdditionalMessageInfoProvider(),
+    private val metadataExtractor: MsgHeadMetadataExtractor = MsgHeadMetadataExtractor()
+) : MessageConverter, AttachmentHandler, MetadataExtractor {
     /**
      * Converts an incoming dialog message from MsgHead XML to JSON.
      *
@@ -47,7 +49,7 @@ class MsgHeadMessageConverter(
     override fun incomingDialogMessageXmlToJson(xml: String): Either<ConversionError, String> =
         either {
             val msgHead = xmlSerializer.deserialize(xml).bind()
-            val dialogMessage = mapper.toIncomingDialogMessage(msgHead).bind()
+            val dialogMessage = dialogMessageMapper.toIncomingDialogMessage(msgHead).bind()
 
             incomingDialogMessageSerializer.serialize(dialogMessage).bind()
         }
@@ -66,7 +68,7 @@ class MsgHeadMessageConverter(
             val dialogMessage = outgoingDialogMessageSerializer.deserialize(json).bind()
             val additionalMessageInfo = additionalMessageInfoProvider.getAdditionalMessageInfo(dialogMessage).bind()
             val outgoingMessage = createOutgoingMessage(dialogMessage, additionalMessageInfo).bind()
-            val msgHead = mapper.toMsgHead(outgoingMessage).bind()
+            val msgHead = dialogMessageMapper.toMsgHead(outgoingMessage).bind()
 
             xmlSerializer.serialize(msgHead).bind()
         }
@@ -124,5 +126,23 @@ class MsgHeadMessageConverter(
                 .bind()
 
             xmlSerializer.serialize(msgHead).bind()
+        }
+
+    /**
+     * Extracts sender and receiver her ids and the message type from a MsgHead XML message.
+     *
+     * Only the outermost MsgInfo is used. The original XML is not modified.
+     *
+     * Prefers practitioner her ids over organization her ids and includes both primary
+     * and additional receivers, removing duplicate receiver ids while preserving their order.
+     *
+     * @param xml the raw MsgHead XML string
+     * @return a [MessageMetadata] containing sender and receiver her ids and the raw message type,
+     *   or a [ConversionError] if the XML cannot be parsed or required metadata is missing or ambiguous
+     */
+    override fun extractMetadata(xml: String): Either<ConversionError, MessageMetadata> =
+        either {
+            val msgHead = xmlSerializer.deserialize(xml).bind()
+            metadataExtractor.extract(msgHead).bind()
         }
 }

@@ -41,9 +41,9 @@ import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.uuid.Uuid
 
-class MsgHeadDialogMessageMapperSpec : StringSpec(
+class DialogMessageMapperSpec : StringSpec(
     {
-        val mapper = MsgHeadDialogMessageMapper()
+        val mapper = DialogMessageMapper()
 
         "should map incoming fields" {
             val msgHead = msgHead(

@@ -17,6 +17,7 @@ import no.nav.helsemelding.messageconverter.error.AdditionalMessageInfoError
 import no.nav.helsemelding.messageconverter.error.InvalidJson
 import no.nav.helsemelding.messageconverter.error.InvalidXml
 import no.nav.helsemelding.messageconverter.error.MappingError
+import no.nav.helsemelding.messageconverter.model.MessageMetadata
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.model.AdditionalMessageInfo
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
@@ -36,6 +37,7 @@ private const val XML_INCOMING_MESSAGE_INVALID_TEMAKODE_PATH = "src/test/resourc
 
 private fun incomingXmlPath(name: String) = "src/test/resources/incoming/$name.xml"
 private fun incomingJsonPath(name: String) = "src/test/resources/incoming/$name.json"
+private fun outgoingXmlPath(name: String) = "src/test/resources/outgoing/$name.xml"
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
@@ -241,6 +243,54 @@ class MsgHeadMessageConverterSpec : StringSpec(
             msgHead.document.size shouldBe 1
             xmlWithoutAttachments shouldContain "MsgHead"
         }
+
+        "should extract incoming practitioner and NAV metadata" {
+            val xml = Files.readString(Paths.get(incomingXmlPath("PATIENT_INQUIRY")))
+
+            val metadata = converter.extractMetadata(xml).shouldBeRight()
+
+            metadata shouldBe MessageMetadata(
+                senderHerId = "2000",
+                receiverHerIds = listOf("79768"),
+                messageTypeIdentificator = "DIALOG_NOTAT"
+            )
+        }
+
+        "should extract outgoing NAV and practitioner metadata" {
+            val xml = Files.readString(Paths.get(outgoingXmlPath("PATIENT_REQUEST")))
+
+            val metadata = converter.extractMetadata(xml).shouldBeRight()
+
+            metadata shouldBe MessageMetadata(
+                senderHerId = "8142519",
+                receiverHerIds = listOf("654321"),
+                messageTypeIdentificator = "DIALOG_FORESPORSEL"
+            )
+        }
+
+        "should extract metadata from the outermost MsgInfo with explicit namespace prefixes" {
+            val nested = "<Document><RefDoc><Content>${msgHeadXml(type = "INNER")}</Content></RefDoc></Document>"
+            val xml = msgHeadXml(type = "OUTER").replace("</MsgHead>", "$nested</MsgHead>")
+                .replace("<MsgHead xmlns=", "<m:MsgHead xmlns:m=\"http://www.kith.no/xmlstds/msghead/2006-05-24\" xmlns=")
+                .replace("</MsgHead>", "</m:MsgHead>")
+
+            val metadata = converter.extractMetadata(xml).shouldBeRight()
+
+            metadata.messageTypeIdentificator shouldBe "OUTER"
+        }
+
+        withData(
+            nameFn = { "should return InvalidXml when extracting metadata from ${it.first}" },
+            listOf(
+                "malformed XML" to "<MsgHead",
+                "XML with an unsupported root" to "<Unknown/>",
+                "XML with a DOCTYPE declaration" to "<!DOCTYPE MsgHead>${msgHeadXml()}"
+            )
+        ) { (_, xml) ->
+            val error = converter.extractMetadata(xml).shouldBeLeft()
+
+            error.shouldBeInstanceOf<InvalidXml>()
+        }
     }
 )
 
@@ -291,3 +341,15 @@ fun createProvider(
     receivedAt = OffsetDateTime.now(),
     suspended = false
 )
+
+private fun ident(id: String, type: String = "HER") = "<Ident><Id>$id</Id><TypeId V=\"$type\"/></Ident>"
+
+private fun organisation(id: String, content: String = "") = "<Organisation>${ident(id)}$content</Organisation>"
+
+private fun msgHeadXml(
+    sender: String = organisation("sender"),
+    receiver: String = organisation("receiver"),
+    others: String = "",
+    type: String = "DIALOG_NOTAT"
+) = "<MsgHead xmlns=\"http://www.kith.no/xmlstds/msghead/2006-05-24\"><MsgInfo>" +
+    "<Type V=\"$type\"/><Sender>$sender</Sender><Receiver>$receiver</Receiver>$others</MsgInfo></MsgHead>"

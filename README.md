@@ -7,7 +7,7 @@ The library currently supports two conversion directions:
 - Incoming dialog message: MsgHead XML to `IncomingDialogMessage` JSON
 - Outgoing dialog message: `OutgoingDialogMessage` JSON to MsgHead XML
 
-It also includes helpers for extracting and removing attachments from MsgHead XML.
+It also includes helpers for extracting metadata and for extracting and removing attachments from MsgHead XML.
 
 ## Public API
 
@@ -28,6 +28,14 @@ The converter implements:
 interface MessageConverter {
     fun incomingDialogMessageXmlToJson(xml: String): Either<ConversionError, String>
     fun outgoingDialogMessageJsonToXml(json: String): Either<ConversionError, String>
+}
+```
+
+It also implements `MetadataExtractor`:
+
+```kotlin
+interface MetadataExtractor {
+    fun extractMetadata(xml: String): Either<ConversionError, MessageMetadata>
 }
 ```
 
@@ -109,6 +117,26 @@ A list of supported outgoing and incoming dialog messages (from specification) c
 ![Overview](dialogMessageOverview.png)
 
 Complete examples of every supported outgoing message can be found in the [outgoing test fixtures](./src/test/resources/outgoing).
+
+## Metadata
+
+Metadata can be extracted separately from conversion:
+
+```kotlin
+val metadata = converter.extractMetadata(msgHeadXml)
+```
+
+`MessageMetadata` contains:
+
+```kotlin
+data class MessageMetadata(
+    val senderHerId: String,
+    val receiverHerIds: List<String>,
+    val messageTypeIdentificator: String
+)
+```
+
+Practitioner her ids take priority over organization her ids. Receiver ids include primary and additional receivers, without duplicates.
 
 ## Attachments
 
