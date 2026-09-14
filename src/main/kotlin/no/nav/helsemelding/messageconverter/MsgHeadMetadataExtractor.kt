@@ -16,8 +16,8 @@ class MsgHeadMetadataExtractor {
     fun extract(msgHead: XMLMsgHead): Either<ConversionError, MessageMetadata> = either {
         val info = ensureNotNull(msgHead.msgInfo) { missing("msgInfo") }
         val type = ensureNotNull(info.type?.v?.takeIf { it.isNotBlank() }) { missing("msgInfo.type.v") }
-        val sender = herId(info.sender?.organisation, "msgInfo.sender").bind()
-        val receiver = herId(info.receiver?.organisation, "msgInfo.receiver").bind()
+        val senderHerId = herId(info.sender?.organisation, "msgInfo.sender").bind()
+        val receiverHerId = herId(info.receiver?.organisation, "msgInfo.receiver").bind()
         val otherReceivers = info.otherReceiver.mapIndexed { index, receiver ->
             herId(
                 receiver.organisation,
@@ -27,8 +27,8 @@ class MsgHeadMetadataExtractor {
                 .bind()
         }
         MessageMetadata(
-            senderHerId = sender,
-            receiverHerIds = (listOf(receiver) + otherReceivers).distinct(),
+            senderHerId = senderHerId,
+            receiverHerIds = (listOf(receiverHerId) + otherReceivers).distinct(),
             messageTypeIdentificator = type
         )
     }
