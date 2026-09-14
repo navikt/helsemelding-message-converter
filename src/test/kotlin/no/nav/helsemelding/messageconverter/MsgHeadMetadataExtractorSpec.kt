@@ -1,4 +1,4 @@
-package no.nav.helsemelding.messageconverter.msghead.mapper
+package no.nav.helsemelding.messageconverter
 
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
@@ -18,9 +18,9 @@ import no.nav.helse.msgHead.XMLReceiver
 import no.nav.helse.msgHead.XMLSender
 import no.nav.helsemelding.messageconverter.error.MappingError
 
-class MsgHeadMetadataMapperSpec : StringSpec(
+class MsgHeadMetadataExtractorSpec : StringSpec(
     {
-        val mapper = MsgHeadMetadataMapper()
+        val extractor = MsgHeadMetadataExtractor()
 
         "should prefer deepest practitioner even when a deeper organisation has a her id" {
             val sender = organisation(
@@ -30,7 +30,7 @@ class MsgHeadMetadataMapperSpec : StringSpec(
             )
             val msgHead = message(sender = sender)
 
-            val metadata = mapper.extract(msgHead).shouldBeRight()
+            val metadata = extractor.extract(msgHead).shouldBeRight()
 
             metadata.senderHerId shouldBe "child"
         }
@@ -42,7 +42,7 @@ class MsgHeadMetadataMapperSpec : StringSpec(
             )
             val msgHead = message(sender = sender)
 
-            val metadata = mapper.extract(msgHead).shouldBeRight()
+            val metadata = extractor.extract(msgHead).shouldBeRight()
 
             metadata.senderHerId shouldBe "child"
         }
@@ -55,7 +55,7 @@ class MsgHeadMetadataMapperSpec : StringSpec(
             )
             val msgHead = message(others = others)
 
-            val metadata = mapper.extract(msgHead).shouldBeRight()
+            val metadata = extractor.extract(msgHead).shouldBeRight()
 
             metadata.receiverHerIds shouldBe listOf("receiver", "other", "direct")
         }
@@ -66,7 +66,7 @@ class MsgHeadMetadataMapperSpec : StringSpec(
             }
             val msgHead = message(sender = sender)
 
-            val metadata = mapper.extract(msgHead).shouldBeRight()
+            val metadata = extractor.extract(msgHead).shouldBeRight()
 
             metadata.senderHerId shouldBe "00123"
         }
@@ -74,7 +74,7 @@ class MsgHeadMetadataMapperSpec : StringSpec(
         "should accept unknown message types without dialog content" {
             val msgHead = message(type = "FUTURE_TYPE")
 
-            val metadata = mapper.extract(msgHead).shouldBeRight()
+            val metadata = extractor.extract(msgHead).shouldBeRight()
 
             metadata.messageTypeIdentificator shouldBe "FUTURE_TYPE"
         }
@@ -99,7 +99,7 @@ class MsgHeadMetadataMapperSpec : StringSpec(
                 )
             )
         ) { (_, msgHead, field) ->
-            val error = mapper.extract(msgHead).shouldBeLeft()
+            val error = extractor.extract(msgHead).shouldBeLeft()
 
             error.shouldBeInstanceOf<MappingError>()
             error.field shouldBe field
@@ -110,7 +110,7 @@ class MsgHeadMetadataMapperSpec : StringSpec(
             val sender = organisation("office", practitioner)
             val msgHead = message(sender = sender)
 
-            val error = mapper.extract(msgHead).shouldBeLeft()
+            val error = extractor.extract(msgHead).shouldBeLeft()
 
             error.shouldBeInstanceOf<MappingError>()
             error.field shouldBe "msgInfo.sender.herId"

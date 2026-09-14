@@ -14,7 +14,6 @@ import no.nav.helsemelding.messageconverter.model.SplitMessage
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.extractAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.mapper.MsgHeadDialogMessageMapper
-import no.nav.helsemelding.messageconverter.msghead.mapper.MsgHeadMetadataMapper
 import no.nav.helsemelding.messageconverter.msghead.mapper.createOutgoingMessage
 import no.nav.helsemelding.messageconverter.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.toAttachment
@@ -33,7 +32,7 @@ import no.nav.helsemelding.messageconverter.msghead.toAttachment
  * @param outgoingDialogMessageSerializer serializer for outgoing dialog message JSON
  * @param dialogMessageMapper mapper between MsgHead and dialog message models
  * @param additionalMessageInfoProvider provider for additional metadata required for outgoing conversion
- * @param metadataMapper mapper from the MsgHead envelope to message metadata
+ * @param metadataExtractor extractor for metadata from MsgHead XML messages
  */
 class MsgHeadMessageConverter(
     private val xmlSerializer: XmlSerializer = XmlSerializer(),
@@ -41,7 +40,7 @@ class MsgHeadMessageConverter(
     private val outgoingDialogMessageSerializer: OutgoingDialogMessageSerializer = OutgoingDialogMessageSerializer(),
     private val dialogMessageMapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper(),
     private val additionalMessageInfoProvider: AdditionalMessageInfoProvider = MissingAdditionalMessageInfoProvider(),
-    private val metadataMapper: MsgHeadMetadataMapper = MsgHeadMetadataMapper()
+    private val metadataExtractor: MsgHeadMetadataExtractor = MsgHeadMetadataExtractor()
 ) : MessageConverter, AttachmentHandler, MetadataExtractor {
     /**
      * Converts an incoming dialog message from MsgHead XML to JSON.
@@ -146,6 +145,6 @@ class MsgHeadMessageConverter(
     override fun extractMetadata(xml: String): Either<ConversionError, MessageMetadata> =
         either {
             val msgHead = xmlSerializer.deserialize(xml).bind()
-            metadataMapper.extract(msgHead).bind()
+            metadataExtractor.extract(msgHead).bind()
         }
 }

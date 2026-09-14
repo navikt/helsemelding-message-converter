@@ -1,4 +1,4 @@
-package no.nav.helsemelding.messageconverter.msghead.mapper
+package no.nav.helsemelding.messageconverter
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -12,7 +12,7 @@ import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.error.MappingError
 import no.nav.helsemelding.messageconverter.model.MessageMetadata
 
-class MsgHeadMetadataMapper {
+class MsgHeadMetadataExtractor {
     fun extract(msgHead: XMLMsgHead): Either<ConversionError, MessageMetadata> = either {
         val info = ensureNotNull(msgHead.msgInfo) { missing("msgInfo") }
         val type = ensureNotNull(info.type?.v?.takeIf { it.isNotBlank() }) { missing("msgInfo.type.v") }
