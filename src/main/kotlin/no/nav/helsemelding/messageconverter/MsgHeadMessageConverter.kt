@@ -11,7 +11,7 @@ import no.nav.helsemelding.messageconverter.model.MessageMetadata
 import no.nav.helsemelding.messageconverter.model.SplitMessage
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.extractAttachmentDocuments
-import no.nav.helsemelding.messageconverter.msghead.mapper.MsgHeadDialogMessageMapper
+import no.nav.helsemelding.messageconverter.msghead.mapper.DialogMessageMapper
 import no.nav.helsemelding.messageconverter.msghead.mapper.createOutgoingMessage
 import no.nav.helsemelding.messageconverter.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.toAttachment
@@ -36,7 +36,7 @@ class MsgHeadMessageConverter(
     private val xmlSerializer: XmlSerializer = XmlSerializer(),
     private val incomingDialogMessageSerializer: IncomingDialogMessageSerializer = IncomingDialogMessageSerializer(),
     private val outgoingDialogMessageSerializer: OutgoingDialogMessageSerializer = OutgoingDialogMessageSerializer(),
-    private val dialogMessageMapper: MsgHeadDialogMessageMapper = MsgHeadDialogMessageMapper(),
+    private val dialogMessageMapper: DialogMessageMapper = DialogMessageMapper(),
     private val additionalMessageInfoProvider: AdditionalMessageInfoProvider = MissingAdditionalMessageInfoProvider(),
     private val metadataExtractor: MsgHeadMetadataExtractor = MsgHeadMetadataExtractor()
 ) : MessageConverter, AttachmentHandler, MetadataExtractor {
