@@ -42,8 +42,9 @@ class MsgHeadMetadataExtractor {
             .map { it.herIds() }
             .firstOrNull { it.isNotEmpty() }
             ?: raise(missing("$field.herId"))
-        ensure(herIds.size == 1)
-        { MappingError("Ambiguous her id identifiers in MsgHead field: $field", "$field.herId") }
+        ensure(herIds.size == 1) {
+            MappingError("Ambiguous her id identifiers in MsgHead field: $field", "$field.herId")
+        }
         herIds.single()
     }
 
