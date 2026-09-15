@@ -250,8 +250,8 @@ class MsgHeadMessageConverterSpec : StringSpec(
             val metadata = converter.extractMetadata(xml).shouldBeRight()
 
             metadata shouldBe MessageMetadata(
-                senderHerId = "2000",
-                receiverHerIds = listOf("79768"),
+                senderHerId = 2000,
+                receiverHerIds = listOf(79768),
                 messageTypeIdentificator = "DIALOG_NOTAT"
             )
         }
@@ -262,8 +262,8 @@ class MsgHeadMessageConverterSpec : StringSpec(
             val metadata = converter.extractMetadata(xml).shouldBeRight()
 
             metadata shouldBe MessageMetadata(
-                senderHerId = "8142519",
-                receiverHerIds = listOf("654321"),
+                senderHerId = 8142519,
+                receiverHerIds = listOf(654321),
                 messageTypeIdentificator = "DIALOG_FORESPORSEL"
             )
         }
@@ -347,8 +347,8 @@ private fun ident(id: String, type: String = "HER") = "<Ident><Id>$id</Id><TypeI
 private fun organisation(id: String, content: String = "") = "<Organisation>${ident(id)}$content</Organisation>"
 
 private fun msgHeadXml(
-    sender: String = organisation("sender"),
-    receiver: String = organisation("receiver"),
+    sender: String = organisation("600"),
+    receiver: String = organisation("700"),
     others: String = "",
     type: String = "DIALOG_NOTAT"
 ) = "<MsgHead xmlns=\"http://www.kith.no/xmlstds/msghead/2006-05-24\"><MsgInfo>" +

@@ -37,15 +37,21 @@ class MsgHeadMetadataExtractor {
         organisation: XMLOrganisation?,
         field: String,
         practitioner: XMLHealthcareProfessional? = null
-    ): Either<ConversionError, String> = either {
+    ): Either<ConversionError, Int> = either {
         val herIds = organisation.identifierCandidates(practitioner)
             .map { it.herIds() }
             .firstOrNull { it.isNotEmpty() }
             ?: raise(missing("$field.herId"))
-        ensure(herIds.size == 1) {
+        val numericHerIds = herIds.map { id ->
+            ensureNotNull(id.toIntOrNull()) {
+                MappingError("Invalid integer her id in MsgHead field: $field", "$field.herId")
+            }
+        }
+            .distinct()
+        ensure(numericHerIds.size == 1) {
             MappingError("Ambiguous her id identifiers in MsgHead field: $field", "$field.herId")
         }
-        herIds.single()
+        numericHerIds.single()
     }
 
     private fun XMLOrganisation?.identifierCandidates(

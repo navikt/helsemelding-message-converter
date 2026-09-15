@@ -130,8 +130,8 @@ val metadata = converter.extractMetadata(msgHeadXml)
 
 ```kotlin
 data class MessageMetadata(
-    val senderHerId: String,
-    val receiverHerIds: List<String>,
+    val senderHerId: Int,
+    val receiverHerIds: List<Int>,
     val messageTypeIdentificator: String
 )
 ```
