@@ -8,7 +8,7 @@ package no.nav.helsemelding.messageconverter.model
  * @property messageTypeIdentificator the message type from MsgInfo/Type/@V, e.g. `"DIALOG_NOTAT"`
  */
 data class MessageMetadata(
-    val senderHerId: String,
-    val receiverHerIds: List<String>,
+    val senderHerId: Int,
+    val receiverHerIds: List<Int>,
     val messageTypeIdentificator: String
 )
