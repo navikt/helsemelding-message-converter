@@ -45,7 +45,7 @@ class FakeAdditionalMessageInfoProvider : AdditionalMessageInfoProvider {
     }
 
     override fun getAdditionalMessageInfo(dialogMessage: OutgoingDialogMessage): Either<ConversionError, AdditionalMessageInfo> {
-        return additionalMessageInfoByMsgId[Uuid.parse(dialogMessage.id)]
+        return additionalMessageInfoByMsgId[dialogMessage.id]
             ?: Either.Left(AdditionalMessageInfoError("Error when fetching additional message info"))
     }
 }
