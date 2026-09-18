@@ -79,8 +79,8 @@ private fun createInquiryMessage(
 ): InquiryMessage = InquiryMessage(
     id = dialogMessage.id,
     conversationReference = dialogMessage.conversationReference ?: ConversationReference(
-        parentMessageId = dialogMessage.id,
-        conversationId = dialogMessage.id
+        parentMessageId = dialogMessage.id.toString(),
+        conversationId = dialogMessage.id.toString()
     ),
     type = dialogMessage.type,
     message = dialogMessage.message,
@@ -97,8 +97,8 @@ private fun createMemoMessage(
 ): MemoMessage = MemoMessage(
     id = dialogMessage.id,
     conversationReference = dialogMessage.conversationReference ?: ConversationReference(
-        parentMessageId = dialogMessage.id,
-        conversationId = dialogMessage.id
+        parentMessageId = dialogMessage.id.toString(),
+        conversationId = dialogMessage.id.toString()
     ),
     type = dialogMessage.type,
     message = dialogMessage.message,

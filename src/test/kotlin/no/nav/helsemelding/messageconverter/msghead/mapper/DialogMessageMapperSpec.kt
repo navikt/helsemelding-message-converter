@@ -86,7 +86,7 @@ class DialogMessageMapperSpec : StringSpec(
             }
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dbb4a1cb-943e-4bbb-967d-eb7ef456a30f",
+                id = Uuid.parse("dbb4a1cb-943e-4bbb-967d-eb7ef456a30f"),
                 patientIdent = patientIdent.toString(),
                 providerId = "e5d65352-2fa1-49b0-be3a-a7fd26208998",
                 conversationReference = ConversationReference(
@@ -135,7 +135,7 @@ class DialogMessageMapperSpec : StringSpec(
             }
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dbb4a1cb-943e-4bbb-967d-eb7ef456a30f",
+                id = Uuid.parse("dbb4a1cb-943e-4bbb-967d-eb7ef456a30f"),
                 patientIdent = patientIdent.toString(),
                 providerId = "e5d65352-2fa1-49b0-be3a-a7fd26208998",
                 conversationReference = ConversationReference(

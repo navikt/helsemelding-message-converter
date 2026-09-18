@@ -60,7 +60,7 @@ class OutgoingMessageMapperSpec : StringSpec(
         "should reject missing follow-up attachment" {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                 patientIdent = "12345678910",
                 providerId = "provider-1",
                 conversationReference = ConversationReference(
@@ -82,7 +82,7 @@ class OutgoingMessageMapperSpec : StringSpec(
         "should map follow-up plan" {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                 patientIdent = "12345678910",
                 providerId = "provider-1",
                 conversationReference = ConversationReference(
@@ -120,7 +120,7 @@ class OutgoingMessageMapperSpec : StringSpec(
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                 patientIdent = "12345678910",
                 providerId = "provider-1",
                 conversationReference = ConversationReference(
@@ -159,7 +159,7 @@ class OutgoingMessageMapperSpec : StringSpec(
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                 patientIdent = "12345678910",
                 providerId = "provider-1",
                 conversationReference = null,
@@ -177,8 +177,8 @@ class OutgoingMessageMapperSpec : StringSpec(
             memoMessage.createdAt shouldBe additionalInfo.createdAt
             memoMessage.docId shouldBe additionalInfo.docId
             memoMessage.type shouldBe it
-            memoMessage.conversationReference.parentMessageId shouldBe dialogMessage.id
-            memoMessage.conversationReference.conversationId shouldBe dialogMessage.id
+            memoMessage.conversationReference.parentMessageId shouldBe dialogMessage.id.toString()
+            memoMessage.conversationReference.conversationId shouldBe dialogMessage.id.toString()
             memoMessage.employee shouldBeEqualUsingFields employee
             memoMessage.provider shouldBeEqualUsingFields provider
             memoMessage.message shouldBe dialogMessage.message
@@ -195,7 +195,7 @@ class OutgoingMessageMapperSpec : StringSpec(
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                 patientIdent = "12345678910",
                 providerId = "provider-1",
                 conversationReference = ConversationReference(
@@ -233,7 +233,7 @@ class OutgoingMessageMapperSpec : StringSpec(
         ) {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                 patientIdent = "12345678910",
                 providerId = "provider-1",
                 conversationReference = null,
@@ -251,8 +251,8 @@ class OutgoingMessageMapperSpec : StringSpec(
             inquiryMessage.createdAt shouldBe additionalInfo.createdAt
             inquiryMessage.docId shouldBe additionalInfo.docId
             inquiryMessage.type shouldBe it
-            inquiryMessage.conversationReference.parentMessageId shouldBe dialogMessage.id
-            inquiryMessage.conversationReference.conversationId shouldBe dialogMessage.id
+            inquiryMessage.conversationReference.parentMessageId shouldBe dialogMessage.id.toString()
+            inquiryMessage.conversationReference.conversationId shouldBe dialogMessage.id.toString()
             inquiryMessage.employee shouldBeEqualUsingFields employee
             inquiryMessage.provider shouldBeEqualUsingFields provider
             inquiryMessage.message shouldBe dialogMessage.message

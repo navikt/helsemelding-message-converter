@@ -7,7 +7,7 @@ import java.time.Instant
 import kotlin.uuid.Uuid
 
 sealed interface OutgoingMessage {
-    val id: String
+    val id: Uuid
     val type: OutgoingDialogMessageType
     val message: String?
     val attachment: String?
@@ -18,7 +18,7 @@ sealed interface OutgoingMessage {
 }
 
 data class InquiryMessage(
-    override val id: String,
+    override val id: Uuid,
     val conversationReference: ConversationReference,
     override val type: OutgoingDialogMessageType,
     override val message: String?,
@@ -30,7 +30,7 @@ data class InquiryMessage(
 ) : OutgoingMessage
 
 data class MemoMessage(
-    override val id: String,
+    override val id: Uuid,
     val conversationReference: ConversationReference,
     override val type: OutgoingDialogMessageType,
     override val message: String?,
@@ -42,7 +42,7 @@ data class MemoMessage(
 ) : OutgoingMessage
 
 data class FollowUpPlanMessage(
-    override val id: String,
+    override val id: Uuid,
     override val type: OutgoingDialogMessageType,
     override val message: String,
     override val attachment: String,

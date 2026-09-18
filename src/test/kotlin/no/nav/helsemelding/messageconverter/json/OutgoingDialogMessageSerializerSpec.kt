@@ -9,6 +9,7 @@ import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.messageconverter.error.InvalidJson
+import kotlin.uuid.Uuid
 
 class OutgoingDialogMessageSerializerSpec : StringSpec(
     {
@@ -17,7 +18,7 @@ class OutgoingDialogMessageSerializerSpec : StringSpec(
         "should serialize OutgoingDialogMessage" {
             val dialogMessage = OutgoingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                 patientIdent = "12345678910",
                 providerId = "provider-1",
                 conversationReference = ConversationReference(
@@ -35,7 +36,7 @@ class OutgoingDialogMessageSerializerSpec : StringSpec(
                 """
                 {
                   "version": 1,
-                  "id": "dialog-1",
+                  "id": "986189c9-3ef1-41d5-83a1-132d3ec41784",
                   "patientIdent": "12345678910",
                   "providerId": "provider-1",
                   "conversationReference": {
@@ -54,7 +55,7 @@ class OutgoingDialogMessageSerializerSpec : StringSpec(
             val json = """
                 {
                   "version": 1,
-                  "id": "dialog-1",
+                  "id": "986189c9-3ef1-41d5-83a1-132d3ec41784",
                   "patientIdent": "12345678910",
                   "providerId": "provider-1",
                   "conversationReference": {
@@ -71,7 +72,7 @@ class OutgoingDialogMessageSerializerSpec : StringSpec(
             serializer.deserialize(json).shouldBeRight(
                 OutgoingDialogMessage(
                     version = 1,
-                    id = "dialog-1",
+                    id = Uuid.parse("986189c9-3ef1-41d5-83a1-132d3ec41784"),
                     patientIdent = "12345678910",
                     providerId = "provider-1",
                     conversationReference = ConversationReference(
