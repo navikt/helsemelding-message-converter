@@ -15,6 +15,7 @@ import no.nav.helsemelding.messageconverter.msghead.mapper.DialogMessageMapper
 import no.nav.helsemelding.messageconverter.msghead.mapper.createOutgoingMessage
 import no.nav.helsemelding.messageconverter.msghead.removeAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.toAttachment
+import kotlin.uuid.Uuid
 
 /**
  * MsgHead-based implementation of [MessageConverter], [AttachmentHandler], and [MetadataExtractor].
@@ -144,5 +145,17 @@ class MsgHeadMessageConverter(
         either {
             val msgHead = xmlSerializer.deserialize(xml).bind()
             metadataExtractor.extract(msgHead).bind()
+        }
+
+    /**
+     * Extracts the message id from the MsgInfo/MsgId element of a MsgHead XML message.
+     *
+     * @param xml the raw MsgHead XML string
+     * @return the message id as a [Uuid], or a [ConversionError] if it is missing or not a valid UUID
+     */
+    override fun extractMessageId(xml: String): Either<ConversionError, Uuid> =
+        either {
+            val msgHead = xmlSerializer.deserialize(xml).bind()
+            metadataExtractor.extractMessageId(msgHead).bind()
         }
 }
