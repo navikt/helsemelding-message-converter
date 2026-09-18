@@ -62,7 +62,7 @@ private fun inquiryMessage(): InquiryMessage {
     }
 
     return InquiryMessage(
-        id = "dialog-1",
+        id = Uuid.parse("ff626853-a51e-42ad-8b98-2d084d0dabef"),
         conversationReference = ConversationReference(
             parentMessageId = "parent-1",
             conversationId = "conversation-1"

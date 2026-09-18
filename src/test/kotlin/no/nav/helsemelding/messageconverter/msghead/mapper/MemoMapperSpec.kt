@@ -52,7 +52,7 @@ private fun memoMessage(): MemoMessage {
     }
 
     return MemoMessage(
-        id = "dialog-1",
+        id = Uuid.parse("47bb7130-d106-4ae6-ad65-b2ead07fc1c5"),
         conversationReference = ConversationReference(
             parentMessageId = "parent-1",
             conversationId = "conversation-1"

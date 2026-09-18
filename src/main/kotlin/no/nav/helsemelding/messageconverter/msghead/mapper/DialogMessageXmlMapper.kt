@@ -54,7 +54,7 @@ internal fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
         type = createType(message.type)
         miGversion = "v1.2 2006-05-24"
         genDate = message.createdAt.toOsloLocalDateTime()
-        msgId = message.id
+        msgId = message.id.toString()
         ack = XMLCS().apply {
             dn = "Ja"
             v = "J"

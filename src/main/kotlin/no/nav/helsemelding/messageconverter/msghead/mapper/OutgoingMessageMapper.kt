@@ -62,7 +62,7 @@ private fun createFollowUpPlanMessage(
     }
 
     FollowUpPlanMessage(
-        id = dialogMessage.id.toString(),
+        id = dialogMessage.id,
         type = dialogMessage.type,
         message = "Åpne PDF-vedlegg",
         attachment = attachment,
@@ -77,7 +77,7 @@ private fun createInquiryMessage(
     dialogMessage: OutgoingDialogMessage,
     additionalMessageInfo: AdditionalMessageInfo
 ): InquiryMessage = InquiryMessage(
-    id = dialogMessage.id.toString(),
+    id = dialogMessage.id,
     conversationReference = dialogMessage.conversationReference ?: ConversationReference(
         parentMessageId = dialogMessage.id.toString(),
         conversationId = dialogMessage.id.toString()
@@ -95,7 +95,7 @@ private fun createMemoMessage(
     dialogMessage: OutgoingDialogMessage,
     additionalMessageInfo: AdditionalMessageInfo
 ): MemoMessage = MemoMessage(
-    id = dialogMessage.id.toString(),
+    id = dialogMessage.id,
     conversationReference = dialogMessage.conversationReference ?: ConversationReference(
         parentMessageId = dialogMessage.id.toString(),
         conversationId = dialogMessage.id.toString()

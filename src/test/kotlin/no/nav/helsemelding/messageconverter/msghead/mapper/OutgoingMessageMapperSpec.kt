@@ -98,7 +98,7 @@ class OutgoingMessageMapperSpec : StringSpec(
                 .shouldBeRight()
                 .shouldBeTypeOf<FollowUpPlanMessage>()
 
-            followUpPlanMessage.id shouldBe dialogMessage.id.toString()
+            followUpPlanMessage.id shouldBe dialogMessage.id
             followUpPlanMessage.attachment shouldBe dialogMessage.attachment
             followUpPlanMessage.createdAt shouldBe additionalInfo.createdAt
             followUpPlanMessage.docId shouldBe additionalInfo.docId
@@ -136,7 +136,7 @@ class OutgoingMessageMapperSpec : StringSpec(
                 .shouldBeRight()
                 .shouldBeTypeOf<MemoMessage>()
 
-            memoMessage.id shouldBe dialogMessage.id.toString()
+            memoMessage.id shouldBe dialogMessage.id
             memoMessage.attachment shouldBe dialogMessage.attachment
             memoMessage.createdAt shouldBe additionalInfo.createdAt
             memoMessage.docId shouldBe additionalInfo.docId
@@ -172,7 +172,7 @@ class OutgoingMessageMapperSpec : StringSpec(
                 .shouldBeRight()
                 .shouldBeTypeOf<MemoMessage>()
 
-            memoMessage.id shouldBe dialogMessage.id.toString()
+            memoMessage.id shouldBe dialogMessage.id
             memoMessage.attachment shouldBe dialogMessage.attachment
             memoMessage.createdAt shouldBe additionalInfo.createdAt
             memoMessage.docId shouldBe additionalInfo.docId
@@ -211,7 +211,7 @@ class OutgoingMessageMapperSpec : StringSpec(
                 .shouldBeRight()
                 .shouldBeTypeOf<InquiryMessage>()
 
-            inquiryMessage.id shouldBe dialogMessage.id.toString()
+            inquiryMessage.id shouldBe dialogMessage.id
             inquiryMessage.attachment shouldBe dialogMessage.attachment
             inquiryMessage.createdAt shouldBe additionalInfo.createdAt
             inquiryMessage.docId shouldBe additionalInfo.docId
@@ -246,7 +246,7 @@ class OutgoingMessageMapperSpec : StringSpec(
                 .shouldBeRight()
                 .shouldBeTypeOf<InquiryMessage>()
 
-            inquiryMessage.id shouldBe dialogMessage.id.toString()
+            inquiryMessage.id shouldBe dialogMessage.id
             inquiryMessage.attachment shouldBe dialogMessage.attachment
             inquiryMessage.createdAt shouldBe additionalInfo.createdAt
             inquiryMessage.docId shouldBe additionalInfo.docId

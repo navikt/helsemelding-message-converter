@@ -67,7 +67,7 @@ private fun followUpPlanMessage(
     }
 
     return FollowUpPlanMessage(
-        id = "dialog-1",
+        id = Uuid.parse("909a5b24-ca26-4d57-a0f4-d0a1d8f55aff"),
         type = OutgoingDialogMessageType.FOLLOW_UP_PLAN,
         message = "Åpne PDF-vedlegg",
         attachment = attachment,
