@@ -279,6 +279,14 @@ class MsgHeadMessageConverterSpec : StringSpec(
             metadata.messageTypeIdentificator shouldBe "OUTER"
         }
 
+        "should extract the message ID as a UUID" {
+            val xml = Files.readString(Paths.get(incomingXmlPath("PATIENT_INQUIRY")))
+
+            val messageId = converter.extractMessageId(xml).shouldBeRight()
+
+            messageId shouldBe Uuid.parse("0c6a887b-2bdb-4818-897b-5d7831374c72")
+        }
+
         withData(
             nameFn = { "should return InvalidXml when extracting metadata from ${it.first}" },
             listOf(
