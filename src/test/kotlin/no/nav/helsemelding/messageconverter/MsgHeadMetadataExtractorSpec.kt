@@ -17,6 +17,7 @@ import no.nav.helse.msgHead.XMLOtherReceiver
 import no.nav.helse.msgHead.XMLReceiver
 import no.nav.helse.msgHead.XMLSender
 import no.nav.helsemelding.messageconverter.error.MappingError
+import kotlin.uuid.Uuid
 
 class MsgHeadMetadataExtractorSpec : StringSpec(
     {
@@ -141,6 +142,34 @@ class MsgHeadMetadataExtractorSpec : StringSpec(
 
             error.shouldBeInstanceOf<MappingError>()
             error.field shouldBe "msgInfo.sender.herId"
+        }
+
+        "should extract the message ID as a UUID" {
+            val msgId = Uuid.random()
+            val msgHead = message().apply { msgInfo.msgId = msgId.toString() }
+
+            val result = extractor.extractMessageId(msgHead).shouldBeRight()
+
+            result shouldBe msgId
+        }
+
+        "should return MappingError when msgId is missing" {
+            val msgHead = message()
+
+            val error = extractor.extractMessageId(msgHead).shouldBeLeft()
+
+            error.shouldBeInstanceOf<MappingError>()
+            error.field shouldBe "msgInfo.msgId"
+        }
+
+        "should return MappingError when msgId is not a valid UUID" {
+            val msgHead = message().apply { msgInfo.msgId = "not-a-uuid" }
+
+            val error = extractor.extractMessageId(msgHead).shouldBeLeft()
+
+            error.shouldBeInstanceOf<MappingError>()
+            error.field shouldBe "msgInfo.msgId"
+            error.message shouldBe "msgId is not a valid UUID"
         }
     }
 )

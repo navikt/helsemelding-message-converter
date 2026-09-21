@@ -11,6 +11,7 @@ import no.nav.helse.msgHead.XMLOrganisation
 import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.error.MappingError
 import no.nav.helsemelding.messageconverter.model.MessageMetadata
+import kotlin.uuid.Uuid
 
 class MsgHeadMetadataExtractor {
     fun extract(msgHead: XMLMsgHead): Either<ConversionError, MessageMetadata> = either {
@@ -31,6 +32,16 @@ class MsgHeadMetadataExtractor {
             receiverHerIds = (listOf(receiverHerId) + otherReceivers).distinct(),
             messageTypeIdentificator = type
         )
+    }
+
+    fun extractMessageId(msgHead: XMLMsgHead): Either<ConversionError, Uuid> = either {
+        val msgId = ensureNotNull(msgHead.msgInfo?.msgId) {
+            missing("msgInfo.msgId")
+        }
+
+        ensureNotNull(Uuid.parseOrNull(msgId)) {
+            MappingError("msgId is not a valid UUID", "msgInfo.msgId")
+        }
     }
 
     private fun herId(
