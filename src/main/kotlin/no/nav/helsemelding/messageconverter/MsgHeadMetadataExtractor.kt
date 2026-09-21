@@ -40,7 +40,7 @@ class MsgHeadMetadataExtractor {
         }
 
         ensureNotNull(Uuid.parseOrNull(msgId)) {
-            MappingError("MsgHead is not a valid UUID", "msgInfo.msgId")
+            MappingError("msgId is not a valid UUID", "msgInfo.msgId")
         }
     }
 

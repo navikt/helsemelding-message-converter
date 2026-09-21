@@ -153,7 +153,7 @@ class MsgHeadMetadataExtractorSpec : StringSpec(
             result shouldBe msgId
         }
 
-        "should return MappingError when MsgId is missing" {
+        "should return MappingError when msgId is missing" {
             val msgHead = message()
 
             val error = extractor.extractMessageId(msgHead).shouldBeLeft()
@@ -162,14 +162,14 @@ class MsgHeadMetadataExtractorSpec : StringSpec(
             error.field shouldBe "msgInfo.msgId"
         }
 
-        "should return MappingError when MsgId is not a valid UUID" {
+        "should return MappingError when msgId is not a valid UUID" {
             val msgHead = message().apply { msgInfo.msgId = "not-a-uuid" }
 
             val error = extractor.extractMessageId(msgHead).shouldBeLeft()
 
             error.shouldBeInstanceOf<MappingError>()
             error.field shouldBe "msgInfo.msgId"
-            error.message shouldBe "MsgHead is not a valid UUID"
+            error.message shouldBe "msgId is not a valid UUID"
         }
     }
 )
