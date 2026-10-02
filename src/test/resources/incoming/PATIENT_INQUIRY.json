@@ -2,12 +2,22 @@
   "version": 1,
   "id": "0c6a887b-2bdb-4818-897b-5d7831374c72",
   "type": "PATIENT_INQUIRY",
-  "receivedAt": "2025-03-01T11:06:34.636402900",
+  "receivedAt": "2026-10-02T09:00:00Z",
   "patientIdent": "12345678900",
-  "sender": {
-    "providerId": "976642139",
-    "signingProviderId": "2000"
+  "provider": {
+    "ident": "12345678910",
+    "hprNumber": "100000",
+    "office": {
+      "orgNumber": "976642139",
+      "orgName": "Hov Legesenter",
+      "herId": "1985"
+    }
   },
+  "signature": {
+    "signingProviderIdent": "12345678910",
+    "signedAt": "2025-03-01T11:06:34.636402900"
+  },
+  "documentId": "0c6a887b-2bdb-4818-897b-5d7831374c72",
   "conversationReference": {
     "parentMessageId": "0c6a887b-2bdb-4818-897b-5d7831374c72",
     "conversationId": "0c6a887b-2bdb-4818-897b-5d7831374c72"
