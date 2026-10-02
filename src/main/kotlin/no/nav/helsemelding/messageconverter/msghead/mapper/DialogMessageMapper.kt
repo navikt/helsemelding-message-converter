@@ -3,38 +3,80 @@ package no.nav.helsemelding.messageconverter.msghead.mapper
 import arrow.core.Either
 import arrow.core.raise.either
 import no.nav.helse.dialogmelding.XMLDialogmelding
+import no.nav.helse.msgHead.XMLIdent
 import no.nav.helse.msgHead.XMLMsgHead
+import no.nav.helse.msgHead.XMLOrganisation
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.IncomingType
-import no.nav.helsemelding.jsonschema.core.model.Sender
+import no.nav.helsemelding.jsonschema.core.model.Provider
+import no.nav.helsemelding.jsonschema.core.model.ProviderOffice
+import no.nav.helsemelding.jsonschema.core.model.Signature
 import no.nav.helsemelding.messageconverter.error.ConversionError
 import no.nav.helsemelding.messageconverter.error.MappingError
 import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_NOTE
 import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_RESPONSE
-import no.nav.helsemelding.messageconverter.msghead.extractAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.model.FollowUpPlanMessage
 import no.nav.helsemelding.messageconverter.msghead.model.InquiryMessage
 import no.nav.helsemelding.messageconverter.msghead.model.MemoMessage
 import no.nav.helsemelding.messageconverter.msghead.model.OutgoingMessage
+import java.time.Clock
+import java.time.Instant
 import no.nav.helse.dialogmelding.CV as CodedValue
 
 private const val INCOMING_DIALOG_MESSAGE_VERSION = 1
 
-class DialogMessageMapper {
+class DialogMessageMapper(private val clock: Clock = Clock.systemUTC()) {
     fun toIncomingDialogMessage(msgHead: XMLMsgHead): Either<ConversionError, IncomingDialogMessage> =
         either {
             IncomingDialogMessage(
-                INCOMING_DIALOG_MESSAGE_VERSION,
-                msgHead.dialogId().bind(),
-                msgHead.dialogMessageType().bind(),
-                msgHead.createdAt().bind(),
-                msgHead.patientId().bind(),
-                msgHead.sender().bind(),
-                msgHead.conversationReference(),
-                msgHead.messageText(),
-                msgHead.extractAttachmentDocuments().size
+                version = INCOMING_DIALOG_MESSAGE_VERSION,
+                id = msgHead.dialogId().bind(),
+                type = msgHead.dialogMessageType().bind(),
+                receivedAt = Instant.now(clock).toString(),
+                patientIdent = msgHead.patientId().bind(),
+                conversationReference = msgHead.conversationReference(),
+                message = msgHead.messageText(),
+                numberOfAttachments = 0,
+                provider = msgHead.provider().bind(),
+                signature = msgHead.signature().bind(),
+                documentId = msgHead.documentId().bind()
+            )
+        }
+
+    private fun XMLMsgHead.conversationReference(): ConversationReference? =
+        msgInfo?.conversationRef?.let { conversationRef ->
+            ConversationReference(
+                conversationRef.refToParent,
+                conversationRef.refToConversation
+            )
+        }
+
+    private fun XMLMsgHead.provider(): Either<ConversionError, Provider> =
+        either {
+            Provider(
+                ident = providerId().bind(),
+                hprNumber = providerHprNumber(),
+                office = providerOffice().bind()
+            )
+        }
+
+    private fun XMLMsgHead.providerOffice(): Either<ConversionError, ProviderOffice> =
+        either {
+            ProviderOffice(
+                orgNumber = providerOfficeOrgNumber(),
+                orgName = providerOfficeName().bind(),
+                herId = providerOfficeHerId()
+            )
+        }
+
+    private fun XMLMsgHead.signature(): Either<ConversionError, Signature> =
+        either {
+            // TODO: Temporary solution. The values should be extracted from the signature itself.
+            Signature(
+                signingProviderIdent = providerId().bind(),
+                signedAt = createdAt().bind()
             )
         }
 
@@ -70,53 +112,49 @@ class DialogMessageMapper {
         msgInfo
             ?.patient
             ?.ident
-            ?.firstOrNull()
-            ?.id
+            ?.identifier("FNR", "DNR")
             .toRequiredField("msgInfo.patient.ident[0].id")
 
-    private fun XMLMsgHead.sender(): Either<ConversionError, Sender> =
-        either {
-            Sender(
-                senderProviderId().bind(),
-                senderSigningProviderId().bind()
-            )
-        }
-
-    private fun XMLMsgHead.senderProviderId(): Either<ConversionError, String> {
-        val providerId = msgInfo
-            ?.sender
-            ?.organisation
-            ?.organisation
-            ?.ident
-            ?.firstOrNull()
-            ?.id
-            ?: msgInfo
-                ?.sender
-                ?.organisation
-                ?.ident
-                ?.firstOrNull()
-                ?.id
-        return providerId.toRequiredField("msgInfo.sender.organisation.ident[0].id")
-    }
-
-    private fun XMLMsgHead.senderSigningProviderId(): Either<ConversionError, String> {
-        val signingProviderId = msgInfo
-            ?.sender
-            ?.organisation
+    private fun XMLMsgHead.providerId(): Either<ConversionError, String> =
+        providerOfficeOrganisation()
             ?.healthcareProfessional
             ?.ident
-            ?.firstOrNull()
-            ?.id
-        return signingProviderId?.let { Either.Right(it) } ?: senderProviderId()
-    }
+            ?.identifier("FNR", "DNR")
+            .toRequiredField("msgInfo.sender.organisation.healthcareProfessional.ident[FNR/DNR].id")
 
-    private fun XMLMsgHead.conversationReference(): ConversationReference? =
-        msgInfo?.conversationRef?.let { conversationRef ->
-            ConversationReference(
-                conversationRef.refToParent,
-                conversationRef.refToConversation
-            )
-        }
+    private fun XMLMsgHead.providerHprNumber(): String? =
+        providerOfficeOrganisation()
+            ?.healthcareProfessional
+            ?.ident
+            ?.identifier("HPR")
+
+    private fun XMLMsgHead.providerOfficeOrgNumber(): String? =
+        providerOfficeOrganisation()
+            ?.ident
+            ?.identifier("ENH")
+
+    private fun XMLMsgHead.providerOfficeName(): Either<ConversionError, String> =
+        providerOfficeOrganisation()
+            ?.organisationName
+            .toRequiredField("msgInfo.sender.organisation.organisationName")
+
+    private fun XMLMsgHead.providerOfficeHerId(): String? =
+        providerOfficeOrganisation()
+            ?.ident
+            ?.identifier("HER")
+
+    private fun XMLMsgHead.providerOfficeOrganisation(): XMLOrganisation? =
+        msgInfo?.sender?.organisation
+
+    private fun List<XMLIdent>.identifier(vararg types: String): String? =
+        firstOrNull { it.typeId?.v in types }?.id
+
+    private fun XMLMsgHead.documentId(): Either<ConversionError, String> =
+        dialogMessage()
+            ?.notat
+            ?.firstOrNull()
+            ?.dokIdNotat
+            .toRequiredField("document[0].refDoc.content.Dialogmelding.notat[0].dokIdNotat")
 
     private fun XMLMsgHead.messageText(): String =
         when (

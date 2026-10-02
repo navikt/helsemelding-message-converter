@@ -19,6 +19,7 @@ import no.nav.helsemelding.messageconverter.error.InvalidXml
 import no.nav.helsemelding.messageconverter.error.MappingError
 import no.nav.helsemelding.messageconverter.model.MessageMetadata
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
+import no.nav.helsemelding.messageconverter.msghead.mapper.DialogMessageMapper
 import no.nav.helsemelding.messageconverter.msghead.model.AdditionalMessageInfo
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
 import no.nav.helsemelding.messageconverter.msghead.model.Personident
@@ -28,7 +29,10 @@ import no.nav.helsemelding.messageconverter.msghead.model.provider.ProviderCateg
 import no.nav.helsemelding.messageconverter.msghead.model.provider.ProviderOffice
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Clock
+import java.time.Instant
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import kotlin.uuid.Uuid
 
 private const val XML_MESSAGE_WITH_ATTACHMENTS_PATH = "src/test/resources/message_with_attachments.xml"
@@ -41,7 +45,12 @@ private fun outgoingXmlPath(name: String) = "src/test/resources/outgoing/$name.x
 
 class MsgHeadMessageConverterSpec : StringSpec(
     {
-        val converter = msgHeadMessageConverter()
+        val converter = MsgHeadMessageConverter(
+            dialogMessageMapper = DialogMessageMapper(
+                Clock.fixed(Instant.parse("2026-10-02T09:00:00Z"), ZoneOffset.UTC)
+            ),
+            additionalMessageInfoProvider = FakeAdditionalMessageInfoProvider()
+        )
         val serializer = XmlSerializer()
 
         withData(
