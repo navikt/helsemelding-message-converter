@@ -23,6 +23,8 @@ import no.nav.helsemelding.messageconverter.msghead.model.MemoMessage
 import no.nav.helsemelding.messageconverter.msghead.model.OutgoingMessage
 import java.time.Clock
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import no.nav.helse.dialogmelding.CV as CodedValue
 
 private const val INCOMING_DIALOG_MESSAGE_VERSION = 1
@@ -76,7 +78,7 @@ class DialogMessageMapper(private val clock: Clock = Clock.systemUTC()) {
             // TODO: Temporary solution. The values should be extracted from the signature itself.
             Signature(
                 signingProviderIdent = providerId().bind(),
-                signedAt = createdAt().bind()
+                signedAt = formatDate(createdAt().bind())
             )
         }
 
@@ -214,4 +216,10 @@ class DialogMessageMapper(private val clock: Clock = Clock.systemUTC()) {
             field = "document[0].refDoc.content.Dialogmelding.temaKodet"
         )
     }
+
+    private fun formatDate(date: String): String =
+        LocalDateTime.parse(date)
+            .atZone(ZoneId.of("Europe/Oslo"))
+            .toInstant()
+            .toString()
 }

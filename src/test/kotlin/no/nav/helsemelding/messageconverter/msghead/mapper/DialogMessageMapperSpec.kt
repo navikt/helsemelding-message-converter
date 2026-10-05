@@ -36,6 +36,7 @@ import no.nav.helsemelding.messageconverter.error.AttachmentError
 import no.nav.helsemelding.messageconverter.error.MappingError
 import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_NOTE
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
+import no.nav.helsemelding.messageconverter.msghead.adapter.DateTimeAdapter
 import no.nav.helsemelding.messageconverter.msghead.model.AdditionalMessageInfo
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
 import no.nav.helsemelding.messageconverter.msghead.model.Personident
@@ -72,7 +73,7 @@ class DialogMessageMapperSpec : StringSpec(
                     hprNumber = "123456",
                     office = ProviderOffice(orgNumber = "provider-1", orgName = "Office", herId = "100")
                 ),
-                signature = Signature(signingProviderIdent = "12345678910", signedAt = "2026-06-10T12:30"),
+                signature = Signature(signingProviderIdent = "12345678910", signedAt = "2026-06-10T10:30:00Z"),
                 documentId = "OD2510106934724",
                 conversationReference = ConversationReference(
                     parentMessageId = "parent-1",
@@ -81,6 +82,21 @@ class DialogMessageMapperSpec : StringSpec(
                 message = "",
                 numberOfAttachments = 0
             )
+        }
+
+        withData(
+            nameFn = { "should convert signature Oslo time ${it.first} to UTC" },
+            listOf(
+                "2025-10-01T13:12:51.1497131" to "2025-10-01T11:12:51.149713100Z",
+                "2025-10-01T13:12:51.1497131+02:00" to "2025-10-01T11:12:51.149713100Z",
+                "2025-01-01T12:30:00" to "2025-01-01T11:30:00Z"
+            )
+        ) { (localTime, expected) ->
+            val result = mapper.toIncomingDialogMessage(
+                msgHead(genDate = requireNotNull(DateTimeAdapter().unmarshal(localTime)))
+            ).shouldBeRight()
+
+            result.signature.signedAt shouldBe expected
         }
 
         "should use the current UTC instant as receivedAt" {
