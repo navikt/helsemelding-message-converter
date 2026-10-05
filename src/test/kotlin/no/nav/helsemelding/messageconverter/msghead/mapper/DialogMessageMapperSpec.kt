@@ -73,7 +73,7 @@ class DialogMessageMapperSpec : StringSpec(
                     office = ProviderOffice(orgNumber = "provider-1", orgName = "Office", herId = "100")
                 ),
                 signature = Signature(signingProviderIdent = "12345678910", signedAt = "2026-06-10T12:30"),
-                documentId = "doc-1",
+                documentId = "OD2510106934724",
                 conversationReference = ConversationReference(
                     parentMessageId = "parent-1",
                     conversationId = "conversation-1"
@@ -290,7 +290,7 @@ private fun msgHead(
                             XMLDialogmelding().apply {
                                 notat.add(
                                     XMLNotat().apply {
-                                        dokIdNotat = "doc-1"
+                                        dokIdNotat = "OD2510106934724"
                                         temaKodet = CV().apply {
                                             v = "1"
                                             s = "2.16.578.1.12.4.1.1.8128"
