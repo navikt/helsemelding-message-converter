@@ -95,7 +95,7 @@
           <Notat>
             <TemaKodet V="1" S="2.16.578.1.12.4.1.1.8128" DN="Henvendelse om sykefraværsoppfølging" OT="Benyttes når henvendelsen gjelder en pasient som er sykmeldt, evt henvendelser knyttet til et tidligere sykefraværstilfelle." />
             <TekstNotatInnhold xsi:type="xsd:string">Pasienten følges opp videre. Vennlig hilsen Silje Nordmann</TekstNotatInnhold>
-            <DokIdNotat>0c6a887b-2bdb-4818-897b-5d7831374c72</DokIdNotat>
+            <DokIdNotat>OD2510106934724</DokIdNotat>
             <DatoNotat>2025-03-01</DatoNotat>
           </Notat>
         </Dialogmelding>

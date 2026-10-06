@@ -8,7 +8,9 @@ import kotlinx.serialization.json.Json
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessage
 import no.nav.helsemelding.jsonschema.core.model.IncomingDialogMessageType
-import no.nav.helsemelding.jsonschema.core.model.Sender
+import no.nav.helsemelding.jsonschema.core.model.Provider
+import no.nav.helsemelding.jsonschema.core.model.ProviderOffice
+import no.nav.helsemelding.jsonschema.core.model.Signature
 import no.nav.helsemelding.messageconverter.error.InvalidJson
 
 class IncomingDialogMessageSerializerSpec : StringSpec(
@@ -18,17 +20,23 @@ class IncomingDialogMessageSerializerSpec : StringSpec(
         "should serialize IncomingDialogMessage" {
             val dialogMessage = IncomingDialogMessage(
                 version = 1,
-                id = "dialog-1",
+                id = "f4afe2d3-2d00-40b3-95d0-0b537bf43637",
                 type = IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
                 receivedAt = "2026-06-10T12:30",
                 patientIdent = "12345678910",
-                sender = Sender(
-                    providerId = "provider-1",
-                    signingProviderId = "signing-provider-1"
+                provider = Provider(
+                    ident = "12345678910",
+                    hprNumber = "123456",
+                    office = ProviderOffice(orgNumber = null, orgName = "Office", herId = null)
                 ),
+                signature = Signature(
+                    signingProviderIdent = "12345678910",
+                    signedAt = "2026-06-10T12:30"
+                ),
+                documentId = "OD2510106934724",
                 conversationReference = ConversationReference(
-                    parentMessageId = "parent-1",
-                    conversationId = "conversation-1"
+                    parentMessageId = "72c7b6a8-3abf-4c1b-9780-eb6eda94447a",
+                    conversationId = "980a444b-c36b-49ab-90a3-8682ea31308d"
                 ),
                 message = "Hei",
                 numberOfAttachments = 1
@@ -40,17 +48,27 @@ class IncomingDialogMessageSerializerSpec : StringSpec(
                 """
                 {
                   "version": 1,
-                  "id": "dialog-1",
+                  "id": "f4afe2d3-2d00-40b3-95d0-0b537bf43637",
                   "type": "SICK_LEAVE_FOLLOW_UP_INQUIRY",
                   "receivedAt": "2026-06-10T12:30",
                   "patientIdent": "12345678910",
-                  "sender": {
-                    "providerId": "provider-1",
-                    "signingProviderId": "signing-provider-1"
+                  "provider": {
+                    "ident": "12345678910",
+                    "hprNumber": "123456",
+                    "office": {
+                      "orgNumber": null,
+                      "orgName": "Office",
+                      "herId": null
+                    }
                   },
+                  "signature": {
+                    "signingProviderIdent": "12345678910",
+                    "signedAt": "2026-06-10T12:30"
+                  },
+                  "documentId": "OD2510106934724",
                   "conversationReference": {
-                    "parentMessageId": "parent-1",
-                    "conversationId": "conversation-1"
+                    "parentMessageId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a",
+                    "conversationId": "980a444b-c36b-49ab-90a3-8682ea31308d"
                   },
                   "message": "Hei",
                   "numberOfAttachments": 1
@@ -63,17 +81,27 @@ class IncomingDialogMessageSerializerSpec : StringSpec(
             val json = """
                 {
                   "version": 1,
-                  "id": "dialog-1",
+                  "id": "f4afe2d3-2d00-40b3-95d0-0b537bf43637",
                   "type": "SICK_LEAVE_FOLLOW_UP_INQUIRY",
                   "receivedAt": "2026-06-10T12:30",
                   "patientIdent": "12345678910",
-                  "sender": {
-                    "providerId": "provider-1",
-                    "signingProviderId": "signing-provider-1"
+                  "provider": {
+                    "ident": "12345678910",
+                    "hprNumber": "123456",
+                    "office": {
+                      "orgNumber": null,
+                      "orgName": "Office",
+                      "herId": null
+                    }
                   },
+                  "signature": {
+                    "signingProviderIdent": "12345678910",
+                    "signedAt": "2026-06-10T12:30"
+                  },
+                  "documentId": "OD2510106934724",
                   "conversationReference": {
-                    "parentMessageId": "parent-1",
-                    "conversationId": "conversation-1"
+                    "parentMessageId": "72c7b6a8-3abf-4c1b-9780-eb6eda94447a",
+                    "conversationId": "980a444b-c36b-49ab-90a3-8682ea31308d"
                   },
                   "message": "Hei",
                   "numberOfAttachments": 1,
@@ -84,17 +112,23 @@ class IncomingDialogMessageSerializerSpec : StringSpec(
             serializer.deserialize(json).shouldBeRight(
                 IncomingDialogMessage(
                     version = 1,
-                    id = "dialog-1",
+                    id = "f4afe2d3-2d00-40b3-95d0-0b537bf43637",
                     type = IncomingDialogMessageType.SICK_LEAVE_FOLLOW_UP_INQUIRY,
                     receivedAt = "2026-06-10T12:30",
                     patientIdent = "12345678910",
-                    sender = Sender(
-                        providerId = "provider-1",
-                        signingProviderId = "signing-provider-1"
+                    provider = Provider(
+                        ident = "12345678910",
+                        hprNumber = "123456",
+                        office = ProviderOffice(orgNumber = null, orgName = "Office", herId = null)
                     ),
+                    signature = Signature(
+                        signingProviderIdent = "12345678910",
+                        signedAt = "2026-06-10T12:30"
+                    ),
+                    documentId = "OD2510106934724",
                     conversationReference = ConversationReference(
-                        parentMessageId = "parent-1",
-                        conversationId = "conversation-1"
+                        parentMessageId = "72c7b6a8-3abf-4c1b-9780-eb6eda94447a",
+                        conversationId = "980a444b-c36b-49ab-90a3-8682ea31308d"
                     ),
                     message = "Hei",
                     numberOfAttachments = 1
