@@ -9,6 +9,7 @@ import no.nav.helsemelding.messageconverter.json.OutgoingDialogMessageSerializer
 import no.nav.helsemelding.messageconverter.model.Attachment
 import no.nav.helsemelding.messageconverter.model.MessageMetadata
 import no.nav.helsemelding.messageconverter.model.SplitMessage
+import no.nav.helsemelding.messageconverter.msghead.MsgHeadContentHasher
 import no.nav.helsemelding.messageconverter.msghead.XmlSerializer
 import no.nav.helsemelding.messageconverter.msghead.extractAttachmentDocuments
 import no.nav.helsemelding.messageconverter.msghead.mapper.DialogMessageMapper
@@ -41,6 +42,8 @@ class MsgHeadMessageConverter(
     private val additionalMessageInfoProvider: AdditionalMessageInfoProvider = MissingAdditionalMessageInfoProvider(),
     private val metadataExtractor: MsgHeadMetadataExtractor = MsgHeadMetadataExtractor()
 ) : MessageConverter, AttachmentHandler, MetadataExtractor {
+    private val msgHeadContentHasher = MsgHeadContentHasher(xmlSerializer)
+
     /**
      * Converts an incoming dialog message from MsgHead XML to JSON.
      *
@@ -158,4 +161,13 @@ class MsgHeadMessageConverter(
             val msgHead = xmlSerializer.deserialize(xml).bind()
             metadataExtractor.extractMessageId(msgHead).bind()
         }
+
+    /**
+     * Calculates a content hash for the dialog, patient, and valid attachments in MsgHead XML.
+     *
+     * @param xml the raw MsgHead XML string
+     * @return a lowercase 64-character SHA-256 hash, or a [ConversionError] on failure
+     */
+    fun calculateContentHash(xml: String): Either<ConversionError, String> =
+        msgHeadContentHasher.calculate(xml)
 }
