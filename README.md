@@ -7,7 +7,7 @@ The library currently supports two conversion directions:
 - Incoming dialog message: MsgHead XML to `IncomingDialogMessage` JSON
 - Outgoing dialog message: `OutgoingDialogMessage` JSON to MsgHead XML
 
-It also includes helpers for extracting metadata and for extracting and removing attachments from MsgHead XML.
+It also includes helpers for extracting metadata, extracting and removing attachments, and calculating content hashes from MsgHead XML.
 
 ## Public API
 
@@ -168,6 +168,24 @@ data class Attachment(
 ```
 
 Supported attachment MIME types are PDF, TIFF, PNG, JPEG, PJPEG, JPG, and PJPG.
+
+## Content Hash
+
+Calculate a content hash independently of conversion:
+
+```kotlin
+val contentHash: Either<ConversionError, String> = converter.calculateContentHash(msgHeadXml)
+```
+
+On success, the result is a SHA-256 hash represented by 64 lowercase hexadecimal characters.
+The hash includes 
+- dialog content 
+- patient information 
+- all attachment documents in their extracted order. 
+The hash does not include `MsgId`, timestamps, or other `MsgHead` metadata.
+
+Malformed XML returns `InvalidXml`. A missing dialog or patient returns `MappingError`.
+Attachment extraction and serialization failures return `AttachmentError` and `SerializationError`, respectively.
 
 ## Errors
 
