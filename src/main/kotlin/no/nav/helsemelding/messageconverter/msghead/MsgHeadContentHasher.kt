@@ -19,12 +19,12 @@ internal class MsgHeadContentHasher(private val xmlSerializer: XmlSerializer) {
         either {
             val msgHead = xmlSerializer.deserialize(xml).bind()
 
-            val dialogHash = calculateDialogHash(msgHead).bind()
+            val dialogMessageHash = calculateDialogMessageHash(msgHead).bind()
             val patientHash = calculatePatientHash(msgHead).bind()
             val attachmentHash = calculateAttachmentHash(msgHead).bind()
 
             val componentHashes = buildList {
-                add(dialogHash)
+                add(dialogMessageHash)
                 add(patientHash)
                 add(attachmentHash)
             }
@@ -32,10 +32,10 @@ internal class MsgHeadContentHasher(private val xmlSerializer: XmlSerializer) {
             componentHashes.joinToString(separator = "").sha256Hex()
         }
 
-    private fun calculateDialogHash(msgHead: XMLMsgHead): Either<ConversionError, String> =
+    private fun calculateDialogMessageHash(msgHead: XMLMsgHead): Either<ConversionError, String> =
         either {
-            val dialogs = msgHead.dialogMessages()
-            if (dialogs.isEmpty()) {
+            val dialogMessages = msgHead.dialogMessages()
+            if (dialogMessages.isEmpty()) {
                 raise(
                     MappingError(
                         message = "Missing required MsgHead field: $MISSING_DIALOG_FIELD",
@@ -44,7 +44,7 @@ internal class MsgHeadContentHasher(private val xmlSerializer: XmlSerializer) {
                 )
             }
 
-            dialogs.joinToString(separator = "") {
+            dialogMessages.joinToString(separator = "") {
                 xmlSerializer.serializeForContentHash(it).bind()
             }.sha256Hex()
         }

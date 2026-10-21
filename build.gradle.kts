@@ -51,7 +51,7 @@ publishing {
         create<MavenPublication>("mavenJava") {
             groupId = "no.nav.helsemelding"
             artifactId = "message-converter"
-            version = "0.1.1-SNAPSHOT"
+            version = "0.1.1"
             from(components["java"])
         }
     }

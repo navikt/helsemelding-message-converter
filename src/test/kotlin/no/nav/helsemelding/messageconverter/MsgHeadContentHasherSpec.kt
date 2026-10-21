@@ -33,7 +33,7 @@ class MsgHeadContentHasherSpec : StringSpec(
             hash.matches(Regex("[0-9a-f]{64}")) shouldBe true
         }
 
-        "should change the hash when dialog content changes" {
+        "should change the hash when dialog message content changes" {
             val oldHash = converter.calculateContentHash(msgHeadXml()).shouldBeRight()
 
             val newHash = converter.calculateContentHash(msgHeadXml(dialogText = "changed dialog")).shouldBeRight()
@@ -68,7 +68,7 @@ class MsgHeadContentHasherSpec : StringSpec(
             missingAttachmentsHash shouldNotBe oldHash
         }
 
-        "should return MappingError when dialog is missing" {
+        "should return MappingError when dialog message is missing" {
             val missingDialog = converter.calculateContentHash(msgHeadXml(dialogText = null)).shouldBeLeft()
 
             missingDialog.shouldBeInstanceOf<MappingError>().field shouldBe "document[0].refDoc.content.Dialogmelding"
