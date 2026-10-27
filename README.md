@@ -7,7 +7,7 @@ The library currently supports two conversion directions:
 - Incoming dialog message: MsgHead XML to `IncomingDialogMessage` JSON
 - Outgoing dialog message: `OutgoingDialogMessage` JSON to MsgHead XML
 
-It also includes helpers for extracting metadata, extracting and removing attachments, and calculating content hashes from MsgHead XML.
+It also includes helpers for identifying AppRec XML messages, extracting metadata, extracting and removing attachments, and calculating content hashes from MsgHead XML.
 
 ## Public API
 
@@ -48,6 +48,8 @@ interface AttachmentHandler {
     fun removeAttachments(msgHeadXml: String): Either<ConversionError, String>
 }
 ```
+
+`MsgHeadMessageConverter` also exposes `isAppRec` and `calculateContentHash` directly, outside these interfaces.
 
 ## Convert Incoming MsgHead XML To JSON
 
@@ -168,6 +170,18 @@ data class Attachment(
 ```
 
 Supported attachment MIME types are PDF, TIFF, PNG, JPEG, PJPEG, JPG, and PJPG.
+
+## Identify AppRec XML
+
+Check whether the XML root element has the local name `AppRec`:
+
+```kotlin
+val appRec: Either<ConversionError, Boolean> = converter.isAppRec(xml)
+```
+
+The check supports XML with or without a namespace, including namespace prefixes, XML declarations, and comments.
+It does not validate the AppRec schema or namespace. A `false` result does not imply that the XML is a valid MsgHead message.
+Malformed XML and XML containing a DOCTYPE declaration return `InvalidXml`.
 
 ## Content Hash
 
