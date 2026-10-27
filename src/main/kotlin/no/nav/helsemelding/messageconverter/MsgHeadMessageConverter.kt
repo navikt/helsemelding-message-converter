@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.raise.either
 import no.nav.helsemelding.messageconverter.error.AttachmentError
 import no.nav.helsemelding.messageconverter.error.ConversionError
+import no.nav.helsemelding.messageconverter.error.InvalidXml
 import no.nav.helsemelding.messageconverter.json.IncomingDialogMessageSerializer
 import no.nav.helsemelding.messageconverter.json.OutgoingDialogMessageSerializer
 import no.nav.helsemelding.messageconverter.model.Attachment
@@ -22,7 +23,7 @@ import kotlin.uuid.Uuid
  * MsgHead-based implementation of [MessageConverter], [AttachmentHandler], and [MetadataExtractor].
  *
  * Converts between MsgHead XML and dialog message JSON, extracts metadata,
- * and extracts or removes attachments from MsgHead XML messages.
+ * extracts or removes attachments from MsgHead XML messages, and identifies AppRec XML messages.
  *
  * For outgoing conversion, an [AdditionalMessageInfoProvider] must be supplied —
  * the default [MissingAdditionalMessageInfoProvider] will always return an error.
@@ -161,6 +162,18 @@ class MsgHeadMessageConverter(
             val msgHead = xmlSerializer.deserialize(xml).bind()
             metadataExtractor.extractMessageId(msgHead).bind()
         }
+
+    /**
+     * Checks whether the XML root element has the local name AppRec.
+     *
+     * This does not validate the AppRec schema or namespace.
+     * A false result does not imply that the XML is a valid MsgHead message.
+     *
+     * @param xml the raw XML string
+     * @return whether the root element is AppRec, or [InvalidXml] if parsing fails
+     */
+    fun isAppRec(xml: String): Either<ConversionError, Boolean> =
+        XmlMessageClassifier.isAppRec(xml)
 
     /**
      * Calculates a content hash for the dialog, patient, and valid attachments in MsgHead XML.
