@@ -53,6 +53,19 @@ class MsgHeadMessageConverterSpec : StringSpec(
         )
         val serializer = XmlSerializer()
 
+        "should classify XML through MsgHeadMessageConverter" {
+            converter.isAppRec("<AppRec/>").shouldBeRight() shouldBe true
+            converter.isAppRec("<MsgHead/>").shouldBeRight() shouldBe false
+        }
+
+        withData(
+            nameFn = { "should return InvalidXml when classifying '$it' through MsgHeadMessageConverter" },
+            "<AppRec>",
+            "<!DOCTYPE AppRec><AppRec/>"
+        ) { xml ->
+            converter.isAppRec(xml).shouldBeLeft().shouldBeInstanceOf<InvalidXml>()
+        }
+
         withData(
             nameFn = { "should convert $it XML to DialogMessage JSON" },
             listOf(
