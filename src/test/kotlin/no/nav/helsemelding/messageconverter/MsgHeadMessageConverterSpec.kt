@@ -337,7 +337,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
     }
 )
 
-internal const val HELSEMELDING_TEST_HER_ID = 8142519
+internal const val HELSEMELDING_TEST_FAGSYSTEM_HER_ID = 8142519
 
 fun createProvider(
     providerReference: Uuid,
