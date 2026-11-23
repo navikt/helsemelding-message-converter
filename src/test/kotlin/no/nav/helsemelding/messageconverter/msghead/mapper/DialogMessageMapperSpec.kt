@@ -31,6 +31,7 @@ import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
 import no.nav.helsemelding.jsonschema.core.model.Provider
 import no.nav.helsemelding.jsonschema.core.model.ProviderOffice
 import no.nav.helsemelding.jsonschema.core.model.Signature
+import no.nav.helsemelding.messageconverter.HELSEMELDING_TEST_HER_ID
 import no.nav.helsemelding.messageconverter.createProvider
 import no.nav.helsemelding.messageconverter.error.AttachmentError
 import no.nav.helsemelding.messageconverter.error.MappingError
@@ -204,6 +205,7 @@ class DialogMessageMapperSpec : StringSpec(
             val additionalInfo = AdditionalMessageInfo(
                 provider = provider,
                 employee = employee,
+                senderHerId = HELSEMELDING_TEST_HER_ID,
                 createdAt = Instant.parse("2026-07-06T07:48:44.572719100Z"),
                 docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
             )
@@ -249,6 +251,7 @@ class DialogMessageMapperSpec : StringSpec(
                     lastName = "Nordmann",
                     personident = patientIdent
                 ),
+                senderHerId = HELSEMELDING_TEST_HER_ID,
                 createdAt = Instant.parse("2026-07-06T07:48:44.572719100Z"),
                 docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
             )

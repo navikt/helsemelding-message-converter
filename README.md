@@ -88,8 +88,10 @@ val xml = converter
 ```
 
 The input JSON must follow the `OutgoingDialogMessage` schema from `json-schema-core`.
-`AdditionalMessageInfoProvider` supplies the MsgHead fields not present in the outgoing JSON:
-provider, employee, created timestamp as `Instant`, and `docId`.
+`AdditionalMessageInfoProvider` supplies the MsgHead fields not present in the outgoing JSON.
+Its `AdditionalMessageInfo` includes the receiving provider, employee, creation timestamp as `Instant`,
+`docId`, and the required `senderHerId` for the message. The consuming application supplies the sender's
+HER ID for its environment. The converter writes it alongside NAV's name and organisation number.
 
 ### Outgoing Message Types
 
