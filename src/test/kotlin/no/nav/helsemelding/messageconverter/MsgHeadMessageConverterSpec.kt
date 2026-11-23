@@ -181,7 +181,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
 
         withData(
             nameFn = { "should convert OutgoingDialogMessage JSON to MsgHead XML and use HER ID $it from additional message info" },
-            HELSEMELDING_TEST_HER_ID,
+            HELSEMELDING_TEST_FAGSYSTEM_HER_ID,
             1234567
         ) { senderHerId ->
             val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
