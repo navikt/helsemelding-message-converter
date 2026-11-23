@@ -180,7 +180,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
         }
 
         withData(
-            nameFn = { "should use HER ID $it from additional message info" },
+            nameFn = { "should convert OutgoingDialogMessage JSON to MsgHead XML and use HER ID $it from additional message info" },
             HELSEMELDING_TEST_HER_ID,
             1234567
         ) { senderHerId ->
