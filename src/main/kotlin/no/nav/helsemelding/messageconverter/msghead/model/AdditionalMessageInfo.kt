@@ -7,6 +7,7 @@ import kotlin.uuid.Uuid
 data class AdditionalMessageInfo(
     val provider: Provider,
     val employee: Employee,
+    val senderHerId: Int,
     val createdAt: Instant = Instant.now(),
     val docId: Uuid = Uuid.random()
 )

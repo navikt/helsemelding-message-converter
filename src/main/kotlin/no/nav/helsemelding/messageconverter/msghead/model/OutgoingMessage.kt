@@ -13,6 +13,7 @@ sealed interface OutgoingMessage {
     val attachment: String?
     val provider: Provider
     val employee: Employee
+    val senderHerId: Int
     val createdAt: Instant
     val docId: Uuid
 }
@@ -25,6 +26,7 @@ data class InquiryMessage(
     override val attachment: String?,
     override val provider: Provider,
     override val employee: Employee,
+    override val senderHerId: Int,
     override val createdAt: Instant,
     override val docId: Uuid
 ) : OutgoingMessage
@@ -37,6 +39,7 @@ data class MemoMessage(
     override val attachment: String?,
     override val provider: Provider,
     override val employee: Employee,
+    override val senderHerId: Int,
     override val createdAt: Instant,
     override val docId: Uuid
 ) : OutgoingMessage
@@ -48,6 +51,7 @@ data class FollowUpPlanMessage(
     override val attachment: String,
     override val provider: Provider,
     override val employee: Employee,
+    override val senderHerId: Int,
     override val createdAt: Instant,
     override val docId: Uuid
 ) : OutgoingMessage

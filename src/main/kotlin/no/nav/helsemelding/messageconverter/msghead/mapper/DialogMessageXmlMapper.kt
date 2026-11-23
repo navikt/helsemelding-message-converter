@@ -47,6 +47,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Base64
 
 private const val CODE_SYSTEM_BASE = "2.16.578.1.12.4.1.1."
+private const val NAV_ORGANISATION_NUMBER = "889640782"
 private val OSLO_ZONE: ZoneId = ZoneId.of("Europe/Oslo")
 
 internal fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
@@ -59,7 +60,7 @@ internal fun createBaseDialogMessage(message: OutgoingMessage): XMLMsgInfo {
             dn = "Ja"
             v = "J"
         }
-        sender = createSender()
+        sender = createSender(message.senderHerId)
         patient = createPatient(message.employee)
     }
 }
@@ -112,25 +113,14 @@ internal fun createAttachmentDocument(
     }
 }
 
-internal fun createSender(): XMLSender {
-    return XMLSender().apply {
+private fun createSender(senderHerId: Int): XMLSender =
+    XMLSender().apply {
         organisation = XMLOrganisation().apply {
             organisationName = "NAV"
-            ident.add(
-                XMLIdent().apply {
-                    id = "889640782"
-                    typeId = createOrganisationNumberType()
-                }
-            )
-            ident.add(
-                XMLIdent().apply {
-                    id = "8142519"
-                    typeId = createHerId()
-                }
-            )
+            ident.add(createOrganisationNumberIdent(NAV_ORGANISATION_NUMBER))
+            ident.add(createHerIdIdent(senderHerId.toString()))
         }
     }
-}
 
 internal fun createOrganisationNumberType(): XMLCV {
     return XMLCV().apply {

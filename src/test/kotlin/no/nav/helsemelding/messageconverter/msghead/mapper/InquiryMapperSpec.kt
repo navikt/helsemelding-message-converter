@@ -9,6 +9,7 @@ import no.nav.helse.base64container.Base64Container
 import no.nav.helse.dialogmelding.XMLDialogmelding
 import no.nav.helsemelding.jsonschema.core.model.ConversationReference
 import no.nav.helsemelding.jsonschema.core.model.OutgoingDialogMessageType
+import no.nav.helsemelding.messageconverter.HELSEMELDING_TEST_FAGSYSTEM_HER_ID
 import no.nav.helsemelding.messageconverter.createProvider
 import no.nav.helsemelding.messageconverter.msghead.MSG_TYPE_DIALOG_REQUEST
 import no.nav.helsemelding.messageconverter.msghead.model.Employee
@@ -77,6 +78,7 @@ private fun inquiryMessage(): InquiryMessage {
             lastName = "Nordmann",
             personident = patientIdent
         ),
+        senderHerId = HELSEMELDING_TEST_FAGSYSTEM_HER_ID,
         createdAt = Instant.parse("2026-07-06T07:48:44.572719100Z"),
         docId = Uuid.parse("769a5524-ca26-4d57-a0f4-d0a1d8f445c9")
     )

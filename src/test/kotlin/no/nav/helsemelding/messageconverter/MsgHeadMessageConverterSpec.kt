@@ -179,7 +179,11 @@ class MsgHeadMessageConverterSpec : StringSpec(
             error.message shouldBe "AdditionalMessageInfoProvider is required for outgoing conversion"
         }
 
-        "should convert OutgoingDialogMessage JSON to MsgHead XML" {
+        withData(
+            nameFn = { "should convert OutgoingDialogMessage JSON to MsgHead XML and use HER ID $it from additional message info" },
+            HELSEMELDING_TEST_FAGSYSTEM_HER_ID,
+            1234567
+        ) { senderHerId ->
             val providerId = Uuid.parse("75837362-2d8c-4f50-9ba5-961999bf1acc")
             val patientIdent = Personident("12345678910").getOrElse { error ->
                 error(error.message)
@@ -213,11 +217,20 @@ class MsgHeadMessageConverterSpec : StringSpec(
             val additionalMessageInfoProvider = FakeAdditionalMessageInfoProvider()
             additionalMessageInfoProvider.givenAdditionalMessageInfo(
                 msgId = msgId,
-                either = Either.Right(AdditionalMessageInfo(provider, employee))
+                either = Either.Right(AdditionalMessageInfo(provider, employee, senderHerId))
             )
 
-            val converter = msgHeadMessageConverter(additionalMessageInfoProvider)
-            converter.outgoingDialogMessageJsonToXml(json).shouldBeRight()
+            val converter = MsgHeadMessageConverter(
+                additionalMessageInfoProvider = additionalMessageInfoProvider
+            )
+            val xml = converter.outgoingDialogMessageJsonToXml(json).shouldBeRight()
+            val organisation = serializer.deserialize(xml).shouldBeRight().msgInfo.sender.organisation
+
+            organisation.organisationName shouldBe "NAV"
+            organisation.ident.map { it.typeId.v to it.id } shouldContainExactly listOf(
+                "ENH" to "889640782",
+                "HER" to senderHerId.toString()
+            )
         }
 
         "should extract attachments from MsgHead XML" {
@@ -324,11 +337,7 @@ class MsgHeadMessageConverterSpec : StringSpec(
     }
 )
 
-private fun msgHeadMessageConverter(
-    additionalMessageInfoProvider: AdditionalMessageInfoProvider = FakeAdditionalMessageInfoProvider()
-): MsgHeadMessageConverter = MsgHeadMessageConverter(
-    additionalMessageInfoProvider = additionalMessageInfoProvider
-)
+internal const val HELSEMELDING_TEST_FAGSYSTEM_HER_ID = 8142519
 
 fun createProvider(
     providerReference: Uuid,

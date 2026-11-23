@@ -68,6 +68,7 @@ private fun createFollowUpPlanMessage(
         attachment = attachment,
         provider = additionalMessageInfo.provider,
         employee = additionalMessageInfo.employee,
+        senderHerId = additionalMessageInfo.senderHerId,
         createdAt = additionalMessageInfo.createdAt,
         docId = additionalMessageInfo.docId
     )
@@ -87,6 +88,7 @@ private fun createInquiryMessage(
     attachment = dialogMessage.attachment,
     provider = additionalMessageInfo.provider,
     employee = additionalMessageInfo.employee,
+    senderHerId = additionalMessageInfo.senderHerId,
     createdAt = additionalMessageInfo.createdAt,
     docId = additionalMessageInfo.docId
 )
@@ -105,6 +107,7 @@ private fun createMemoMessage(
     attachment = dialogMessage.attachment,
     provider = additionalMessageInfo.provider,
     employee = additionalMessageInfo.employee,
+    senderHerId = additionalMessageInfo.senderHerId,
     createdAt = additionalMessageInfo.createdAt,
     docId = additionalMessageInfo.docId
 )
